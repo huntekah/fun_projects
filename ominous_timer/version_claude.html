@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced LeetCode Timer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
+    <style>
+        @keyframes glitch {
+            0% { transform: translate(0) }
+            20% { transform: translate(-2px, 2px) }
+            40% { transform: translate(-2px, -2px) }
+            60% { transform: translate(2px, 2px) }
+            80% { transform: translate(2px, -2px) }
+            100% { transform: translate(0) }
+        }
+        .glitch-effect {
+            animation: glitch 0.3s infinite;
+        }
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 to-black min-h-screen flex items-center justify-center p-4">
+    <div class="bg-gray-800 bg-opacity-50 p-8 rounded-2xl backdrop-blur-sm shadow-2xl max-w-2xl w-full">
+        <div class="text-center relative">
+            <!-- Circular Progress -->
+            <div class="relative inline-block">
+                <svg class="progress-ring" width="280" height="280">
+                    <circle id="progress-bg" cx="140" cy="140" r="120" stroke="#374151" stroke-width="8" fill="none"/>
+                    <circle id="progress" cx="140" cy="140" r="120" stroke="#ef4444" stroke-width="8" fill="none"/>
+                </svg>
+                <div id="timer" class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-red-500 font-mono text-6xl transition-all duration-500">
+                    00:00
+                </div>
+            </div>
+
+            <!-- Stats Display -->
+            <div id="stats" class="mt-4 grid grid-cols-3 gap-4 mb-6 text-gray-300">
+                <div class="bg-gray-800 p-3 rounded-lg">
+                    <div class="text-sm opacity-70">Best Time</div>
+                    <div id="bestTime" class="text-xl">--:--</div>
+                </div>
+                <div class="bg-gray-800 p-3 rounded-lg">
+                    <div class="text-sm opacity-70">Average</div>
+                    <div id="avgTime" class="text-xl">--:--</div>
+                </div>
+                <div class="bg-gray-800 p-3 rounded-lg">
+                    <div class="text-sm opacity-70">Attempts</div>
+                    <div id="attempts" class="text-xl">0</div>
+                </div>
+            </div>
+
+            <!-- Time Input -->
+            <div class="mb-6 flex justify-center space-x-2">
+                <input type="number" id="customTime" min="1" max="60" value="15" 
+                       class="bg-gray-700 text-white px-4 py-2 rounded-lg w-24 text-center focus:outline-none focus:ring-2 focus:ring-red-500">
+                <button onclick="startCustomTimer()" 
+                        class="bg-red-800 hover:bg-red-700 text-white px-6 py-2 rounded-lg font-bold transition-all transform hover:scale-105">
+                    Start Custom
+                </button>
+            </div>
+
+            <!-- Quick Start Buttons -->
+            <div class="space-x-4 mb-6">
+                <button onclick="startTimer(10)" class="bg-red-800 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition-all transform hover:scale-105">
+                    10 Minutes
+                </button>
+                <button onclick="startTimer(15)" class="bg-red-800 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-bold transition-all transform hover:scale-105">
+                    15 Minutes
+                </button>
+                <button onclick="resetTimer()" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-bold transition-all transform hover:scale-105">
+                    Reset
+                </button>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="space-x-4">
+                <button onclick="completeTask()" id="doneBtn" disabled
+                        class="bg-green-800 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-bold transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                    DONE ✓
+                </button>
+                <button onclick="addMoreTime()" id="moreTimeBtn" disabled
+                        class="bg-yellow-800 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-bold transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+                    MORE TIME (+5m)
+                </button>
+            </div>
+
+            <!-- Results Display -->
+            <div id="result" class="mt-6 text-green-500 text-xl font-bold hidden"></div>
+        </div>
+    </div>
+
+    <script>
+        const tickSound = new Howl({
+            src: ['data:audio/wav;base64,UklGRkQFAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YSAFAACAgICAgICAgICAgICAgICAgICAgICAgICAf3hxeH+AfXZ1eHx6eX+Df4F/gIKFg4GAfX+Af3+BgYODhIGCgX99en+Ff4OBhIWGgoJ/g4SCgX6Af4OHhYeFhoeGgXt2eXyBhIaJi4mIhYGBg4WFgoGDhYWDgX19foGIiImHhYSGenh3foKHjI+RjYuHhIKDg4GAgYOIioiGhIODh4iIhoSChYeSjEQhFxwlLzc8NDm/yNPe6fL2+vz+/v37+vn5+vv8/f7+/v79/Pv4+fb18/Px7evp6Ofm5OPh4N/e3dzb2tnY19bU0tHPzs3My8rJyMfGxcTDwsC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWkoqGgn56dnJuamZiXlpWUk5KRkI+OjYyLiomIh4aFhIOCgYB/fn18e3p5eHd2dXRzcnFwb25tbGtqaWhnZmVkY2JhYF9eXVxbWllYV1ZVVFNSUVBPTk1MS0pJSEdGRURDQkFAPz49PDs6OTg3NjU0MzIxMC8uLSwrKikoJyYlJCMiISAfHh0cGxoZGBcWFRQTEhEQDw4NDAsKCQgHBgUEAwIBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'],
+            volume: 0.5
+        });
+
+        const alarmSound = new Howl({
+            src: ['data:audio/wav;base64,UklGRkQFAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YSAFAACBhYiFhIaEhIaDg4OCgoGBgYGAgICAgICAgH9/f39/f39+fn5+fn5+fn5+fn5+fn1+fb69vby8vLy7u7u7u7u6urq6urm5ubm5ubm4uLi4uLi4t7e3t7e3t7e3t7e3t7e3tra2tra2tra2tra2tbW1tbW1tbW1tbW1tbW1tbW1tLW0tbS1tLW0tbS1tLW0tbS1tLW0tbS1tLW0tbS1tLEhFxwlLzc8NDm/yNPe6fL2+vz+/v37+vn5+vv8/f7+/v79/Pv4+fb18/Px7evp6Ofm5OPh4N/e3dzb2tnY19bU0tHPzs3My8rJyMfGxcTDwsC/vr28u7q5uLe2tbSzsrGwr66trKuqqainpqWkoqGgn56dnJuamZiXlpWUk5KRkI+OjYyLiomIh4aFhIOCgYB/fn18e3p5eHd2dXRzcnFwb25tbGtqaWhnZmVkY2JhYF9eXVxbWllYV1ZVVFNSUVBPTk1MS0pJSEdGRURDQkFAPz49PDs6OTg3NjU0MzIxMC8uLSwrKikoJyYlJCMiISAfHh0cGxoZGBcWFRQTEhEQDw4NDAsKCQgHBgUEAwIBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA'],
+            volume: 0.8
+        });
+
+        let timerInterval;
+        let endTime;
+        let isRunning = false;
+        let originalMinutes = 0;
+        let extraTimeAdded = false;
+        let stats = {
+            bestTime: Infinity,
+            totalTime: 0,
+            attempts: 0
+        };
+
+        // Initialize progress circle
+        const circle = document.getElementById('progress');
+        const radius = circle.r.baseVal.value;
+        const circumference = radius * 2 * Math.PI;
+        circle.style.strokeDasharray = `${circumference} ${circumference}`;
+        circle.style.strokeDashoffset = circumference;
+
+        function setProgress(percent) {
+            const offset = circumference - (percent / 100) * circumference;
+            circle.style.strokeDashoffset = offset;
+        }
+
+        function startCustomTimer() {
+            const minutes = parseInt(document.getElementById('customTime').value);
+            if (minutes > 0 && minutes <= 60) {
+                startTimer(minutes);
+            }
+        }
+
+        function updateStats(timeInSeconds) {
+            stats.attempts++;
+            if (timeInSeconds < stats.bestTime) {
+                stats.bestTime = timeInSeconds;
+            }
+            stats.totalTime += timeInSeconds;
+
+            document.getElementById('attempts').textContent = stats.attempts;
+            document.getElementById('bestTime').textContent = formatTime(stats.bestTime);
+            document.getElementById('avgTime').textContent = formatTime(stats.totalTime / stats.attempts);
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function startTimer(minutes) {
+            if (isRunning) return;
+            
+            isRunning = true;
+            originalMinutes = minutes;
+            extraTimeAdded = false;
+            endTime = moment().add(minutes, 'minutes');
+            
+            document.getElementById('doneBtn').disabled = false;
+            document.getElementById('moreTimeBtn').disabled = false;
+            document.getElementById('result').classList.add('hidden');
+            document.getElementById('timer').classList.remove('glitch-effect');
+            
+            timerInterval = setInterval(() => {
+                const remaining = moment.duration(endTime.diff(moment()));
+                const totalSeconds = remaining.asSeconds();
+                const progress = (totalSeconds / (originalMinutes * 60)) * 100;
+                
+                if (totalSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timer').textContent = "00:00";
+                    document.getElementById('timer').classList.add('glitch-effect');
+                    alarmSound.play();
+                    setProgress(0);
+                    isRunning = false;
+                    return;
+                }
+
+                const minutes = Math.floor(remaining.asMinutes());
+                const seconds = Math.floor(remaining.

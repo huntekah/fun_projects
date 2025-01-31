@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ominous Timer</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background: black;
+            color: red;
+            text-align: center;
+            font-size: 5rem;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            transition: background 0.5s;
+        }
+        .danger {
+            background: darkred !important;
+            animation: pulse 1s infinite alternate;
+        }
+        #controls {
+            margin-top: 20px;
+        }
+        button {
+            font-size: 2rem;
+            margin: 10px;
+        }
+        @keyframes pulse {
+            from { background-color: darkred; }
+            to { background-color: black; }
+        }
+    </style>
+</head>
+<body>
+    <div id="timer">00:00</div>
+    <div id="controls">
+        <button id="done" class="btn btn-success">DONE</button>
+        <button id="more-time" class="btn btn-warning">MORE TIME</button>
+    </div>
+    
+    <script>
+        $(document).ready(function () {
+            Swal.fire({
+                title: 'Set Timer',
+                input: 'number',
+                inputAttributes: { min: 1, max: 60, step: 1 },
+                inputPlaceholder: 'Enter minutes',
+                showCancelButton: true,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    startTimer(result.value * 60);
+                }
+            });
+        });
+        
+        let ticking = new Howl({ src: ['https://freesound.org/data/previews/342/342205_5121236-lq.mp3'], loop: true, volume: 0.3 });
+        let time, originalTime, interval;
+        
+        function startTimer(duration) {
+            time = duration;
+            originalTime = duration;
+            ticking.play();
+            updateDisplay();
+            interval = setInterval(() => {
+                if (time <= 0) {
+                    clearInterval(interval);
+                    ticking.stop();
+                    Swal.fire({ title: 'TIME UP!', icon: 'error' });
+                    return;
+                }
+                time--;
+                updateDisplay();
+            }, 1000);
+        }
+
+        function updateDisplay() {
+            let minutes = Math.floor(time / 60);
+            let seconds = time % 60;
+            $('#timer').text(`${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`);
+            if (time === 10) {
+                $('body').addClass('danger');
+                ticking.rate(1.5);
+            }
+        }
+
+        $('#done').click(function () {
+            clearInterval(interval);
+            ticking.stop();
+            Swal.fire({ title: 'Task Completed!', text: `You finished with ${Math.floor(time / 60)}:${String(time % 60).padStart(2, '0')} left.`, icon: 'success' });
+        });
+
+        $('#more-time').click(function () {
+            let extraTime = Math.min(300, Math.floor(originalTime * 0.4));
+            if (time + extraTime <= originalTime * 1.4) {
+                time += extraTime;
+                $('body').addClass('danger');
+                ticking.rate(1.2);
+                updateDisplay();
+            }
+        });
+    </script>
+</body>
+</html>
+
