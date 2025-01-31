@@ -34,7 +34,36 @@ Now you can refactor the code, and add any changes to wow the judge before sunmi
 * the mistake in prompt is intentional. It might influence weaker LLM's.
 
 
-## Prompt 4: Judging the results of others.
 
-- Here I wont print the whole prompt. Basically each LLM got all four results and needed to choose a winner. 
+# Winner
+
+Although I initially thought to ask LLM's to judge each other and let them choose who won, it was not needed. Turns out only the version from gpt_o1 model actually works as a timer. All other webpages, show a result but didnt work. The state of those files is saved in commit 0cf1e81 if you wish to see it, but for the pleasure of random internet walkers, here are the images of each timer:
+
+# Gemini Advanced timer:
+
+![Gemini Timer](assets/gemini_timer.png)
+
+# Deepseek timer:
+
+![Deepseek Timer](assets/deepseek_timer.png)
+
+# Claude timer:
+
+![Claude Timer](assets/claude_timer.png)
+
+# The winner: gpt_o1 timer:
+
+## Starting page
+![GPT_O1 Timer](assets/gpt_timer_1.png)
+## First counter screen
+![GPT_O1 Timer](assets/gpt_timer_2.png)
+## What happens when you ask for more time
+![GPT_O1 Timer](assets/gpt_timer_3.png)
+## And what happens when you finish the task
+![GPT_O1 Timer](assets/gpt_timer_4.png)
+
+
+
+
+Ths code that you see as a final repo verion is the one where each model got a custom description of things which were not working, and had a last chance to fix their mistakes. Those results you can view simply by opening the html file.
 
