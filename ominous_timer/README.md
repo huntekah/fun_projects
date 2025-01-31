@@ -1,5 +1,19 @@
 # Ominous Timer
 
+# State of the Repository:
+
+All of the timers are working. Each of the timers was created only by using the LLM with the name of the file. Deep Seek and Claude need human interation to point out the bugs, while Gemini and gpt made the correct submission right away. I'd say deepseeks looks best, but it could't win cause it didn't work initially. Thus, the final verdict:
+1. Gemini ADvanced
+    - The timer works out of the box, and it looks clean
+2. GPT_O1
+    - The timer works out of the box, and it has a nice design. No sound included, and requires user to click reset in order to make another timer.
+3. Deep Seek
+    - The best timer, although disqualified cause it didn't work initially. Has the best design, but also no sounds included.
+4. Claude
+    - The timer works, but looks very very poor. And it didnt work on the first run. I really though Claude would win.
+
+# Initial task
+
 All four LLMs received the same prompt. They were tasked with creating an ominous timer app and refining it over three steps:
 
 ## Prompt 1:
@@ -38,9 +52,7 @@ Now you can refactor the code, and add any changes to wow the judge before sunmi
 
 # Winner
 
-Although I initially considered letting the LLMs judge each other, it turned out to be unnecessary. Only the version from the **gpt_o1** model AND **gemini Advanced** models actually worked as a functional timer. All other versions displayed a result but failed to function correctly.
-
-The state of all files is saved in commit **0cf1e81** if you wish to review them. However, for the convenience of random internet visitors, here are images of each timer:
+The state of all files (except gemini that I needed to patch, cause it referenced previous response blocks) is saved in commit **0cf1e81** if you wish to review them in the state that was judged. However, for the convenience of random internet visitors, here are images of each timer:
 
 ### Gemini Advanced Timer:
 ![Gemini Timer](assets/gemini_timer_1.png)
