@@ -38,12 +38,13 @@ Now you can refactor the code, and add any changes to wow the judge before sunmi
 
 # Winner
 
-Although I initially considered letting the LLMs judge each other, it turned out to be unnecessary. Only the version from the **gpt_o1** model actually worked as a functional timer. All other versions displayed a result but failed to function correctly.
+Although I initially considered letting the LLMs judge each other, it turned out to be unnecessary. Only the version from the **gpt_o1** model AND **gemini Advanced** models actually worked as a functional timer. All other versions displayed a result but failed to function correctly.
 
 The state of all files is saved in commit **0cf1e81** if you wish to review them. However, for the convenience of random internet visitors, here are images of each timer:
 
 ### Gemini Advanced Timer:
-![Gemini Timer](assets/gemini_timer.png)
+![Gemini Timer](assets/gemini_timer_1.png)
+![Gemini Timer](assets/gemini_timer_2.png)
 
 ### Deepseek Timer:
 ![Deepseek Timer](assets/deepseek_timer.png)
