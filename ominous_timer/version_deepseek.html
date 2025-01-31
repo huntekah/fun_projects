@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Code Pressure Timer</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&display=swap" rel="stylesheet">
@@ -77,6 +77,22 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
+
+        #result {
+            font-size: 1.5em;
+            color: #00ff00;
+            margin-top: 10px;
+        }
+
+        #timer.urgent {
+            animation: urgentPulse 1s infinite;
+        }
+
+        @keyframes urgentPulse {
+            0% { transform: scale(1.05); color: #f00; }
+            50% { transform: scale(1.1); color: #a00; }
+            100% { transform: scale(1.05); color: #f00; }
+        }
     </style>
 </head>
 <body>
@@ -84,12 +100,13 @@
     <div class="buttons">
         <input type="text" id="customTime" placeholder="MM:SS">
         <button class="warning" onclick="startCustomTimer()">CUSTOM</button>
-        <button class="danger" onclick="startTimer(600)">10:00</button>
-        <button class="danger" onclick="startTimer(900)">15:00</button>
+        <button class="danger" onclick="startTimer(600, 600)">10:00</button>
+        <button class="danger" onclick="startTimer(900, 900)">15:00</button>
         <button class="success" onclick="done()">DONE</button>
         <button class="warning" onclick="addMoreTime()">+5:00</button>
         <button class="danger" onclick="resetTimer()">RESET</button>
     </div>
+    <div id="result"></div>
 
     <script>
         let endTime, timerInterval, originalDuration, addedTime = 0;
@@ -109,9 +126,9 @@
                 `0 0 ${30 * (1 - percentLeft)}px hsl(0, ${100 - (percentLeft * 50)}%, 50%)`;
         }
 
-        function startTimer(seconds) {
+        function startTimer(seconds, initialDuration) {
             resetTimer();
-            originalDuration = seconds;
+            originalDuration = initialDuration;
             addedTime = 0;
             endTime = Date.now() + seconds * 1000;
             timerInterval = setInterval(() => {
@@ -125,22 +142,29 @@
         }
 
         function startCustomTimer() {
-            const input = document.getElementById('customTime').value.split(':');
-            const minutes = parseInt(input[0]) || 0;
-            const seconds = parseInt(input[1]) || 0;
-            if (minutes + seconds > 0) startTimer(minutes * 60 + seconds);
+            const input = document.getElementById('customTime').value;
+            if (!/^\d{2}:\d{2}$/.test(input)) {
+                alert("Please enter a valid time in MM:SS format.");
+                return;
+            }
+            const [minutes, seconds] = input.split(':').map(Number);
+            startTimer(minutes * 60 + seconds, minutes * 60 + seconds);
         }
 
         function addMoreTime() {
+            if (!originalDuration) return;
+
             const maxAdditional = originalDuration * 0.4;
             const remainingAdditional = maxAdditional - addedTime;
-            if (remainingAdditional <= 0) return;
+            if (remainingAdditional <= 0) {
+                alert("You can't add more time.");
+                return;
+            }
 
             const additional = Math.min(300, remainingAdditional);
             addedTime += additional;
             endTime += additional * 1000;
-            document.getElementById('timer').style.color = '#ff0000';
-            document.getElementById('timer').style.textShadow = '0 0 30px #ff0000';
+            document.getElementById('timer').classList.add('urgent');
             updateDisplay();
         }
 
@@ -148,9 +172,8 @@
             clearInterval(timerInterval);
             const elapsed = originalDuration + addedTime - Math.max(0, Math.floor((endTime - Date.now()) / 1000));
             const duration = moment.duration(elapsed, 'seconds');
-            document.getElementById('timer').innerHTML = `COMPLETE<br>${duration.format('mm:ss')}`;
-            document.getElementById('timer').style.color = '#00ff00';
-            document.getElementById('timer').style.textShadow = '0 0 30px #00ff00';
+            document.getElementById('result').textContent = `Elapsed Time: ${duration.format('mm:ss')}`;
+            document.getElementById('timer').classList.remove('urgent');
         }
 
         function resetTimer() {
@@ -159,7 +182,9 @@
             document.getElementById('timer').style.color = '#ff5555';
             document.getElementById('timer').style.textShadow = '0 0 20px #ff0000';
             document.body.style.background = '#000';
-            document.getElementById('timer').classList.remove('pulse');
+            document.getElementById('timer').classList.remove('pulse', 'urgent');
+            document.getElementById('result').textContent = '';
+            addedTime = 0;
         }
     </script>
 </body>
