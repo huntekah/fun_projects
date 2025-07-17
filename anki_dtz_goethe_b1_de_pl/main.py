@@ -39,7 +39,7 @@ def main():
     print(f"Loaded {original_deck.total_cards} cards from original deck")
     
     # Select 3 random cards
-    random_cards = random.sample(original_deck.cards, min(3, len(original_deck.cards)))
+    random_cards = random.sample(original_deck.cards, min(5, len(original_deck.cards)))
     print(f"Selected {len(random_cards)} random cards for translation")
     
     # Print original cards

@@ -7,6 +7,7 @@ import genanki
 from pathlib import Path
 from typing import Dict, Any, List
 from schema import AnkiCard, AnkiDeck
+from card_templates import DTZ_MODEL_FIELDS, DTZ_CARD_TEMPLATES, DTZ_CARD_CSS
 
 
 def load_anki_deck(path: Path) -> AnkiDeck:
@@ -85,105 +86,10 @@ def save_anki_deck(deck: AnkiDeck, output_path: Path, original_apkg_path: Path =
     # Create genanki model that matches our card structure
     model = genanki.Model(
         1607392319,  # Model ID
-        'DTZ Goethe B1 Model',
-        fields=[
-            {'name': 'full_d'},
-            {'name': 'base_e'},
-            {'name': 'base_d'},
-            {'name': 'artikel_d'},
-            {'name': 'plural_d'},
-            {'name': 'audio_text_d'},
-            {'name': 's1'},
-            {'name': 's1e'},
-            {'name': 's2'},
-            {'name': 's2e'},
-            {'name': 's3'},
-            {'name': 's3e'},
-            {'name': 's4'},
-            {'name': 's4e'},
-            {'name': 's5'},
-            {'name': 's5e'},
-            {'name': 's6'},
-            {'name': 's6e'},
-            {'name': 's7'},
-            {'name': 's7e'},
-            {'name': 's8'},
-            {'name': 's8e'},
-            {'name': 's9'},
-            {'name': 's9e'},
-            {'name': 'original_order'},
-            {'name': 'base_a'},
-            {'name': 's1a'},
-            {'name': 's2a'},
-            {'name': 's3a'},
-            {'name': 's4a'},
-            {'name': 's5a'},
-            {'name': 's6a'},
-            {'name': 's7a'},
-            {'name': 's8a'},
-            {'name': 's9a'},
-        ],
-        templates=[
-            {
-                'name': 'German to English',
-                'qfmt': '<div class="german">{{full_d}}</div><br>{{base_a}}',
-                'afmt': '''
-                <div class="german">{{full_d}}</div>
-                <hr id="answer">
-                <div class="english">{{base_e}}</div>
-                {{#s1}}<br><div class="example">{{s1}}</div>{{/s1}}
-                {{#s1e}}<div class="example-en">{{s1e}}</div>{{/s1e}}
-                {{#s2}}<br><div class="example">{{s2}}</div>{{/s2}}
-                {{#s2e}}<div class="example-en">{{s2e}}</div>{{/s2e}}
-                {{#s3}}<br><div class="example">{{s3}}</div>{{/s3}}
-                {{#s3e}}<div class="example-en">{{s3e}}</div>{{/s3e}}
-                ''',
-            },
-            {
-                'name': 'English to German',
-                'qfmt': '<div class="english">{{base_e}}</div>',
-                'afmt': '''
-                <div class="english">{{base_e}}</div>
-                <hr id="answer">
-                <div class="german">{{full_d}}</div>
-                {{base_a}}
-                {{#s1}}<br><div class="example">{{s1}}</div>{{/s1}}
-                {{#s1e}}<div class="example-en">{{s1e}}</div>{{/s1e}}
-                {{#s2}}<br><div class="example">{{s2}}</div>{{/s2}}
-                {{#s2e}}<div class="example-en">{{s2e}}</div>{{/s2e}}
-                {{#s3}}<br><div class="example">{{s3}}</div>{{/s3}}
-                {{#s3e}}<div class="example-en">{{s3e}}</div>{{/s3e}}
-                ''',
-            }
-        ],
-        css='''
-        .card {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            color: black;
-            background-color: white;
-        }
-        .german {
-            font-size: 20px;
-            font-weight: bold;
-            color: #2E86AB;
-        }
-        .english {
-            font-size: 18px;
-            color: #A23B72;
-        }
-        .example {
-            font-size: 14px;
-            font-style: italic;
-            color: #666;
-            margin-top: 10px;
-        }
-        .example-en {
-            font-size: 14px;
-            font-style: italic;
-            color: #999;
-        }
-        '''
+        'DTZ Goethe B1 German-Polish Model',
+        fields=DTZ_MODEL_FIELDS,
+        templates=DTZ_CARD_TEMPLATES,
+        css=DTZ_CARD_CSS
     )
 
     # Create genanki deck
@@ -194,45 +100,48 @@ def save_anki_deck(deck: AnkiDeck, output_path: Path, original_apkg_path: Path =
 
     # Convert our cards to genanki notes
     for card in deck.cards:
+        # Ensure all fields are strings and handle None/empty values
+        fields = [
+            card.full_d or "",
+            card.base_e or "",
+            card.base_d or "",
+            card.artikel_d or "",
+            card.plural_d or "",
+            card.audio_text_d or "",
+            card.s1 or "",
+            card.s1e or "",
+            card.s2 or "",
+            card.s2e or "",
+            card.s3 or "",
+            card.s3e or "",
+            card.s4 or "",
+            card.s4e or "",
+            card.s5 or "",
+            card.s5e or "",
+            card.s6 or "",
+            card.s6e or "",
+            card.s7 or "",
+            card.s7e or "",
+            card.s8 or "",
+            card.s8e or "",
+            card.s9 or "",
+            card.s9e or "",
+            card.original_order or "",
+            card.base_a or "",
+            card.s1a or "",
+            card.s2a or "",
+            card.s3a or "",
+            card.s4a or "",
+            card.s5a or "",
+            card.s6a or "",
+            card.s7a or "",
+            card.s8a or "",
+            card.s9a or "",
+        ]
+        
         note = genanki.Note(
             model=model,
-            fields=[
-                card.full_d,
-                card.base_e,
-                card.base_d,
-                card.artikel_d,
-                card.plural_d,
-                card.audio_text_d,
-                card.s1,
-                card.s1e,
-                card.s2,
-                card.s2e,
-                card.s3,
-                card.s3e,
-                card.s4,
-                card.s4e,
-                card.s5,
-                card.s5e,
-                card.s6,
-                card.s6e,
-                card.s7,
-                card.s7e,
-                card.s8,
-                card.s8e,
-                card.s9,
-                card.s9e,
-                card.original_order,
-                card.base_a,
-                card.s1a,
-                card.s2a,
-                card.s3a,
-                card.s4a,
-                card.s5a,
-                card.s6a,
-                card.s7a,
-                card.s8a,
-                card.s9a,
-            ]
+            fields=fields
         )
         anki_deck.add_note(note)
 

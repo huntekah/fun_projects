@@ -19,7 +19,7 @@ class VertexAIConfig(BaseModel):
     """Configuration for Vertex AI Gemini client."""
     project_id: str = "maximal-arcade-267011"
     location: str = "europe-west4"
-    llm_model: str = "gemini-2.5-flash"
+    llm_model: str = "gemini-2.0-flash"
 
 
 class LLMClient:
