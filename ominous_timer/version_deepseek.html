@@ -106,43 +106,92 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
+
+        #results {
+            margin-top: 20px;
+            list-style: none;
+            padding: 0;
+            color: #00ff00; /* Set text color for results */
+        }
+
+        #results li {
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px #00ff00; /* Add glow to results */
+        }
     </style>
 </head>
 <body>
     <div id="timer">00:00</div>
     <div class="buttons">
         <input type="text" id="customTime" placeholder="MM:SS">
-        <button class="warning" onclick="startCustomTimer()">CUSTOM</button>
-        <button class="danger" onclick="startTimer(600)">10:00</button>
-        <button class="danger" onclick="startTimer(900)">15:00</button>
+        <button class="warning" onclick="startCustomTimer()">START</button>
         <button class="success" onclick="done()">DONE</button>
         <button class="warning" onclick="addMoreTime()">+5:00</button>
         <button class="danger" onclick="resetTimer()">RESET</button>
     </div>
+    <ul id="results"></ul>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
 
     <script>
         let endTime = null;
         let timerInterval = null;
         let originalDuration = 0;
         let addedTime = 0;
-        const alarmSound = new Howl({
-            src: ['https://assets.mixkit.co/active_storage/sfx/2570/2570-preview.mp3'],
-            volume: 0.7
+        let tickingSound = new Howl({
+            src: ['tick.mp3'], // Replace with your tick sound file
+            loop: true,
+            volume: 0.5
         });
+        let lastTickTime = 0;
+        const resultsList = document.getElementById('results');
+
+
 
         function updateDisplay() {
             if (!endTime) return;
-            
-            const remaining = Math.max(endTime - Date.now(), 0);
+
+            const remaining = endTime - Date.now();
             const duration = moment.duration(remaining, 'milliseconds');
-            document.getElementById('timer').textContent = 
-                `${String(duration.minutes()).padStart(2, '0')}:${String(duration.seconds()).padStart(2, '0')}`;
+
+            let formattedTime = "";
+            if (remaining < 0) {
+                formattedTime = "-"; // Add the negative sign at the beginning
+                duration.abs(); // Work with the absolute value of the duration
+            }
+
+            formattedTime += `${String(duration.minutes()).padStart(2, '0')}:${String(duration.seconds()).padStart(2, '0')}`;
+            document.getElementById('timer').textContent = formattedTime;
             
             const totalDuration = originalDuration * 1000;
             const percentLeft = remaining / totalDuration;
             document.body.style.background = `hsl(0, ${100 - (percentLeft * 100)}%, 5%)`;
             document.getElementById('timer').style.textShadow = 
                 `0 0 ${30 * (1 - percentLeft)}px hsl(0, ${100 - (percentLeft * 50)}%, 50%)`;
+
+            if (remaining < 0) {
+                document.getElementById('timer').style.color = '#ff1155';
+                document.getElementById('timer').style.textShadow = '0 0 30px #ff0000';
+            }
+
+            if (remaining <= 60000 && remaining > 0) { // Last minute
+                const now = Date.now();
+                if (now - lastTickTime >= 10000) { // Every 10 seconds
+                    tickingSound.play();
+                    lastTickTime = now;
+                }
+            } else {
+                tickingSound.pause(); // Stop ticking outside the last minute
+                lastTickTime = 0; // Reset last tick time
+            }
+        }
+
+        function startCustomTimer() {
+            const input = document.getElementById('customTime').value.split(':');
+            const minutes = parseInt(input[0]) || 0;
+            const seconds = parseInt(input[1]) || 0;
+            startTimer(minutes * 60 + seconds);
         }
 
         function startTimer(seconds) {
@@ -151,13 +200,7 @@
             addedTime = 0;
             endTime = Date.now() + (seconds * 1000);
             timerInterval = setInterval(updateDisplay, 100);
-        }
-
-        function startCustomTimer() {
-            const input = document.getElementById('customTime').value.split(':');
-            const minutes = parseInt(input[0]) || 0;
-            const seconds = parseInt(input[1]) || 0;
-            startTimer(minutes * 60 + seconds);
+            tickingSound.stop(); // Stop any previous ticking
         }
 
         function addMoreTime() {
@@ -177,12 +220,21 @@
 
         function done() {
             clearInterval(timerInterval);
-            const elapsed = originalDuration + addedTime - Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            const elapsed = Math.floor((Date.now() - (endTime - (originalDuration + addedTime) * 1000)) / 1000);
             const duration = moment.duration(elapsed, 'seconds');
-            document.getElementById('timer').innerHTML = `
-                <span style="font-size: 0.6em">COMPLETE</span><br>
-                <span>${String(duration.minutes()).padStart(2, '0')}:${String(duration.seconds()).padStart(2, '0')}</span>
-            `;
+            const resultText = `${String(duration.minutes()).padStart(2, '0')}:${String(duration.seconds()).padStart(2, '0')}`;
+
+            const listItem = document.createElement('li');
+
+            fetch('https://random-word-api.herokuapp.com/word?lang=de')
+            .then(response => response.json())
+            .then(word => {
+                listItem.textContent = `${resultText} ${word[0]}`;
+            });
+
+            resultsList.appendChild(listItem);
+
+            document.getElementById('timer').textContent = resultText;
             document.getElementById('timer').style.color = '#00ff00';
             document.getElementById('timer').style.textShadow = '0 0 30px #00ff00';
             endTime = null;
@@ -195,7 +247,7 @@
             document.getElementById('timer').style.color = '#ff5555';
             document.getElementById('timer').style.textShadow = '0 0 20px #ff0000';
             document.body.style.background = '#000';
-            document.getElementById('timer').classList.remove('pulse');
+            tickingSound.stop(); // Stop any previous ticking
         }
     </script>
 </body>
