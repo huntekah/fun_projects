@@ -4,48 +4,48 @@ Based on the original DTZ deck structure.
 """
 
 DTZ_MODEL_FIELDS = [
-    {'name': 'full_d'},
-    {'name': 'base_e'},
-    {'name': 'base_d'},
-    {'name': 'artikel_d'},
-    {'name': 'plural_d'},
-    {'name': 'audio_text_d'},
-    {'name': 's1'},
-    {'name': 's1e'},
-    {'name': 's2'},
-    {'name': 's2e'},
-    {'name': 's3'},
-    {'name': 's3e'},
-    {'name': 's4'},
-    {'name': 's4e'},
-    {'name': 's5'},
-    {'name': 's5e'},
-    {'name': 's6'},
-    {'name': 's6e'},
-    {'name': 's7'},
-    {'name': 's7e'},
-    {'name': 's8'},
-    {'name': 's8e'},
-    {'name': 's9'},
-    {'name': 's9e'},
-    {'name': 'original_order'},
-    {'name': 'base_a'},
-    {'name': 's1a'},
-    {'name': 's2a'},
-    {'name': 's3a'},
-    {'name': 's4a'},
-    {'name': 's5a'},
-    {'name': 's6a'},
-    {'name': 's7a'},
-    {'name': 's8a'},
-    {'name': 's9a'},
+    {"name": "full_d"},
+    {"name": "base_e"},
+    {"name": "base_d"},
+    {"name": "artikel_d"},
+    {"name": "plural_d"},
+    {"name": "audio_text_d"},
+    {"name": "s1"},
+    {"name": "s1e"},
+    {"name": "s2"},
+    {"name": "s2e"},
+    {"name": "s3"},
+    {"name": "s3e"},
+    {"name": "s4"},
+    {"name": "s4e"},
+    {"name": "s5"},
+    {"name": "s5e"},
+    {"name": "s6"},
+    {"name": "s6e"},
+    {"name": "s7"},
+    {"name": "s7e"},
+    {"name": "s8"},
+    {"name": "s8e"},
+    {"name": "s9"},
+    {"name": "s9e"},
+    {"name": "original_order"},
+    {"name": "base_a"},
+    {"name": "s1a"},
+    {"name": "s2a"},
+    {"name": "s3a"},
+    {"name": "s4a"},
+    {"name": "s5a"},
+    {"name": "s6a"},
+    {"name": "s7a"},
+    {"name": "s8a"},
+    {"name": "s9a"},
 ]
 
 DTZ_CARD_TEMPLATES = [
     {
-        'name': 'German to Polish',
-        'qfmt': '{{base_d}}{{base_a}}',
-        'afmt': '''{{base_e}}<br>
+        "name": "German to Polish",
+        "qfmt": "{{base_d}}{{base_a}}",
+        "afmt": """{{base_e}}<br>
 {{full_d}}{{base_a}}
 <div style="display:none">[sound:_1-minute-of-silence.mp3]</div>
 
@@ -59,12 +59,12 @@ DTZ_CARD_TEMPLATES = [
 <div style='font-family: Arial; font-size: 16px;'>{{s6}}{{s6a}}{{hint:s6e}}</div>
 <div style='font-family: Arial; font-size: 16px;'>{{s7}}{{s7a}}{{hint:s7e}}</div>
 <div style='font-family: Arial; font-size: 16px;'>{{s8}}{{s8a}}{{hint:s8e}}</div>
-<div style='font-family: Arial; font-size: 16px;'>{{s9}}{{s9a}}{{hint:s9e}}</div>''',
+<div style='font-family: Arial; font-size: 16px;'>{{s9}}{{s9a}}{{hint:s9e}}</div>""",
     },
     {
-        'name': 'Polish to German',
-        'qfmt': '{{base_e}}',
-        'afmt': '''{{full_d}}{{base_a}}<br>
+        "name": "Polish to German",
+        "qfmt": "{{base_e}}",
+        "afmt": """{{full_d}}{{base_a}}<br>
 {{base_e}}
 <div style="display:none">[sound:_1-minute-of-silence.mp3]</div>
 
@@ -78,11 +78,11 @@ DTZ_CARD_TEMPLATES = [
 <div style='font-family: Arial; font-size: 16px;'>{{s6e}}{{s6a}}{{hint:s6}}</div>
 <div style='font-family: Arial; font-size: 16px;'>{{s7e}}{{s7a}}{{hint:s7}}</div>
 <div style='font-family: Arial; font-size: 16px;'>{{s8e}}{{s8a}}{{hint:s8}}</div>
-<div style='font-family: Arial; font-size: 16px;'>{{s9e}}{{s9a}}{{hint:s9}}</div>''',
-    }
+<div style='font-family: Arial; font-size: 16px;'>{{s9e}}{{s9a}}{{hint:s9}}</div>""",
+    },
 ]
 
-DTZ_CARD_CSS = '''
+DTZ_CARD_CSS = """
 .card {
     font-family: Arial, sans-serif;
     text-align: center;
@@ -109,4 +109,4 @@ DTZ_CARD_CSS = '''
     font-style: italic;
     color: #999;
 }
-'''
+"""

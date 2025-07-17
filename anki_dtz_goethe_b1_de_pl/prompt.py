@@ -4,14 +4,14 @@ from schema import AnkiCard
 def create_translation_prompt(card: AnkiCard) -> str:
     """
     Create a prompt for translating a German-English Anki card to German-Polish.
-    
+
     Args:
         card: The original AnkiCard with German-English content
-        
+
     Returns:
         str: Formatted prompt for LLM translation
     """
-    
+
     prompt = f"""You are a professional German-Polish translator working on creating German-Polish language learning flashcards for DTZ (Deutsch-Test für Zuwanderer) Goethe B1 level vocabulary.
 
 Your task is to translate ALL English content in this Anki flashcard to Polish, while keeping all German content exactly the same.
@@ -63,18 +63,18 @@ Please provide the complete translated card with all fields filled out appropria
 def create_batch_translation_prompt(cards: list[AnkiCard], batch_size: int = 5) -> str:
     """
     Create a prompt for translating multiple German-English Anki cards to German-Polish in batch.
-    
+
     Args:
         cards: List of AnkiCards with German-English content
         batch_size: Number of cards to process in one batch
-        
+
     Returns:
         str: Formatted prompt for batch LLM translation
     """
-    
+
     if len(cards) > batch_size:
         cards = cards[:batch_size]
-    
+
     prompt = f"""You are a professional German-Polish translator working on creating German-Polish language learning flashcards for DTZ (Deutsch-Test für Zuwanderer) Goethe B1 level vocabulary.
 
 Your task is to translate ALL English content in these {len(cards)} Anki flashcards to Polish, while keeping all German content exactly the same.
@@ -91,7 +91,7 @@ TRANSLATION REQUIREMENTS:
 CARDS TO TRANSLATE:
 
 """
-    
+
     for i, card in enumerate(cards, 1):
         prompt += f"""
 CARD {i}:
@@ -100,19 +100,25 @@ CARD {i}:
 - German base form (base_d): {card.base_d}
 - Example sentences and their English translations:
 """
-        
+
         # Add non-empty example sentences
         examples = [
-            (card.s1, card.s1e), (card.s2, card.s2e), (card.s3, card.s3e),
-            (card.s4, card.s4e), (card.s5, card.s5e), (card.s6, card.s6e),
-            (card.s7, card.s7e), (card.s8, card.s8e), (card.s9, card.s9e)
+            (card.s1, card.s1e),
+            (card.s2, card.s2e),
+            (card.s3, card.s3e),
+            (card.s4, card.s4e),
+            (card.s5, card.s5e),
+            (card.s6, card.s6e),
+            (card.s7, card.s7e),
+            (card.s8, card.s8e),
+            (card.s9, card.s9e),
         ]
-        
+
         for j, (german_ex, english_ex) in enumerate(examples, 1):
             if german_ex.strip():
                 prompt += f"  - German example {j}: {german_ex}\n"
                 prompt += f"  - English translation {j}: {english_ex}\n"
-    
+
     prompt += f"""
 
 CONTEXT: This is for German language learners who speak Polish as their native language, studying for the DTZ (Deutsch-Test für Zuwanderer) at B1 level.

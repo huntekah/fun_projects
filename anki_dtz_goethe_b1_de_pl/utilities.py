@@ -13,16 +13,16 @@ from card_templates import DTZ_MODEL_FIELDS, DTZ_CARD_TEMPLATES, DTZ_CARD_CSS
 def load_anki_deck(path: Path) -> AnkiDeck:
     """
     Load an Anki deck from a .apkg file.
-    
+
     Args:
         path: Path to the .apkg file
-        
+
     Returns:
         AnkiDeck: Parsed deck with all cards
     """
     cards = []
     deck_name = path.stem
-    
+
     with tempfile.TemporaryDirectory() as tmpdir:
         # Unzip the .apkg file
         with zipfile.ZipFile(path, "r") as z:
@@ -39,11 +39,11 @@ def load_anki_deck(path: Path) -> AnkiDeck:
         cursor.execute("SELECT models FROM col")
         models_json = cursor.fetchone()[0]
         models = json.loads(models_json)
-        
+
         # Create a mapping of model_id to field names
         model_fields = {}
         for model_id, model in models.items():
-            field_names = [field['name'] for field in model['flds']]
+            field_names = [field["name"] for field in model["flds"]]
             model_fields[int(model_id)] = field_names
 
         # Get the note and card information
@@ -53,18 +53,15 @@ def load_anki_deck(path: Path) -> AnkiDeck:
         # The 'flds' column contains the fields of a note joined by a special character
         # We can split this to get individual fields.
         for note_id, model_id, flds in notes:
-            fields = flds.split('\x1f')
+            fields = flds.split("\x1f")
             field_names = model_fields.get(model_id, [])
-            
+
             # Create a dictionary mapping field names to values
-            fields_dict = {
-                'note_id': note_id,
-                'model_id': model_id
-            }
+            fields_dict = {"note_id": note_id, "model_id": model_id}
             for i, field_value in enumerate(fields):
                 field_name = field_names[i] if i < len(field_names) else f"field_{i}"
                 fields_dict[field_name] = field_value
-            
+
             # Create AnkiCard instance
             card = AnkiCard(**fields_dict)
             cards.append(card)
@@ -74,10 +71,12 @@ def load_anki_deck(path: Path) -> AnkiDeck:
     return AnkiDeck(cards=cards, name=deck_name, total_cards=len(cards))
 
 
-def save_anki_deck(deck: AnkiDeck, output_path: Path, original_apkg_path: Path = None) -> None:
+def save_anki_deck(
+    deck: AnkiDeck, output_path: Path, original_apkg_path: Path = None
+) -> None:
     """
     Save an AnkiDeck to a .apkg file using genanki.
-    
+
     Args:
         deck: The AnkiDeck to save
         output_path: Path where to save the deck (.apkg format)
@@ -86,16 +85,16 @@ def save_anki_deck(deck: AnkiDeck, output_path: Path, original_apkg_path: Path =
     # Create genanki model that matches our card structure
     model = genanki.Model(
         1607392319,  # Model ID
-        'DTZ Goethe B1 German-Polish Model',
+        "DTZ Goethe B1 German-Polish Model",
         fields=DTZ_MODEL_FIELDS,
         templates=DTZ_CARD_TEMPLATES,
-        css=DTZ_CARD_CSS
+        css=DTZ_CARD_CSS,
     )
 
     # Create genanki deck
     anki_deck = genanki.Deck(
         2059400110,  # Deck ID
-        deck.name or "DTZ Goethe B1 Vocabulary"
+        deck.name or "DTZ Goethe B1 Vocabulary",
     )
 
     # Convert our cards to genanki notes
@@ -138,11 +137,8 @@ def save_anki_deck(deck: AnkiDeck, output_path: Path, original_apkg_path: Path =
             card.s8a or "",
             card.s9a or "",
         ]
-        
-        note = genanki.Note(
-            model=model,
-            fields=fields
-        )
+
+        note = genanki.Note(model=model, fields=fields)
         anki_deck.add_note(note)
 
     # Extract media files from original .apkg if provided
@@ -152,33 +148,34 @@ def save_anki_deck(deck: AnkiDeck, output_path: Path, original_apkg_path: Path =
 
     # Generate the .apkg file
     genanki.Package(anki_deck, media_files=media_files).write_to_file(str(output_path))
-    
+
     print(f"Saved {deck.total_cards} cards to {output_path}")
 
 
 def _extract_media_files(apkg_path: Path) -> List[str]:
     """
     Extract media files from an existing .apkg file.
-    
+
     Args:
         apkg_path: Path to the original .apkg file
-        
+
     Returns:
         List of media file paths
     """
     media_files = []
-    
+
     # Create a persistent temp directory for media files
     media_temp_dir = tempfile.mkdtemp(prefix="anki_media_")
-    
+
     try:
         with tempfile.TemporaryDirectory() as tmpdir:
             # Unzip the .apkg file
             with zipfile.ZipFile(apkg_path, "r") as z:
                 z.extractall(tmpdir)
-            
+
             # Find all media files (typically numbered files)
             import shutil
+
             for item in os.listdir(tmpdir):
                 item_path = os.path.join(tmpdir, item)
                 if os.path.isfile(item_path) and item.isdigit():
@@ -190,7 +187,8 @@ def _extract_media_files(apkg_path: Path) -> List[str]:
         print(f"Warning: Could not extract media files: {e}")
         # Clean up temp dir if extraction failed
         import shutil
+
         shutil.rmtree(media_temp_dir, ignore_errors=True)
         return []
-    
+
     return media_files

@@ -46,6 +46,6 @@ class AnkiDeck(BaseModel):
     cards: List[AnkiCard]
     name: Optional[str] = None
     total_cards: int = 0
-    
+
     def __post_init__(self):
         self.total_cards = len(self.cards)
