@@ -1162,3 +1162,6 @@ dmypy.json
 cython_debug/
 
 # End of https://mrkandreev.name/snippets/gitignore-generator/#C,R,D,1C,vs,Qt,Go,DM,AL,Tye,Yii,OSX,Opa,TeX,SVN,now,SSH,Vim,C++,Java,Helm,Scala,Linux,Python
+
+# Large Anki deck files
+*.apkg
