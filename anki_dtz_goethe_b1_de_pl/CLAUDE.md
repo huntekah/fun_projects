@@ -4,7 +4,30 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an Anki flashcard analysis project for German DTZ (Deutsch-Test für Zuwanderer) Goethe B1 vocabulary. The project uses the `ankipandas` library to read and analyze Anki deck files (.apkg format).
+This is an Anki flashcard translation project for German DTZ (Deutsch-Test für Zuwanderer) Goethe B1 vocabulary. The project loads German-English Anki decks, translates them to German-Polish using Gemini LLM, and creates new .apkg files.
+
+## Schema Design
+
+The project uses a **universal AnkiCard schema** with source/target field naming instead of language-specific suffixes. This prevents LLM confusion during translation:
+
+- `full_source`, `base_source` (German content)  
+- `base_target` (English → Polish translation)
+- `s1_source`, `s1_target` (example sentences)
+- `base_audio`, `s1_audio` (audio fields)
+
+This design works for any language pair and makes prompts clearer for the LLM.
+
+## LLM Output Cleaning
+
+The project includes automatic cleaning of LLM hallucinations:
+
+- **Problem**: LLMs sometimes output "string" or garbage in metadata fields
+- **Solution**: `copy_non_translation_fields_from_original()` function 
+- **Automatic**: Runs after each translation to restore original metadata
+- **Preserves**: Audio fields, IDs, German content, original_order
+- **Keeps**: Only the actual translations (target language fields)
+
+This ensures clean, properly formatted output even when the LLM makes mistakes.
 
 ## Development Commands
 

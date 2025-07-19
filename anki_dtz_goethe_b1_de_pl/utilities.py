@@ -20,55 +20,150 @@ def load_anki_deck(path: Path) -> AnkiDeck:
     Returns:
         AnkiDeck: Parsed deck with all cards
     """
-    cards = []
-    deck_name = path.stem
+    import traceback
+    
+    try:
+        print(f"🔍 Loading deck from: {path}")
+        
+        if not path.exists():
+            raise FileNotFoundError(f"Anki deck file not found: {path}")
+        
+        if not path.suffix.lower() == '.apkg':
+            raise ValueError(f"Expected .apkg file, got: {path.suffix}")
+            
+        cards = []
+        deck_name = path.stem
 
-    with tempfile.TemporaryDirectory() as tmpdir:
-        # Unzip the .apkg file
-        with zipfile.ZipFile(path, "r") as z:
-            z.extractall(tmpdir)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            print(f"📂 Extracting .apkg to temp dir: {tmpdir}")
+            
+            # Unzip the .apkg file
+            try:
+                with zipfile.ZipFile(path, "r") as z:
+                    z.extractall(tmpdir)
+            except zipfile.BadZipFile as e:
+                raise ValueError(f"Invalid .apkg file (corrupted zip): {e}")
 
-        # Path to the SQLite database
-        db_path = os.path.join(tmpdir, "collection.anki2")
+            # Path to the SQLite database
+            db_path = os.path.join(tmpdir, "collection.anki2")
+            
+            if not os.path.exists(db_path):
+                raise FileNotFoundError(f"collection.anki2 not found in .apkg file")
 
-        # Connect to the SQLite database
-        conn = sqlite3.connect(db_path)
-        cursor = conn.cursor()
+            print(f"🗄️  Connecting to SQLite database: {db_path}")
+            
+            # Connect to the SQLite database
+            try:
+                conn = sqlite3.connect(db_path)
+                cursor = conn.cursor()
+            except sqlite3.Error as e:
+                raise RuntimeError(f"Failed to connect to SQLite database: {e}")
 
-        # Get field names from models
-        cursor.execute("SELECT models FROM col")
-        models_json = cursor.fetchone()[0]
-        models = json.loads(models_json)
+            try:
+                # Get field names from models
+                print("📋 Reading card models and field definitions...")
+                cursor.execute("SELECT models FROM col")
+                models_result = cursor.fetchone()
+                if not models_result:
+                    raise RuntimeError("No models found in collection")
+                
+                models_json = models_result[0]
+                models = json.loads(models_json)
 
-        # Create a mapping of model_id to field names
-        model_fields = {}
-        for model_id, model in models.items():
-            field_names = [field["name"] for field in model["flds"]]
-            model_fields[int(model_id)] = field_names
+                # Create a mapping of model_id to field names
+                model_fields = {}
+                for model_id, model in models.items():
+                    field_names = [field["name"] for field in model["flds"]]
+                    model_fields[int(model_id)] = field_names
+                    print(f"  Model {model_id}: {len(field_names)} fields")
 
-        # Get the note and card information
-        cursor.execute("SELECT id, mid, flds FROM notes")
-        notes = cursor.fetchall()
+                # Get the note and card information
+                print("🃏 Reading notes and cards...")
+                cursor.execute("SELECT id, mid, flds FROM notes")
+                notes = cursor.fetchall()
+                print(f"  Found {len(notes)} notes")
 
-        # The 'flds' column contains the fields of a note joined by a special character
-        # We can split this to get individual fields.
-        for note_id, model_id, flds in notes:
-            fields = flds.split("\x1f")
-            field_names = model_fields.get(model_id, [])
+                # The 'flds' column contains the fields of a note joined by a special character
+                # We can split this to get individual fields.
+                for note_idx, (note_id, model_id, flds) in enumerate(notes):
+                    try:
+                        fields = flds.split("\x1f")
+                        field_names = model_fields.get(model_id, [])
 
-            # Create a dictionary mapping field names to values
-            fields_dict = {"note_id": note_id, "model_id": model_id}
-            for i, field_value in enumerate(fields):
-                field_name = field_names[i] if i < len(field_names) else f"field_{i}"
-                fields_dict[field_name] = field_value
+                        # Create a dictionary mapping old field names to values
+                        raw_fields_dict = {"note_id": note_id, "model_id": model_id}
+                        for i, field_value in enumerate(fields):
+                            field_name = field_names[i] if i < len(field_names) else f"field_{i}"
+                            raw_fields_dict[field_name] = field_value
 
-            # Create AnkiCard instance
-            card = AnkiCard(**fields_dict)
-            cards.append(card)
+                        # Map old field names to new schema field names
+                        mapped_fields = {
+                            "note_id": note_id,
+                            "model_id": model_id,
+                            # Map main fields
+                            "full_source": raw_fields_dict.get("full_d", ""),
+                            "base_source": raw_fields_dict.get("base_d", ""),
+                            "base_target": raw_fields_dict.get("base_e", ""),
+                            # German-specific fields (keep same names)
+                            "artikel_d": raw_fields_dict.get("artikel_d", ""),
+                            "plural_d": raw_fields_dict.get("plural_d", ""),
+                            "audio_text_d": raw_fields_dict.get("audio_text_d", ""),
+                            # Map sentence fields
+                            "s1_source": raw_fields_dict.get("s1", ""),
+                            "s1_target": raw_fields_dict.get("s1e", ""),
+                            "s2_source": raw_fields_dict.get("s2", ""),
+                            "s2_target": raw_fields_dict.get("s2e", ""),
+                            "s3_source": raw_fields_dict.get("s3", ""),
+                            "s3_target": raw_fields_dict.get("s3e", ""),
+                            "s4_source": raw_fields_dict.get("s4", ""),
+                            "s4_target": raw_fields_dict.get("s4e", ""),
+                            "s5_source": raw_fields_dict.get("s5", ""),
+                            "s5_target": raw_fields_dict.get("s5e", ""),
+                            "s6_source": raw_fields_dict.get("s6", ""),
+                            "s6_target": raw_fields_dict.get("s6e", ""),
+                            "s7_source": raw_fields_dict.get("s7", ""),
+                            "s7_target": raw_fields_dict.get("s7e", ""),
+                            "s8_source": raw_fields_dict.get("s8", ""),
+                            "s8_target": raw_fields_dict.get("s8e", ""),
+                            "s9_source": raw_fields_dict.get("s9", ""),
+                            "s9_target": raw_fields_dict.get("s9e", ""),
+                            # Map audio fields
+                            "base_audio": raw_fields_dict.get("base_a", ""),
+                            "s1_audio": raw_fields_dict.get("s1a", ""),
+                            "s2_audio": raw_fields_dict.get("s2a", ""),
+                            "s3_audio": raw_fields_dict.get("s3a", ""),
+                            "s4_audio": raw_fields_dict.get("s4a", ""),
+                            "s5_audio": raw_fields_dict.get("s5a", ""),
+                            "s6_audio": raw_fields_dict.get("s6a", ""),
+                            "s7_audio": raw_fields_dict.get("s7a", ""),
+                            "s8_audio": raw_fields_dict.get("s8a", ""),
+                            "s9_audio": raw_fields_dict.get("s9a", ""),
+                            # Metadata
+                            "original_order": raw_fields_dict.get("original_order", ""),
+                        }
 
-        conn.close()
+                        # Create AnkiCard instance with mapped fields
+                        card = AnkiCard(**mapped_fields)
+                        cards.append(card)
+                        
+                    except Exception as e:
+                        print(f"⚠️  Warning: Failed to parse note {note_id} (#{note_idx+1}): {e}")
+                        continue
 
-    return AnkiDeck(cards=cards, name=deck_name, total_cards=len(cards))
+            finally:
+                conn.close()
+
+        print(f"✅ Successfully loaded {len(cards)} cards")
+        return AnkiDeck(cards=cards, name=deck_name, total_cards=len(cards))
+        
+    except Exception as e:
+        print(f"\n❌ ERROR loading Anki deck from {path}")
+        print(f"Error type: {type(e).__name__}")
+        print(f"Error message: {str(e)}")
+        print(f"\n🔍 Full traceback:")
+        traceback.print_exc()
+        print("-" * 80)
+        raise
 
 
 def save_anki_deck(
@@ -82,74 +177,129 @@ def save_anki_deck(
         output_path: Path where to save the deck (.apkg format)
         original_apkg_path: Optional path to original .apkg file to extract media files
     """
-    # Create genanki model that matches our card structure
-    model = genanki.Model(
-        1607392319,  # Model ID
-        "DTZ Goethe B1 German-Polish Model",
-        fields=DTZ_MODEL_FIELDS,
-        templates=DTZ_CARD_TEMPLATES,
-        css=DTZ_CARD_CSS,
-    )
+    import traceback
+    
+    try:
+        print(f"💾 Saving deck to: {output_path}")
+        
+        if not deck.cards:
+            raise ValueError("Cannot save empty deck - no cards provided")
+            
+        if not str(output_path).endswith('.apkg'):
+            print(f"⚠️  Warning: Output path doesn't end with .apkg: {output_path}")
+            
+        # Ensure output directory exists
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        print(f"📋 Creating genanki model and deck structure...")
+        
+        # Create genanki model that matches our card structure
+        try:
+            model = genanki.Model(
+                1607392319,  # Model ID
+                "DTZ Goethe B1 German-Polish Model",
+                fields=DTZ_MODEL_FIELDS,
+                templates=DTZ_CARD_TEMPLATES,
+                css=DTZ_CARD_CSS,
+            )
+        except Exception as e:
+            raise RuntimeError(f"Failed to create genanki model: {e}")
 
-    # Create genanki deck
-    anki_deck = genanki.Deck(
-        2059400110,  # Deck ID
-        deck.name or "DTZ Goethe B1 Vocabulary",
-    )
+        # Create genanki deck
+        try:
+            anki_deck = genanki.Deck(
+                2059400110,  # Deck ID
+                deck.name or "DTZ Goethe B1 Vocabulary",
+            )
+        except Exception as e:
+            raise RuntimeError(f"Failed to create genanki deck: {e}")
 
-    # Convert our cards to genanki notes
-    for card in deck.cards:
-        # Ensure all fields are strings and handle None/empty values
-        fields = [
-            card.full_d or "",
-            card.base_e or "",
-            card.base_d or "",
-            card.artikel_d or "",
-            card.plural_d or "",
-            card.audio_text_d or "",
-            card.s1 or "",
-            card.s1e or "",
-            card.s2 or "",
-            card.s2e or "",
-            card.s3 or "",
-            card.s3e or "",
-            card.s4 or "",
-            card.s4e or "",
-            card.s5 or "",
-            card.s5e or "",
-            card.s6 or "",
-            card.s6e or "",
-            card.s7 or "",
-            card.s7e or "",
-            card.s8 or "",
-            card.s8e or "",
-            card.s9 or "",
-            card.s9e or "",
-            card.original_order or "",
-            card.base_a or "",
-            card.s1a or "",
-            card.s2a or "",
-            card.s3a or "",
-            card.s4a or "",
-            card.s5a or "",
-            card.s6a or "",
-            card.s7a or "",
-            card.s8a or "",
-            card.s9a or "",
-        ]
+        print(f"🃏 Converting {len(deck.cards)} cards to genanki notes...")
+        
+        # Convert our cards to genanki notes
+        failed_cards = 0
+        for card_idx, card in enumerate(deck.cards):
+            try:
+                # Ensure all fields are strings and handle None/empty values
+                fields = [
+                    str(card.full_source or ""),
+                    str(card.base_target or ""),
+                    str(card.base_source or ""),
+                    str(card.artikel_d or ""),
+                    str(card.plural_d or ""),
+                    str(card.audio_text_d or ""),
+                    str(card.s1_source or ""),
+                    str(card.s1_target or ""),
+                    str(card.s2_source or ""),
+                    str(card.s2_target or ""),
+                    str(card.s3_source or ""),
+                    str(card.s3_target or ""),
+                    str(card.s4_source or ""),
+                    str(card.s4_target or ""),
+                    str(card.s5_source or ""),
+                    str(card.s5_target or ""),
+                    str(card.s6_source or ""),
+                    str(card.s6_target or ""),
+                    str(card.s7_source or ""),
+                    str(card.s7_target or ""),
+                    str(card.s8_source or ""),
+                    str(card.s8_target or ""),
+                    str(card.s9_source or ""),
+                    str(card.s9_target or ""),
+                    str(card.original_order or ""),
+                    str(card.base_audio or ""),
+                    str(card.s1_audio or ""),
+                    str(card.s2_audio or ""),
+                    str(card.s3_audio or ""),
+                    str(card.s4_audio or ""),
+                    str(card.s5_audio or ""),
+                    str(card.s6_audio or ""),
+                    str(card.s7_audio or ""),
+                    str(card.s8_audio or ""),
+                    str(card.s9_audio or ""),
+                ]
 
-        note = genanki.Note(model=model, fields=fields)
-        anki_deck.add_note(note)
+                note = genanki.Note(model=model, fields=fields)
+                anki_deck.add_note(note)
+                
+            except Exception as e:
+                failed_cards += 1
+                print(f"⚠️  Warning: Failed to convert card {card_idx+1} (note_id={getattr(card, 'note_id', 'unknown')}): {e}")
+                continue
 
-    # Extract media files from original .apkg if provided
-    media_files = []
-    if original_apkg_path and original_apkg_path.exists():
-        media_files = _extract_media_files(original_apkg_path)
+        if failed_cards > 0:
+            print(f"⚠️  {failed_cards} cards failed to convert and were skipped")
 
-    # Generate the .apkg file
-    genanki.Package(anki_deck, media_files=media_files).write_to_file(str(output_path))
+        # Extract media files from original .apkg if provided
+        media_files = []
+        if original_apkg_path and original_apkg_path.exists():
+            print(f"🎵 Extracting media files from original deck...")
+            media_files = _extract_media_files(original_apkg_path)
+            print(f"  Found {len(media_files)} media files")
 
-    print(f"Saved {deck.total_cards} cards to {output_path}")
+        # Generate the .apkg file
+        print(f"📦 Generating .apkg file...")
+        try:
+            genanki.Package(anki_deck, media_files=media_files).write_to_file(str(output_path))
+        except Exception as e:
+            raise RuntimeError(f"Failed to write .apkg file: {e}")
+
+        # Verify file was created
+        if not output_path.exists():
+            raise RuntimeError("Output file was not created successfully")
+            
+        file_size = output_path.stat().st_size
+        print(f"✅ Successfully saved {len(deck.cards) - failed_cards} cards to {output_path}")
+        print(f"   File size: {file_size / (1024*1024):.1f} MB")
+        
+    except Exception as e:
+        print(f"\n❌ ERROR saving Anki deck to {output_path}")
+        print(f"Error type: {type(e).__name__}")
+        print(f"Error message: {str(e)}")
+        print(f"\n🔍 Full traceback:")
+        traceback.print_exc()
+        print("-" * 80)
+        raise
 
 
 def _extract_media_files(apkg_path: Path) -> List[str]:
@@ -192,3 +342,123 @@ def _extract_media_files(apkg_path: Path) -> List[str]:
         return []
 
     return media_files
+
+
+def copy_non_translation_fields_from_original(translated_card: AnkiCard, original_card: AnkiCard, verbose: bool = True) -> tuple[AnkiCard, int]:
+    """
+    Copy non-translation fields from original card to fix LLM hallucinations.
+    
+    LLMs sometimes output 'string' or other garbage in fields that should be copied unchanged.
+    This function preserves original values for metadata and audio fields.
+    
+    Args:
+        translated_card: Card returned by LLM with potential hallucinations
+        original_card: Original card with correct metadata
+        verbose: Whether to print cleaning details
+        
+    Returns:
+        tuple[AnkiCard, int]: Cleaned card with proper field values, number of issues fixed
+    """
+    import traceback
+    
+    try:
+        if verbose:
+            print(f"🧹 Cleaning translated card {translated_card.note_id}...")
+        
+        # Create a copy to avoid modifying the original
+        cleaned_card = translated_card.model_copy()
+        
+        # Fields that should NEVER be translated (preserve original values)
+        metadata_fields = [
+            'note_id', 'model_id', 'original_order'
+        ]
+        
+        # German-specific fields that should remain unchanged
+        german_fields = [
+            'full_source', 'base_source', 'artikel_d', 'plural_d', 'audio_text_d',
+            's1_source', 's2_source', 's3_source', 's4_source', 's5_source',
+            's6_source', 's7_source', 's8_source', 's9_source'
+        ]
+        
+        # Audio fields that should be copied from original
+        audio_fields = [
+            'base_audio', 's1_audio', 's2_audio', 's3_audio', 's4_audio',
+            's5_audio', 's6_audio', 's7_audio', 's8_audio', 's9_audio'
+        ]
+        
+        # Copy metadata fields (these should never change)
+        for field in metadata_fields:
+            original_value = getattr(original_card, field, "")
+            setattr(cleaned_card, field, original_value)
+        
+        # Copy German-specific fields (source language should never change)
+        for field in german_fields:
+            original_value = getattr(original_card, field, "")
+            setattr(cleaned_card, field, original_value)
+        
+        # Copy audio fields (these are technical metadata, not translations)
+        issues_found = []
+        for field in audio_fields:
+            original_value = getattr(original_card, field, "")
+            translated_value = getattr(translated_card, field, "")
+            
+            # Check for LLM hallucinations in audio fields
+            if translated_value and translated_value.lower() in ['string', 'none', 'null', 'empty', '""', "''", 'undefined']:
+                issues_found.append(f"{field}: '{translated_value}' → '{original_value}'")
+                setattr(cleaned_card, field, original_value)
+            elif translated_value != original_value and original_value:
+                # If LLM changed an audio field that had a value, restore original
+                issues_found.append(f"{field}: '{translated_value}' → '{original_value}' (restored)")
+                setattr(cleaned_card, field, original_value)
+            else:
+                # Keep original value
+                setattr(cleaned_card, field, original_value)
+        
+        # Handle empty target fields (if LLM left translations empty, that's probably wrong)
+        target_fields = [
+            'base_target', 's1_target', 's2_target', 's3_target', 's4_target',
+            's5_target', 's6_target', 's7_target', 's8_target', 's9_target'
+        ]
+        
+        empty_translations = []
+        for field in target_fields:
+            original_source_field = field.replace('_target', '_source')
+            original_source_value = getattr(original_card, original_source_field, "")
+            translated_value = getattr(translated_card, field, "")
+            
+            # If source has content but translation is empty, that's suspicious
+            if original_source_value.strip() and not translated_value.strip():
+                empty_translations.append(f"{field} (source: '{original_source_value[:30]}...')")
+        
+        total_issues = len(issues_found)
+        
+        if verbose:
+            if issues_found:
+                print(f"  ⚠️  Fixed {len(issues_found)} LLM hallucinations:")
+                for issue in issues_found[:3]:  # Show first 3 issues
+                    print(f"    - {issue}")
+                if len(issues_found) > 3:
+                    print(f"    - ... and {len(issues_found) - 3} more")
+            
+            if empty_translations:
+                print(f"  ⚠️  Found {len(empty_translations)} empty translations:")
+                for empty in empty_translations[:2]:  # Show first 2
+                    print(f"    - {empty}")
+                if len(empty_translations) > 2:
+                    print(f"    - ... and {len(empty_translations) - 2} more")
+            
+            if not issues_found and not empty_translations:
+                print(f"  ✅ No issues found - card is clean")
+        
+        return cleaned_card, total_issues
+        
+    except Exception as e:
+        print(f"\n❌ ERROR cleaning translated card:")
+        print(f"Error type: {type(e).__name__}")
+        print(f"Error message: {str(e)}")
+        print(f"\n🔍 Full traceback:")
+        traceback.print_exc()
+        print("-" * 80)
+        
+        # Return original translated card if cleaning fails
+        return translated_card, 0

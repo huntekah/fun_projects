@@ -14,48 +14,50 @@ def create_translation_prompt(card: AnkiCard) -> str:
 
     prompt = f"""You are a professional German-Polish translator working on creating German-Polish language learning flashcards for DTZ (Deutsch-Test für Zuwanderer) Goethe B1 level vocabulary.
 
-Your task is to translate ALL English content in this Anki flashcard to Polish, while keeping all German content exactly the same.
+Your task is to translate ALL target language content (currently English) in this Anki flashcard to Polish, while keeping all source language content (German) exactly the same.
 
 ORIGINAL CARD (German-English):
-- German word/phrase (full_d): {card.full_d}
-- English translation (base_e): {card.base_e}
-- German base form (base_d): {card.base_d}
+- German word/phrase (full_source): {card.full_source}
+- English translation (base_target): {card.base_target}
+- German base form (base_source): {card.base_source}
 - German article (artikel_d): {card.artikel_d}
 - German plural (plural_d): {card.plural_d}
 - Audio text (audio_text_d): {card.audio_text_d}
 
 Example sentences:
-- German sentence 1 (s1): {card.s1}
-- English translation 1 (s1e): {card.s1e}
-- German sentence 2 (s2): {card.s2}
-- English translation 2 (s2e): {card.s2e}
-- German sentence 3 (s3): {card.s3}
-- English translation 3 (s3e): {card.s3e}
-- German sentence 4 (s4): {card.s4}
-- English translation 4 (s4e): {card.s4e}
-- German sentence 5 (s5): {card.s5}
-- English translation 5 (s5e): {card.s5e}
-- German sentence 6 (s6): {card.s6}
-- English translation 6 (s6e): {card.s6e}
-- German sentence 7 (s7): {card.s7}
-- English translation 7 (s7e): {card.s7e}
-- German sentence 8 (s8): {card.s8}
-- English translation 8 (s8e): {card.s8e}
-- German sentence 9 (s9): {card.s9}
-- English translation 9 (s9e): {card.s9e}
+- German sentence 1 (s1_source): {card.s1_source}
+- English translation 1 (s1_target): {card.s1_target}
+- German sentence 2 (s2_source): {card.s2_source}
+- English translation 2 (s2_target): {card.s2_target}
+- German sentence 3 (s3_source): {card.s3_source}
+- English translation 3 (s3_target): {card.s3_target}
+- German sentence 4 (s4_source): {card.s4_source}
+- English translation 4 (s4_target): {card.s4_target}
+- German sentence 5 (s5_source): {card.s5_source}
+- English translation 5 (s5_target): {card.s5_target}
+- German sentence 6 (s6_source): {card.s6_source}
+- English translation 6 (s6_target): {card.s6_target}
+- German sentence 7 (s7_source): {card.s7_source}
+- English translation 7 (s7_target): {card.s7_target}
+- German sentence 8 (s8_source): {card.s8_source}
+- English translation 8 (s8_target): {card.s8_target}
+- German sentence 9 (s9_source): {card.s9_source}
+- English translation 9 (s9_target): {card.s9_target}
 
 TRANSLATION REQUIREMENTS:
-1. Translate ALL English content (base_e, s1e, s2e, s3e, s4e, s5e, s6e, s7e, s8e, s9e) to Polish
-2. Keep ALL German content exactly the same (full_d, base_d, artikel_d, plural_d, audio_text_d, s1, s2, s3, s4, s5, s6, s7, s8, s9)
-3. Keep all other fields unchanged (note_id, model_id, original_order, audio fields)
-4. Ensure Polish translations are accurate and appropriate for B1 level learners
-5. Use natural, contemporary Polish that matches the formality level of the original English
-6. For grammar terms or linguistic concepts, use standard Polish linguistic terminology
-7. If an English field is empty, leave the corresponding Polish field empty
+1. Translate ALL target language content (base_target, s1_target, s2_target, s3_target, s4_target, s5_target, s6_target, s7_target, s8_target, s9_target) from English to Polish
+2. Keep ALL source language content exactly the same (full_source, base_source, artikel_d, plural_d, audio_text_d, s1_source, s2_source, s3_source, s4_source, s5_source, s6_source, s7_source, s8_source, s9_source)
+3. Keep ALL metadata fields unchanged (note_id, model_id, original_order)
+4. Keep ALL audio fields unchanged - copy them exactly as they are (base_audio, s1_audio, s2_audio, s3_audio, s4_audio, s5_audio, s6_audio, s7_audio, s8_audio, s9_audio)
+5. NEVER output "string" or placeholder text - copy the original values exactly
+6. Ensure Polish translations are accurate and appropriate for B1 level learners
+7. Use natural, contemporary Polish that matches the formality level of the original English
+8. For grammar terms or linguistic concepts, use standard Polish linguistic terminology
+9. If a target language field is empty, leave the corresponding Polish field empty
 
 CONTEXT: This is for German language learners who speak Polish as their native language, studying for the DTZ (Deutsch-Test für Zuwanderer) at B1 level.
 
-Please provide the complete translated card with all fields filled out appropriately."""
+Please provide the complete translated card with all fields filled out appropriately using the same field names (source/target structure)."""
 
     return prompt
 
@@ -77,16 +79,18 @@ def create_batch_translation_prompt(cards: list[AnkiCard], batch_size: int = 5) 
 
     prompt = f"""You are a professional German-Polish translator working on creating German-Polish language learning flashcards for DTZ (Deutsch-Test für Zuwanderer) Goethe B1 level vocabulary.
 
-Your task is to translate ALL English content in these {len(cards)} Anki flashcards to Polish, while keeping all German content exactly the same.
+Your task is to translate ALL target language content (currently English) in these {len(cards)} Anki flashcards to Polish, while keeping all source language content (German) exactly the same.
 
 TRANSLATION REQUIREMENTS:
-1. Translate ALL English content (base_e, s1e, s2e, s3e, s4e, s5e, s6e, s7e, s8e, s9e) to Polish
-2. Keep ALL German content exactly the same (full_d, base_d, artikel_d, plural_d, audio_text_d, s1, s2, s3, s4, s5, s6, s7, s8, s9)
-3. Keep all other fields unchanged (note_id, model_id, original_order, audio fields)
-4. Ensure Polish translations are accurate and appropriate for B1 level learners
-5. Use natural, contemporary Polish that matches the formality level of the original English
-6. For grammar terms or linguistic concepts, use standard Polish linguistic terminology
-7. If an English field is empty, leave the corresponding Polish field empty
+1. Translate ALL target language content (base_target, s1_target, s2_target, s3_target, s4_target, s5_target, s6_target, s7_target, s8_target, s9_target) from English to Polish
+2. Keep ALL source language content exactly the same (full_source, base_source, artikel_d, plural_d, audio_text_d, s1_source, s2_source, s3_source, s4_source, s5_source, s6_source, s7_source, s8_source, s9_source)
+3. Keep ALL metadata fields unchanged (note_id, model_id, original_order)
+4. Keep ALL audio fields unchanged - copy them exactly as they are (base_audio, s1_audio, s2_audio, s3_audio, s4_audio, s5_audio, s6_audio, s7_audio, s8_audio, s9_audio)
+5. NEVER output "string" or placeholder text - copy the original values exactly
+6. Ensure Polish translations are accurate and appropriate for B1 level learners
+7. Use natural, contemporary Polish that matches the formality level of the original English
+8. For grammar terms or linguistic concepts, use standard Polish linguistic terminology
+9. If a target language field is empty, leave the corresponding Polish field empty
 
 CARDS TO TRANSLATE:
 
@@ -95,34 +99,34 @@ CARDS TO TRANSLATE:
     for i, card in enumerate(cards, 1):
         prompt += f"""
 CARD {i}:
-- German word/phrase (full_d): {card.full_d}
-- English translation (base_e): {card.base_e}
-- German base form (base_d): {card.base_d}
-- Example sentences and their English translations:
+- German word/phrase (full_source): {card.full_source}
+- English translation (base_target): {card.base_target}
+- German base form (base_source): {card.base_source}
+- Example sentences and their translations:
 """
 
         # Add non-empty example sentences
         examples = [
-            (card.s1, card.s1e),
-            (card.s2, card.s2e),
-            (card.s3, card.s3e),
-            (card.s4, card.s4e),
-            (card.s5, card.s5e),
-            (card.s6, card.s6e),
-            (card.s7, card.s7e),
-            (card.s8, card.s8e),
-            (card.s9, card.s9e),
+            (card.s1_source, card.s1_target),
+            (card.s2_source, card.s2_target),
+            (card.s3_source, card.s3_target),
+            (card.s4_source, card.s4_target),
+            (card.s5_source, card.s5_target),
+            (card.s6_source, card.s6_target),
+            (card.s7_source, card.s7_target),
+            (card.s8_source, card.s8_target),
+            (card.s9_source, card.s9_target),
         ]
 
-        for j, (german_ex, english_ex) in enumerate(examples, 1):
-            if german_ex.strip():
-                prompt += f"  - German example {j}: {german_ex}\n"
-                prompt += f"  - English translation {j}: {english_ex}\n"
+        for j, (source_ex, target_ex) in enumerate(examples, 1):
+            if source_ex and source_ex.strip():
+                prompt += f"  - German example {j} (s{j}_source): {source_ex}\n"
+                prompt += f"  - English translation {j} (s{j}_target): {target_ex}\n"
 
     prompt += f"""
 
 CONTEXT: This is for German language learners who speak Polish as their native language, studying for the DTZ (Deutsch-Test für Zuwanderer) at B1 level.
 
-Please provide the complete translated cards with all fields filled out appropriately, maintaining the same structure and field names as the original cards."""
+Please provide the complete translated cards with all fields filled out appropriately, maintaining the same source/target field structure."""
 
     return prompt
