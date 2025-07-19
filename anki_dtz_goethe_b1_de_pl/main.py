@@ -2,30 +2,34 @@ import random
 from pathlib import Path
 from utilities import load_anki_deck, save_anki_deck, copy_non_translation_fields_from_original
 from connectors.llm.structured_gemini import LLMClient, VertexAIConfig
-from prompt import create_translation_prompt
-from schema import AnkiCard, AnkiDeck
+from prompt import create_text_translation_prompt
+from schema import AnkiCard, AnkiDeck, AnkiCardTextFields
 
 
 def translate_card_with_llm(card: AnkiCard, llm_client: LLMClient) -> AnkiCard:
     """
     Translate a single AnkiCard from German-English to German-Polish using LLM.
+    Uses text-only model for LLM translation to improve efficiency and accuracy.
 
     Args:
         card: Original AnkiCard with German-English content
         llm_client: Configured LLM client
 
     Returns:
-        AnkiCard: Translated card with German-Polish content, cleaned of LLM hallucinations
+        AnkiCard: Translated card with German-Polish content, metadata preserved
     """
-    prompt = create_translation_prompt(card)
-
     try:
-        translated_card = llm_client.generate(prompt, AnkiCard)
+        # Convert to text-only model for LLM translation
+        text_model = card.to_text_model()
+        prompt = create_text_translation_prompt(text_model)
+
+        # Translate using text-only model (faster, cheaper, more accurate)
+        translated_text_model = llm_client.generate(prompt, AnkiCardTextFields)
         
-        # Clean up LLM hallucinations in non-translation fields
-        cleaned_card, issues_fixed = copy_non_translation_fields_from_original(translated_card, card)
+        # Convert back to full AnkiCard with preserved metadata and audio fields
+        translated_card = card.from_text_model(translated_text_model)
         
-        return cleaned_card
+        return translated_card
     except Exception as e:
         import traceback
         print(f"\n❌ ERROR translating card {card.note_id}")
