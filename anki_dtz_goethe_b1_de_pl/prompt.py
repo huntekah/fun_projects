@@ -15,47 +15,56 @@ def create_text_translation_prompt(text_model: AnkiCardTextFields) -> str:
 
     prompt = f"""You are a professional German-Polish translator working on creating German-Polish language learning flashcards for DTZ (Deutsch-Test für Zuwanderer) Goethe B1 level vocabulary.
 
-Your task is to translate ALL target language content (currently English) in this text to Polish, while keeping all source language content (German) exactly the same.
+Your task is to provide DIRECT Polish translations for ALL German content. The English translations are provided as reference context to help you understand the meaning, but you should translate FROM GERMAN TO POLISH directly, not from English to Polish.
 
-ORIGINAL TEXT (German-English):
+IMPORTANT: Translate German → Polish directly. Use English only as reference context to understand meaning.
+
+ORIGINAL FLASHCARD DATA:
 - German word/phrase (full_source): {text_model.full_source}
-- English translation (base_target): {text_model.base_target}
 - German base form (base_source): {text_model.base_source}
+- English reference (base_target): {text_model.base_target} ← USE AS CONTEXT ONLY
 - German article (artikel_d): {text_model.artikel_d}
 - German plural (plural_d): {text_model.plural_d}
 - Audio text (audio_text_d): {text_model.audio_text_d}
 
-Example sentences:
-- German sentence 1 (s1_source): {text_model.s1_source}
-- English translation 1 (s1_target): {text_model.s1_target}
-- German sentence 2 (s2_source): {text_model.s2_source}
-- English translation 2 (s2_target): {text_model.s2_target}
-- German sentence 3 (s3_source): {text_model.s3_source}
-- English translation 3 (s3_target): {text_model.s3_target}
-- German sentence 4 (s4_source): {text_model.s4_source}
-- English translation 4 (s4_target): {text_model.s4_target}
-- German sentence 5 (s5_source): {text_model.s5_source}
-- English translation 5 (s5_target): {text_model.s5_target}
-- German sentence 6 (s6_source): {text_model.s6_source}
-- English translation 6 (s6_target): {text_model.s6_target}
-- German sentence 7 (s7_source): {text_model.s7_source}
-- English translation 7 (s7_target): {text_model.s7_target}
-- German sentence 8 (s8_source): {text_model.s8_source}
-- English translation 8 (s8_target): {text_model.s8_target}
-- German sentence 9 (s9_source): {text_model.s9_source}
-- English translation 9 (s9_target): {text_model.s9_target}
+German example sentences with English reference context:
+- German sentence 1: {text_model.s1_source}
+  English reference: {text_model.s1_target} ← USE AS CONTEXT ONLY
+- German sentence 2: {text_model.s2_source}
+  English reference: {text_model.s2_target} ← USE AS CONTEXT ONLY
+- German sentence 3: {text_model.s3_source}
+  English reference: {text_model.s3_target} ← USE AS CONTEXT ONLY
+- German sentence 4: {text_model.s4_source}
+  English reference: {text_model.s4_target} ← USE AS CONTEXT ONLY
+- German sentence 5: {text_model.s5_source}
+  English reference: {text_model.s5_target} ← USE AS CONTEXT ONLY
+- German sentence 6: {text_model.s6_source}
+  English reference: {text_model.s6_target} ← USE AS CONTEXT ONLY
+- German sentence 7: {text_model.s7_source}
+  English reference: {text_model.s7_target} ← USE AS CONTEXT ONLY
+- German sentence 8: {text_model.s8_source}
+  English reference: {text_model.s8_target} ← USE AS CONTEXT ONLY
+- German sentence 9: {text_model.s9_source}
+  English reference: {text_model.s9_target} ← USE AS CONTEXT ONLY
+
+TRANSLATION APPROACH:
+1. **Primary task**: Translate each German text DIRECTLY to Polish
+2. **English role**: Use English translations only as reference context to understand meaning and nuance
+3. **Avoid translation chains**: Do NOT translate English to Polish - translate German to Polish
+4. **Quality goal**: Produce natural, idiomatic Polish that accurately conveys the German meaning
 
 TRANSLATION REQUIREMENTS:
-1. Translate ALL target language content (base_target, s1_target, s2_target, s3_target, s4_target, s5_target, s6_target, s7_target, s8_target, s9_target) from English to Polish
-2. Keep ALL source language content exactly the same (full_source, base_source, artikel_d, plural_d, audio_text_d, s1_source, s2_source, s3_source, s4_source, s5_source, s6_source, s7_source, s8_source, s9_source)
-3. Ensure Polish translations are accurate and appropriate for B1 level learners
-4. Use natural, contemporary Polish that matches the formality level of the original English
-5. For grammar terms or linguistic concepts, use standard Polish linguistic terminology
-6. If a target language field is empty, leave the corresponding Polish field empty
+1. Provide direct German→Polish translations for ALL target fields (base_target, s1_target, s2_target, s3_target, s4_target, s5_target, s6_target, s7_target, s8_target, s9_target)
+2. Keep ALL German source content exactly the same (full_source, base_source, artikel_d, plural_d, audio_text_d, s1_source, s2_source, s3_source, s4_source, s5_source, s6_source, s7_source, s8_source, s9_source)
+3. Use English translations as context to understand meaning, register, and nuance
+4. Ensure Polish translations are natural, idiomatic, and appropriate for B1 level learners
+5. Match the formality and register of the German original (not the English)
+6. For grammar terms or linguistic concepts, use standard Polish linguistic terminology
+7. If a German source field is empty, leave the corresponding Polish target field empty
 
-CONTEXT: This is for German language learners who speak Polish as their native language, studying for the DTZ (Deutsch-Test für Zuwanderer) at B1 level.
+CONTEXT: This is for German language learners who speak Polish as their native language, studying for the DTZ (Deutsch-Test für Zuwanderer) at B1 level. They need accurate, natural Polish translations that help them understand German vocabulary and usage patterns.
 
-Please provide the complete translated text with all fields filled out appropriately using the same field names (source/target structure)."""
+Please provide the complete result with all fields filled out appropriately using the same field names (source/target structure)."""
 
     return prompt
 
