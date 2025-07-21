@@ -1,0 +1,31 @@
+# Anki deck files (can be very large)
+*.apkg
+
+# Contribution package (contains CSV + media files)
+contribution_package/
+
+# Test files
+test_*.csv
+test_*.apkg
+
+# Cache directories
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.cache/
+.pytest_cache/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
