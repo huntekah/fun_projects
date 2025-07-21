@@ -10,6 +10,162 @@ from schema import AnkiCard, AnkiDeck
 from card_templates import DTZ_MODEL_FIELDS, DTZ_CARD_TEMPLATES, DTZ_CARD_CSS
 
 
+def _map_fields_to_schema(raw_fields_dict: Dict[str, Any], note_id: int, model_id: int) -> Dict[str, Any]:
+    """
+    Map raw field names to AnkiCard schema, handling both old and new naming schemes.
+    
+    Old scheme (original DE-EN deck): full_d, base_d, base_e, s1, s1e, base_a, s1a, etc.
+    New scheme (translated DE-PL deck): full_source, base_source, base_target, s1_source, s1_target, base_audio, s1_audio, etc.
+    
+    Args:
+        raw_fields_dict: Dictionary of field_name -> value from .apkg file
+        note_id: Note ID
+        model_id: Model ID
+        
+    Returns:
+        Dictionary with AnkiCard schema field names
+    """
+    # Detect which naming scheme is used by checking for key fields
+    has_old_fields = any(field in raw_fields_dict for field in ['full_d', 'base_d', 'base_e'])
+    has_new_fields = any(field in raw_fields_dict for field in ['full_source', 'base_source', 'base_target'])
+    
+    if has_new_fields and not has_old_fields:
+        # New scheme (translated deck) - direct mapping
+        # Only print once per deck, not per card
+        pass
+        return {
+            "note_id": note_id,
+            "model_id": model_id,
+            # Direct mapping for new scheme
+            "full_source": raw_fields_dict.get("full_source", ""),
+            "base_source": raw_fields_dict.get("base_source", ""),
+            "base_target": raw_fields_dict.get("base_target", ""),
+            "artikel_d": raw_fields_dict.get("artikel_d", ""),
+            "plural_d": raw_fields_dict.get("plural_d", ""),
+            "audio_text_d": raw_fields_dict.get("audio_text_d", ""),
+            "s1_source": raw_fields_dict.get("s1_source", ""),
+            "s1_target": raw_fields_dict.get("s1_target", ""),
+            "s2_source": raw_fields_dict.get("s2_source", ""),
+            "s2_target": raw_fields_dict.get("s2_target", ""),
+            "s3_source": raw_fields_dict.get("s3_source", ""),
+            "s3_target": raw_fields_dict.get("s3_target", ""),
+            "s4_source": raw_fields_dict.get("s4_source", ""),
+            "s4_target": raw_fields_dict.get("s4_target", ""),
+            "s5_source": raw_fields_dict.get("s5_source", ""),
+            "s5_target": raw_fields_dict.get("s5_target", ""),
+            "s6_source": raw_fields_dict.get("s6_source", ""),
+            "s6_target": raw_fields_dict.get("s6_target", ""),
+            "s7_source": raw_fields_dict.get("s7_source", ""),
+            "s7_target": raw_fields_dict.get("s7_target", ""),
+            "s8_source": raw_fields_dict.get("s8_source", ""),
+            "s8_target": raw_fields_dict.get("s8_target", ""),
+            "s9_source": raw_fields_dict.get("s9_source", ""),
+            "s9_target": raw_fields_dict.get("s9_target", ""),
+            "base_audio": raw_fields_dict.get("base_audio", ""),
+            "s1_audio": raw_fields_dict.get("s1_audio", ""),
+            "s2_audio": raw_fields_dict.get("s2_audio", ""),
+            "s3_audio": raw_fields_dict.get("s3_audio", ""),
+            "s4_audio": raw_fields_dict.get("s4_audio", ""),
+            "s5_audio": raw_fields_dict.get("s5_audio", ""),
+            "s6_audio": raw_fields_dict.get("s6_audio", ""),
+            "s7_audio": raw_fields_dict.get("s7_audio", ""),
+            "s8_audio": raw_fields_dict.get("s8_audio", ""),
+            "s9_audio": raw_fields_dict.get("s9_audio", ""),
+            "original_order": raw_fields_dict.get("original_order", ""),
+        }
+    elif has_old_fields:
+        # Old scheme (original deck) - need to map to new schema
+        # Only print once per deck, not per card
+        pass
+        return {
+            "note_id": note_id,
+            "model_id": model_id,
+            # Map old field names to new schema field names
+            "full_source": raw_fields_dict.get("full_d", ""),
+            "base_source": raw_fields_dict.get("base_d", ""),
+            "base_target": raw_fields_dict.get("base_e", ""),
+            # German-specific fields (keep same names)
+            "artikel_d": raw_fields_dict.get("artikel_d", ""),
+            "plural_d": raw_fields_dict.get("plural_d", ""),
+            "audio_text_d": raw_fields_dict.get("audio_text_d", ""),
+            # Map sentence fields
+            "s1_source": raw_fields_dict.get("s1", ""),
+            "s1_target": raw_fields_dict.get("s1e", ""),
+            "s2_source": raw_fields_dict.get("s2", ""),
+            "s2_target": raw_fields_dict.get("s2e", ""),
+            "s3_source": raw_fields_dict.get("s3", ""),
+            "s3_target": raw_fields_dict.get("s3e", ""),
+            "s4_source": raw_fields_dict.get("s4", ""),
+            "s4_target": raw_fields_dict.get("s4e", ""),
+            "s5_source": raw_fields_dict.get("s5", ""),
+            "s5_target": raw_fields_dict.get("s5e", ""),
+            "s6_source": raw_fields_dict.get("s6", ""),
+            "s6_target": raw_fields_dict.get("s6e", ""),
+            "s7_source": raw_fields_dict.get("s7", ""),
+            "s7_target": raw_fields_dict.get("s7e", ""),
+            "s8_source": raw_fields_dict.get("s8", ""),
+            "s8_target": raw_fields_dict.get("s8e", ""),
+            "s9_source": raw_fields_dict.get("s9", ""),
+            "s9_target": raw_fields_dict.get("s9e", ""),
+            # Map audio fields
+            "base_audio": raw_fields_dict.get("base_a", ""),
+            "s1_audio": raw_fields_dict.get("s1a", ""),
+            "s2_audio": raw_fields_dict.get("s2a", ""),
+            "s3_audio": raw_fields_dict.get("s3a", ""),
+            "s4_audio": raw_fields_dict.get("s4a", ""),
+            "s5_audio": raw_fields_dict.get("s5a", ""),
+            "s6_audio": raw_fields_dict.get("s6a", ""),
+            "s7_audio": raw_fields_dict.get("s7a", ""),
+            "s8_audio": raw_fields_dict.get("s8a", ""),
+            "s9_audio": raw_fields_dict.get("s9a", ""),
+            # Metadata
+            "original_order": raw_fields_dict.get("original_order", ""),
+        }
+    else:
+        # Fallback - try both schemes and use default values
+        print(f"  ⚠️  Could not detect field naming scheme - using fallback mapping")
+        return {
+            "note_id": note_id,
+            "model_id": model_id,
+            # Try both old and new field names, fallback to empty
+            "full_source": raw_fields_dict.get("full_source", raw_fields_dict.get("full_d", "")),
+            "base_source": raw_fields_dict.get("base_source", raw_fields_dict.get("base_d", "")),
+            "base_target": raw_fields_dict.get("base_target", raw_fields_dict.get("base_e", "")),
+            "artikel_d": raw_fields_dict.get("artikel_d", ""),
+            "plural_d": raw_fields_dict.get("plural_d", ""),
+            "audio_text_d": raw_fields_dict.get("audio_text_d", ""),
+            "s1_source": raw_fields_dict.get("s1_source", raw_fields_dict.get("s1", "")),
+            "s1_target": raw_fields_dict.get("s1_target", raw_fields_dict.get("s1e", "")),
+            "s2_source": raw_fields_dict.get("s2_source", raw_fields_dict.get("s2", "")),
+            "s2_target": raw_fields_dict.get("s2_target", raw_fields_dict.get("s2e", "")),
+            "s3_source": raw_fields_dict.get("s3_source", raw_fields_dict.get("s3", "")),
+            "s3_target": raw_fields_dict.get("s3_target", raw_fields_dict.get("s3e", "")),
+            "s4_source": raw_fields_dict.get("s4_source", raw_fields_dict.get("s4", "")),
+            "s4_target": raw_fields_dict.get("s4_target", raw_fields_dict.get("s4e", "")),
+            "s5_source": raw_fields_dict.get("s5_source", raw_fields_dict.get("s5", "")),
+            "s5_target": raw_fields_dict.get("s5_target", raw_fields_dict.get("s5e", "")),
+            "s6_source": raw_fields_dict.get("s6_source", raw_fields_dict.get("s6", "")),
+            "s6_target": raw_fields_dict.get("s6_target", raw_fields_dict.get("s6e", "")),
+            "s7_source": raw_fields_dict.get("s7_source", raw_fields_dict.get("s7", "")),
+            "s7_target": raw_fields_dict.get("s7_target", raw_fields_dict.get("s7e", "")),
+            "s8_source": raw_fields_dict.get("s8_source", raw_fields_dict.get("s8", "")),
+            "s8_target": raw_fields_dict.get("s8_target", raw_fields_dict.get("s8e", "")),
+            "s9_source": raw_fields_dict.get("s9_source", raw_fields_dict.get("s9", "")),
+            "s9_target": raw_fields_dict.get("s9_target", raw_fields_dict.get("s9e", "")),
+            "base_audio": raw_fields_dict.get("base_audio", raw_fields_dict.get("base_a", "")),
+            "s1_audio": raw_fields_dict.get("s1_audio", raw_fields_dict.get("s1a", "")),
+            "s2_audio": raw_fields_dict.get("s2_audio", raw_fields_dict.get("s2a", "")),
+            "s3_audio": raw_fields_dict.get("s3_audio", raw_fields_dict.get("s3a", "")),
+            "s4_audio": raw_fields_dict.get("s4_audio", raw_fields_dict.get("s4a", "")),
+            "s5_audio": raw_fields_dict.get("s5_audio", raw_fields_dict.get("s5a", "")),
+            "s6_audio": raw_fields_dict.get("s6_audio", raw_fields_dict.get("s6a", "")),
+            "s7_audio": raw_fields_dict.get("s7_audio", raw_fields_dict.get("s7a", "")),
+            "s8_audio": raw_fields_dict.get("s8_audio", raw_fields_dict.get("s8a", "")),
+            "s9_audio": raw_fields_dict.get("s9_audio", raw_fields_dict.get("s9a", "")),
+            "original_order": raw_fields_dict.get("original_order", ""),
+        }
+
+
 def load_anki_deck(path: Path) -> AnkiDeck:
     """
     Load an Anki deck from a .apkg file.
@@ -85,6 +241,7 @@ def load_anki_deck(path: Path) -> AnkiDeck:
 
                 # The 'flds' column contains the fields of a note joined by a special character
                 # We can split this to get individual fields.
+                field_scheme_detected = False
                 for note_idx, (note_id, model_id, flds) in enumerate(notes):
                     try:
                         fields = flds.split("\x1f")
@@ -96,51 +253,19 @@ def load_anki_deck(path: Path) -> AnkiDeck:
                             field_name = field_names[i] if i < len(field_names) else f"field_{i}"
                             raw_fields_dict[field_name] = field_value
 
-                        # Map old field names to new schema field names
-                        mapped_fields = {
-                            "note_id": note_id,
-                            "model_id": model_id,
-                            # Map main fields
-                            "full_source": raw_fields_dict.get("full_d", ""),
-                            "base_source": raw_fields_dict.get("base_d", ""),
-                            "base_target": raw_fields_dict.get("base_e", ""),
-                            # German-specific fields (keep same names)
-                            "artikel_d": raw_fields_dict.get("artikel_d", ""),
-                            "plural_d": raw_fields_dict.get("plural_d", ""),
-                            "audio_text_d": raw_fields_dict.get("audio_text_d", ""),
-                            # Map sentence fields
-                            "s1_source": raw_fields_dict.get("s1", ""),
-                            "s1_target": raw_fields_dict.get("s1e", ""),
-                            "s2_source": raw_fields_dict.get("s2", ""),
-                            "s2_target": raw_fields_dict.get("s2e", ""),
-                            "s3_source": raw_fields_dict.get("s3", ""),
-                            "s3_target": raw_fields_dict.get("s3e", ""),
-                            "s4_source": raw_fields_dict.get("s4", ""),
-                            "s4_target": raw_fields_dict.get("s4e", ""),
-                            "s5_source": raw_fields_dict.get("s5", ""),
-                            "s5_target": raw_fields_dict.get("s5e", ""),
-                            "s6_source": raw_fields_dict.get("s6", ""),
-                            "s6_target": raw_fields_dict.get("s6e", ""),
-                            "s7_source": raw_fields_dict.get("s7", ""),
-                            "s7_target": raw_fields_dict.get("s7e", ""),
-                            "s8_source": raw_fields_dict.get("s8", ""),
-                            "s8_target": raw_fields_dict.get("s8e", ""),
-                            "s9_source": raw_fields_dict.get("s9", ""),
-                            "s9_target": raw_fields_dict.get("s9e", ""),
-                            # Map audio fields
-                            "base_audio": raw_fields_dict.get("base_a", ""),
-                            "s1_audio": raw_fields_dict.get("s1a", ""),
-                            "s2_audio": raw_fields_dict.get("s2a", ""),
-                            "s3_audio": raw_fields_dict.get("s3a", ""),
-                            "s4_audio": raw_fields_dict.get("s4a", ""),
-                            "s5_audio": raw_fields_dict.get("s5a", ""),
-                            "s6_audio": raw_fields_dict.get("s6a", ""),
-                            "s7_audio": raw_fields_dict.get("s7a", ""),
-                            "s8_audio": raw_fields_dict.get("s8a", ""),
-                            "s9_audio": raw_fields_dict.get("s9a", ""),
-                            # Metadata
-                            "original_order": raw_fields_dict.get("original_order", ""),
-                        }
+                        # Detect field naming scheme and map accordingly (only print detection once)
+                        if not field_scheme_detected:
+                            has_old_fields = any(field in raw_fields_dict for field in ['full_d', 'base_d', 'base_e'])
+                            has_new_fields = any(field in raw_fields_dict for field in ['full_source', 'base_source', 'base_target'])
+                            if has_new_fields and not has_old_fields:
+                                print(f"  📋 Detected new field naming scheme (full_source, base_target, etc.)")
+                            elif has_old_fields:
+                                print(f"  📋 Detected old field naming scheme (full_d, base_e, etc.) - mapping to new schema")
+                            else:
+                                print(f"  ⚠️  Could not detect field naming scheme - using fallback mapping")
+                            field_scheme_detected = True
+                        
+                        mapped_fields = _map_fields_to_schema(raw_fields_dict, note_id, model_id)
 
                         # Create AnkiCard instance with mapped fields
                         card = AnkiCard(**mapped_fields)
