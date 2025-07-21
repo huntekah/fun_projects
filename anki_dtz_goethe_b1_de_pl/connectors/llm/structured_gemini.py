@@ -1,7 +1,9 @@
 import datetime
 import logging
+import hashlib
 from typing import Type, TypeVar
 
+import diskcache as dc
 from google import genai
 from google.genai.types import (
     GenerateContentResponse,
@@ -14,6 +16,9 @@ from pydantic import BaseModel
 logger = logging.getLogger(__name__)
 
 T = TypeVar("T", bound=BaseModel)
+
+# Initialize disk cache for LLM responses
+cache = dc.Cache('.llm_cache', size_limit=1_000_000_000)  # 1GB cache limit
 
 
 class VertexAIConfig(BaseModel):
@@ -29,12 +34,41 @@ class LLMClient:
         self.project: str = config.project_id
         self.location: str = config.location
         self.model: str = config.llm_model
+        self.config = config  # Store config for cache key generation
         self.client = genai.Client(
             vertexai=True,
             project=self.project,
             location=self.location,
             http_options=HttpOptions(timeout=100_000),
         )
+    
+    def _create_cache_key(self, text: str, schema: Type[T]) -> str:
+        """
+        Create a unique cache key for the LLM request.
+        
+        Args:
+            text: The prompt text
+            schema: The expected response schema
+            
+        Returns:
+            str: Unique cache key
+        """
+        # Create hash of model + text + schema that uniquely identifies the request
+        content_to_hash = f"{self.model}|{text}|{schema.__name__}"
+        return hashlib.sha256(content_to_hash.encode()).hexdigest()
+    
+    def get_cache_stats(self) -> dict:
+        """Get cache statistics for monitoring."""
+        try:
+            cache_size_mb = sum(cache.volume().values()) / (1024 * 1024) if cache.volume() else 0
+            return {
+                "cache_items": len(cache),
+                "cache_size_mb": round(cache_size_mb, 1),
+                "cache_directory": cache.directory
+            }
+        except Exception as e:
+            logger.warning(f"Failed to get cache stats: {e}")
+            return {"error": str(e)}
 
     def generate(self, text: str, schema: Type[T]) -> T:
         import traceback
@@ -47,6 +81,20 @@ class LLMClient:
             
             if not schema:
                 raise ValueError("No schema provided for structured generation")
+            
+            # Create cache key and check for cached response
+            cache_key = self._create_cache_key(text, schema)
+            cached_result = cache.get(cache_key)
+            
+            if cached_result is not None:
+                logger.debug(f"🎯 Cache hit for {schema.__name__} - using cached response")
+                try:
+                    return schema(**cached_result)
+                except Exception as e:
+                    logger.warning(f"Failed to deserialize cached response: {e}. Making fresh API call.")
+                    # Continue to make API call if deserialization fails
+            else:
+                logger.debug(f"🔄 Cache miss for {schema.__name__} - making API call")
             
             logger.debug(f"Using model: {self.model}")
             logger.debug(f"Expected response schema: {schema.__name__}")
@@ -95,6 +143,15 @@ class LLMClient:
                 raise ValueError(f"Expected response of type {schema.__name__}, got {received_type}")
 
             logger.debug(f"Successfully generated and parsed {schema.__name__} response")
+            
+            # Cache the successful response for future use
+            try:
+                cache.set(cache_key, response.parsed.model_dump())
+                logger.debug(f"💾 Cached {schema.__name__} response")
+            except Exception as e:
+                logger.warning(f"Failed to cache response: {e}")
+                # Continue execution even if caching fails
+            
             return response.parsed
             
         except Exception as e:
