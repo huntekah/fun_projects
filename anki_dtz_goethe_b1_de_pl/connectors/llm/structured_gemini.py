@@ -1,9 +1,11 @@
 import datetime
 import logging
 import hashlib
+import os
 from typing import Type, TypeVar
 
 import diskcache as dc
+from dotenv import load_dotenv
 from google import genai
 from google.genai.types import (
     GenerateContentResponse,
@@ -11,6 +13,9 @@ from google.genai.types import (
     HttpOptions,
 )
 from pydantic import BaseModel
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 logger = logging.getLogger(__name__)
@@ -24,9 +29,9 @@ cache = dc.Cache('.llm_cache', size_limit=1_000_000_000)  # 1GB cache limit
 class VertexAIConfig(BaseModel):
     """Configuration for Vertex AI Gemini client."""
 
-    project_id: str = "maximal-arcade-267011"
-    location: str = "europe-west4"
-    llm_model: str = "gemini-2.0-flash"
+    project_id: str = os.getenv("VERTEX_AI_PROJECT_ID", "")
+    location: str = os.getenv("VERTEX_AI_LOCATION", "us-central1")
+    llm_model: str = os.getenv("VERTEX_AI_MODEL", "gemini-2.0-flash")
 
 
 class LLMClient:
