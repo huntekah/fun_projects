@@ -1,5 +1,10 @@
 # TODO - Known Issues and Improvements
 
+## jotted ideas:
+
+ - use 5000 deutsch frequency book to order flashcards by frequency (or other method)
+ 
+
 ## Current Issues
 
 ### 1. Translation Method Improvements
