@@ -4,41 +4,41 @@ Based on the original DTZ deck structure.
 """
 
 DTZ_MODEL_FIELDS = [
-    {"name": "full_source"},     # Previously full_d
-    {"name": "base_target"},     # Previously base_e  
-    {"name": "base_source"},     # Previously base_d
-    {"name": "artikel_d"},       # Keep German-specific naming
-    {"name": "plural_d"},        # Keep German-specific naming
-    {"name": "audio_text_d"},    # Keep German-specific naming
-    {"name": "s1_source"},       # Previously s1
-    {"name": "s1_target"},       # Previously s1e
-    {"name": "s2_source"},       # Previously s2
-    {"name": "s2_target"},       # Previously s2e
-    {"name": "s3_source"},       # Previously s3
-    {"name": "s3_target"},       # Previously s3e
-    {"name": "s4_source"},       # Previously s4
-    {"name": "s4_target"},       # Previously s4e
-    {"name": "s5_source"},       # Previously s5
-    {"name": "s5_target"},       # Previously s5e
-    {"name": "s6_source"},       # Previously s6
-    {"name": "s6_target"},       # Previously s6e
-    {"name": "s7_source"},       # Previously s7
-    {"name": "s7_target"},       # Previously s7e
-    {"name": "s8_source"},       # Previously s8
-    {"name": "s8_target"},       # Previously s8e
-    {"name": "s9_source"},       # Previously s9
-    {"name": "s9_target"},       # Previously s9e
-    {"name": "original_order"},  # Keep same
-    {"name": "base_audio"},      # Previously base_a
-    {"name": "s1_audio"},        # Previously s1a
-    {"name": "s2_audio"},        # Previously s2a
-    {"name": "s3_audio"},        # Previously s3a
-    {"name": "s4_audio"},        # Previously s4a
-    {"name": "s5_audio"},        # Previously s5a
-    {"name": "s6_audio"},        # Previously s6a
-    {"name": "s7_audio"},        # Previously s7a
-    {"name": "s8_audio"},        # Previously s8a
-    {"name": "s9_audio"},        # Previously s9a
+    {"name": "full_source"},     
+    {"name": "base_target"},     
+    {"name": "base_source"},     
+    {"name": "artikel_d"},       
+    {"name": "plural_d"},        
+    {"name": "audio_text_d"},    
+    {"name": "s1_source"},       
+    {"name": "s1_target"},       
+    {"name": "s2_source"},       
+    {"name": "s2_target"},       
+    {"name": "s3_source"},       
+    {"name": "s3_target"},       
+    {"name": "s4_source"},       
+    {"name": "s4_target"},       
+    {"name": "s5_source"},       
+    {"name": "s5_target"},       
+    {"name": "s6_source"},       
+    {"name": "s6_target"},       
+    {"name": "s7_source"},       
+    {"name": "s7_target"},       
+    {"name": "s8_source"},       
+    {"name": "s8_target"},       
+    {"name": "s9_source"},       
+    {"name": "s9_target"},       
+    {"name": "original_order"},  
+    {"name": "base_audio"},      
+    {"name": "s1_audio"},        
+    {"name": "s2_audio"},        
+    {"name": "s3_audio"},        
+    {"name": "s4_audio"},        
+    {"name": "s5_audio"},        
+    {"name": "s6_audio"},        
+    {"name": "s7_audio"},        
+    {"name": "s8_audio"},        
+    {"name": "s9_audio"},        
 ]
 
 DTZ_CARD_TEMPLATES = [
