@@ -31,13 +31,13 @@ class TTSGenerator:
         self.voices = {
             'german': texttospeech.VoiceSelectionParams(
                 language_code="de-DE",
-                name="de-DE-Studio-C",  # German Studio voice
+                # name="de-DE-Chirp3-HD-Achernar",  # German Studio voice
                 ssml_gender=texttospeech.SsmlVoiceGender.FEMALE
             ),
             'polish': texttospeech.VoiceSelectionParams(
                 language_code="pl-PL", 
                 name="pl-PL-Standard-G",  # Polish Standard voice (sounds great)
-                ssml_gender=texttospeech.SsmlVoiceGender.FEMALE
+                # ssml_gender=texttospeech.SsmlVoiceGender.FEMALE
             )
         }
         
@@ -107,6 +107,10 @@ class TTSGenerator:
                 print(f"✅ Saved from cache: {output_path}")
                 return True
             
+            # if text doesnt have any interpunction at the end, add a dot.
+            if text[-1] not in [".", "!", "?"]:
+                text += ". "
+
             # Create synthesis input
             synthesis_input = texttospeech.SynthesisInput(text=text)
             

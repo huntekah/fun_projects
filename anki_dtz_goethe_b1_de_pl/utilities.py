@@ -72,6 +72,16 @@ def _map_fields_to_schema(raw_fields_dict: Dict[str, Any], note_id: int, model_i
             "s7_audio": raw_fields_dict.get("s7_audio", ""),
             "s8_audio": raw_fields_dict.get("s8_audio", ""),
             "s9_audio": raw_fields_dict.get("s9_audio", ""),
+            "base_target_audio": raw_fields_dict.get("base_target_audio", ""),
+            "s1_target_audio": raw_fields_dict.get("s1_target_audio", ""),
+            "s2_target_audio": raw_fields_dict.get("s2_target_audio", ""),
+            "s3_target_audio": raw_fields_dict.get("s3_target_audio", ""),
+            "s4_target_audio": raw_fields_dict.get("s4_target_audio", ""),
+            "s5_target_audio": raw_fields_dict.get("s5_target_audio", ""),
+            "s6_target_audio": raw_fields_dict.get("s6_target_audio", ""),
+            "s7_target_audio": raw_fields_dict.get("s7_target_audio", ""),
+            "s8_target_audio": raw_fields_dict.get("s8_target_audio", ""),
+            "s9_target_audio": raw_fields_dict.get("s9_target_audio", ""),
             "original_order": raw_fields_dict.get("original_order", ""),
         }
     elif has_old_fields:
@@ -120,6 +130,17 @@ def _map_fields_to_schema(raw_fields_dict: Dict[str, Any], note_id: int, model_i
             "s7_audio": raw_fields_dict.get("s7a", ""),
             "s8_audio": raw_fields_dict.get("s8a", ""),
             "s9_audio": raw_fields_dict.get("s9a", ""),
+            # Polish audio fields don't exist in old scheme - default to empty
+            "base_target_audio": "",
+            "s1_target_audio": "",
+            "s2_target_audio": "",
+            "s3_target_audio": "",
+            "s4_target_audio": "",
+            "s5_target_audio": "",
+            "s6_target_audio": "",
+            "s7_target_audio": "",
+            "s8_target_audio": "",
+            "s9_target_audio": "",
             # Metadata
             "original_order": raw_fields_dict.get("original_order", ""),
         }
@@ -294,15 +315,16 @@ def load_anki_deck(path: Path) -> AnkiDeck:
 
 
 def save_anki_deck(
-    deck: AnkiDeck, output_path: Path, original_apkg_path: Path = None
+    deck: AnkiDeck, output_path: Path, original_apkg_path: Path = None, additional_media_dir: Path = None
 ) -> None:
     """
     Save an AnkiDeck to a .apkg file using genanki.
 
     Args:
-        deck: The AnkiDeck to save
-        output_path: Path where to save the deck (.apkg format)
-        original_apkg_path: Optional path to original .apkg file to extract media files
+        deck: AnkiDeck to save
+        output_path: Path for the output .apkg file
+        original_apkg_path: Optional path to original .apkg for media extraction
+        additional_media_dir: Optional directory containing new media files (e.g., TTS audio)
     """
     import traceback
     
@@ -374,6 +396,7 @@ def save_anki_deck(
                     str(card.s9_source or ""),
                     str(card.s9_target or ""),
                     str(card.original_order or ""),
+                    str(getattr(card, 'full_source_audio', '') or ""),
                     str(card.base_audio or ""),
                     str(card.s1_audio or ""),
                     str(card.s2_audio or ""),
@@ -384,14 +407,31 @@ def save_anki_deck(
                     str(card.s7_audio or ""),
                     str(card.s8_audio or ""),
                     str(card.s9_audio or ""),
+                    str(getattr(card, 'base_target_audio', '') or ""),
+                    str(getattr(card, 's1_target_audio', '') or ""),
+                    str(getattr(card, 's2_target_audio', '') or ""),
+                    str(getattr(card, 's3_target_audio', '') or ""),
+                    str(getattr(card, 's4_target_audio', '') or ""),
+                    str(getattr(card, 's5_target_audio', '') or ""),
+                    str(getattr(card, 's6_target_audio', '') or ""),
+                    str(getattr(card, 's7_target_audio', '') or ""),
+                    str(getattr(card, 's8_target_audio', '') or ""),
+                    str(getattr(card, 's9_target_audio', '') or ""),
                 ]
 
                 # Preserve original GUID to maintain study progress
+                # Set creation timestamp based on card order for proper sequence
+                import time
+                creation_time = int(time.time()) + card_idx  # Sequential timestamps
+                
                 note = genanki.Note(
                     model=model, 
                     fields=fields,
-                    guid=card.original_guid or str(card.note_id)  # Use original GUID to preserve progress
+                    guid=card.original_guid or str(card.note_id),  # Use original GUID to preserve progress
+                    sort_field=0  # Use first field for sorting
                 )
+                # Set the note's creation time to maintain frequency order
+                note.note_id = creation_time
                 anki_deck.add_note(note)
                 
             except Exception as e:
@@ -402,12 +442,43 @@ def save_anki_deck(
         if failed_cards > 0:
             print(f"⚠️  {failed_cards} cards failed to convert and were skipped")
 
+        # Collect all available media files from multiple sources
+        available_media = {}  # filename -> file_path mapping
+        
         # Extract media files from original .apkg if provided
-        media_files = []
         if original_apkg_path and original_apkg_path.exists():
             print(f"🎵 Extracting media files from original deck...")
-            media_files = _extract_media_files(original_apkg_path)
-            print(f"  Found {len(media_files)} media files")
+            original_media = _extract_media_files(original_apkg_path)
+            for media_path in original_media:
+                filename = os.path.basename(media_path)
+                available_media[filename] = media_path
+            print(f"  Found {len(original_media)} original media files")
+        
+        # Add new media files from additional directory if provided
+        if additional_media_dir and additional_media_dir.exists():
+            print(f"🎵 Scanning new media files from {additional_media_dir}...")
+            new_media = list(additional_media_dir.glob("*.mp3"))
+            for media_path in new_media:
+                filename = media_path.name
+                available_media[filename] = str(media_path)  # New media overwrites original if same name
+            print(f"  Found {len(new_media)} new media files")
+            
+            # Ensure silence file exists for audio control
+            silence_file = "_1-minute-of-silence.mp3"
+            if silence_file not in available_media:
+                silence_path = additional_media_dir / silence_file
+                if not silence_path.exists():
+                    print(f"🔇 Creating silence file for audio control: {silence_file}")
+                    _create_silence_file(silence_path)
+                available_media[silence_file] = str(silence_path)
+        
+        print(f"📦 Total available media files: {len(available_media)}")
+        
+        # Filter media files to only include those actually referenced in the deck
+        referenced_media = _get_referenced_media_files(deck, available_media)
+        print(f"🔍 Media files actually used in deck: {len(referenced_media)}")
+        
+        media_files = list(referenced_media.values())
 
         # Generate the .apkg file
         print(f"📦 Generating .apkg file...")
@@ -476,6 +547,118 @@ def _extract_media_files(apkg_path: Path) -> List[str]:
     return media_files
 
 
+def _create_silence_file(output_path: Path) -> None:
+    """
+    Create a minimal silence MP3 file for audio control in Anki templates.
+    
+    Args:
+        output_path: Path where to save the silence file
+    """
+    try:
+        # Create a very short silence file using ffmpeg if available
+        import subprocess
+        subprocess.run([
+            'ffmpeg', '-f', 'lavfi', '-i', 'anullsrc=duration=0.1', 
+            '-acodec', 'mp3', '-y', str(output_path)
+        ], check=True, capture_output=True)
+        print(f"   Created silence file with ffmpeg: {output_path.name}")
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        # Fallback: create a minimal MP3 header (empty file that players recognize)
+        # This is a minimal valid MP3 file (just headers, practically silent)
+        mp3_header = bytes([
+            0xFF, 0xFB, 0x90, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+        ])
+        with open(output_path, 'wb') as f:
+            f.write(mp3_header * 100)  # Repeat to make it a bit longer
+        print(f"   Created minimal silence file: {output_path.name}")
+
+
+def _get_referenced_media_files(deck: AnkiDeck, available_media: Dict[str, str]) -> Dict[str, str]:
+    """
+    Filter available media files to only include those actually referenced in the deck.
+    
+    Args:
+        deck: AnkiDeck to analyze for media references
+        available_media: Dict mapping filename -> file_path of all available media
+        
+    Returns:
+        Dict mapping filename -> file_path of only referenced media files
+    """
+    import re
+    from card_templates import DTZ_CARD_TEMPLATES
+    
+    referenced_files = set()
+    
+    # Pattern to match Anki sound references: [sound:filename.mp3]
+    sound_pattern = re.compile(r'\[sound:([^\]]+)\]')
+    
+    # First, scan card templates for hardcoded media references
+    print(f"🔍 Scanning card templates for media references...")
+    template_media_count = 0
+    for template in DTZ_CARD_TEMPLATES:
+        # Check both question and answer formats
+        for format_key in ['qfmt', 'afmt']:
+            if format_key in template:
+                matches = sound_pattern.findall(template[format_key])
+                for filename in matches:
+                    referenced_files.add(filename)
+                    template_media_count += 1
+                    print(f"   Found template reference: {filename}")
+    
+    # Then check all audio fields in all cards
+    field_media_count = 0
+    for card in deck.cards:
+        # List all audio fields to check
+        audio_fields = [
+            'full_source_audio', 'base_audio', 's1_audio', 's2_audio', 's3_audio', 's4_audio', 
+            's5_audio', 's6_audio', 's7_audio', 's8_audio', 's9_audio',
+            'base_target_audio', 's1_target_audio', 's2_target_audio', 's3_target_audio', 
+            's4_target_audio', 's5_target_audio', 's6_target_audio', 's7_target_audio', 
+            's8_target_audio', 's9_target_audio'
+        ]
+        
+        for field_name in audio_fields:
+            field_value = getattr(card, field_name, "")
+            if field_value:
+                # Extract filename from [sound:filename.mp3] format
+                matches = sound_pattern.findall(field_value)
+                for filename in matches:
+                    if filename not in referenced_files:  # Avoid double counting
+                        field_media_count += 1
+                    referenced_files.add(filename)
+    
+    print(f"   Template media references: {template_media_count}")
+    print(f"   Field media references: {field_media_count}")
+    print(f"   Total unique media files referenced: {len(referenced_files)}")
+    
+    # Filter available media to only include referenced files
+    referenced_media = {}
+    missing_files = []
+    
+    for filename in referenced_files:
+        if filename in available_media:
+            referenced_media[filename] = available_media[filename]
+        else:
+            missing_files.append(filename)
+    
+    # Handle special case: silence file needed for audio control but might not exist
+    silence_file = "_1-minute-of-silence.mp3"
+    if silence_file in referenced_files and silence_file not in available_media:
+        print(f"⚠️  Creating placeholder for required silence file: {silence_file}")
+        # Create a minimal silence file if needed (we'll handle this in save function)
+        missing_files = [f for f in missing_files if f != silence_file]
+    
+    if missing_files:
+        print(f"⚠️  Warning: {len(missing_files)} referenced media files not found:")
+        for filename in missing_files[:5]:  # Show first 5 missing files
+            print(f"     - {filename}")
+        if len(missing_files) > 5:
+            print(f"     ... and {len(missing_files) - 5} more")
+    
+    return referenced_media
+
+
 def copy_non_translation_fields_from_original(translated_card: AnkiCard, original_card: AnkiCard, verbose: bool = True) -> tuple[AnkiCard, int]:
     """
     Copy non-translation fields from original card to fix LLM hallucinations.
@@ -514,7 +697,7 @@ def copy_non_translation_fields_from_original(translated_card: AnkiCard, origina
         
         # Audio fields that should be copied from original
         audio_fields = [
-            'base_audio', 's1_audio', 's2_audio', 's3_audio', 's4_audio',
+            'full_source_audio', 'base_audio', 's1_audio', 's2_audio', 's3_audio', 's4_audio',
             's5_audio', 's6_audio', 's7_audio', 's8_audio', 's9_audio'
         ]
         
