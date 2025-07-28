@@ -36,6 +36,7 @@ def _map_fields_to_schema(raw_fields_dict: Dict[str, Any], note_id: int, model_i
         return {
             "note_id": note_id,
             "model_id": model_id,
+            "original_guid": raw_fields_dict.get("original_guid", ""),
             # Direct mapping for new scheme
             "full_source": raw_fields_dict.get("full_source", ""),
             "base_source": raw_fields_dict.get("base_source", ""),
@@ -80,6 +81,7 @@ def _map_fields_to_schema(raw_fields_dict: Dict[str, Any], note_id: int, model_i
         return {
             "note_id": note_id,
             "model_id": model_id,
+            "original_guid": raw_fields_dict.get("original_guid", ""),
             # Map old field names to new schema field names
             "full_source": raw_fields_dict.get("full_d", ""),
             "base_source": raw_fields_dict.get("base_d", ""),
@@ -235,20 +237,20 @@ def load_anki_deck(path: Path) -> AnkiDeck:
 
                 # Get the note and card information
                 print("🃏 Reading notes and cards...")
-                cursor.execute("SELECT id, mid, flds FROM notes")
+                cursor.execute("SELECT id, mid, flds, guid FROM notes")
                 notes = cursor.fetchall()
                 print(f"  Found {len(notes)} notes")
 
                 # The 'flds' column contains the fields of a note joined by a special character
                 # We can split this to get individual fields.
                 field_scheme_detected = False
-                for note_idx, (note_id, model_id, flds) in enumerate(notes):
+                for note_idx, (note_id, model_id, flds, guid) in enumerate(notes):
                     try:
                         fields = flds.split("\x1f")
                         field_names = model_fields.get(model_id, [])
 
                         # Create a dictionary mapping old field names to values
-                        raw_fields_dict = {"note_id": note_id, "model_id": model_id}
+                        raw_fields_dict = {"note_id": note_id, "model_id": model_id, "original_guid": guid}
                         for i, field_value in enumerate(fields):
                             field_name = field_names[i] if i < len(field_names) else f"field_{i}"
                             raw_fields_dict[field_name] = field_value
@@ -384,7 +386,12 @@ def save_anki_deck(
                     str(card.s9_audio or ""),
                 ]
 
-                note = genanki.Note(model=model, fields=fields)
+                # Preserve original GUID to maintain study progress
+                note = genanki.Note(
+                    model=model, 
+                    fields=fields,
+                    guid=card.original_guid or str(card.note_id)  # Use original GUID to preserve progress
+                )
                 anki_deck.add_note(note)
                 
             except Exception as e:

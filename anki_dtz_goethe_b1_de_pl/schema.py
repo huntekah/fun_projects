@@ -38,6 +38,7 @@ class AnkiCard(BaseModel):
     
     note_id: int = Field(description="Unique note identifier")
     model_id: int = Field(description="Anki model identifier")
+    original_guid: str = Field(default="", description="Original GUID from source deck for progress preservation")
     
     full_source: str = Field(default="", description="Full German word/phrase")
     base_source: str = Field(default="", description="Base German word")
