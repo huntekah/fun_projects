@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Download 50k frequency list (647 KB)
+curl -s https://raw.githubusercontent.com/hermitdave/FrequencyWords/refs/heads/master/content/2018/de/de_50k.txt -o data/de_50k_frequency.txt && echo "Downloaded German 50k frequency list to data/de_50k_frequency.txt"
+
+# Download full frequency list (16 MB) - includes words like "jobben", "girokonto" 
+curl -s https://raw.githubusercontent.com/hermitdave/FrequencyWords/refs/heads/master/content/2018/de/de_full.txt -o data/de_full_frequency.txt && echo "Downloaded German full frequency list to data/de_full_frequency.txt"

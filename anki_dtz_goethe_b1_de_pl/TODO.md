@@ -2,7 +2,8 @@
 
 ## jotted ideas:
 
- - use 5000 deutsch frequency book to order flashcards by frequency (or other method)
+ - ✅ use 5000 deutsch frequency book to order flashcards by frequency (or other method)
+ - IMPLEMENTED: frequency_sort.py with German frequency list (50k + full list support)
  
 
 ## Current Issues
@@ -52,6 +53,17 @@
 - Make LLM model configurable
 - Add translation settings (formality level, dialect)
 - Environment-based configuration
+
+### 7. Frequency Sorting Improvements (Future)
+- **Fallback Strategy 1**: Levenshtein distance matching for unmatched words
+  - Find closest word in frequency list using edit distance
+  - Risk: Random words might get unusually high/low scores
+  - Implementation: Use `python-Levenshtein` library for fast matching
+- **Fallback Strategy 2**: SentenceTransformers semantic similarity
+  - Use embedding similarity to place unmatched words near semantically similar words
+  - More accurate for meaning-based placement
+  - Implementation: Use `sentence-transformers` with German model
+  - Could use models like `distilbert-base-german-cased` or `paraphrase-multilingual-MiniLM-L12-v2`
 
 ## Testing Needs
 - Unit tests for core functions
