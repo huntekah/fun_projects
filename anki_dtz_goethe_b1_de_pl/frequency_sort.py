@@ -180,7 +180,13 @@ def sort_cards_by_frequency(cards: List[AnkiCard], frequency_map: Dict[str, int]
     
     # Sort by frequency rank (ascending = most frequent first)
     sorted_cards_with_rank = sorted(cards_with_rank, key=lambda x: x[1])
-    sorted_cards = [card for card, rank in sorted_cards_with_rank]
+    
+    # Add frequency rank to each card for browser sorting
+    sorted_cards = []
+    for i, (card, rank) in enumerate(sorted_cards_with_rank):
+        updated_card = card.model_copy()
+        updated_card.frequency_rank = f"{i+1:04d}"  # Zero-padded: 0001, 0002, 0003...
+        sorted_cards.append(updated_card)
     
     stats = {
         'total_cards': len(cards),

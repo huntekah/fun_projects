@@ -37,6 +37,7 @@ def _map_fields_to_schema(raw_fields_dict: Dict[str, Any], note_id: int, model_i
             "note_id": note_id,
             "model_id": model_id,
             "original_guid": raw_fields_dict.get("original_guid", ""),
+            "frequency_rank": raw_fields_dict.get("frequency_rank", ""),
             # Direct mapping for new scheme
             "full_source": raw_fields_dict.get("full_source", ""),
             "base_source": raw_fields_dict.get("base_source", ""),
@@ -92,6 +93,7 @@ def _map_fields_to_schema(raw_fields_dict: Dict[str, Any], note_id: int, model_i
             "note_id": note_id,
             "model_id": model_id,
             "original_guid": raw_fields_dict.get("original_guid", ""),
+            "frequency_rank": raw_fields_dict.get("frequency_rank", ""),
             # Map old field names to new schema field names
             "full_source": raw_fields_dict.get("full_d", ""),
             "base_source": raw_fields_dict.get("base_d", ""),
@@ -150,6 +152,7 @@ def _map_fields_to_schema(raw_fields_dict: Dict[str, Any], note_id: int, model_i
         return {
             "note_id": note_id,
             "model_id": model_id,
+            "frequency_rank": raw_fields_dict.get("frequency_rank", ""),
             # Try both old and new field names, fallback to empty
             "full_source": raw_fields_dict.get("full_source", raw_fields_dict.get("full_d", "")),
             "base_source": raw_fields_dict.get("base_source", raw_fields_dict.get("base_d", "")),
@@ -371,6 +374,7 @@ def save_anki_deck(
             try:
                 # Ensure all fields are strings and handle None/empty values
                 fields = [
+                    str(getattr(card, 'frequency_rank', '') or ""),
                     str(card.full_source or ""),
                     str(card.base_target or ""),
                     str(card.base_source or ""),
@@ -705,6 +709,10 @@ def copy_non_translation_fields_from_original(translated_card: AnkiCard, origina
         for field in metadata_fields:
             original_value = getattr(original_card, field, "")
             setattr(cleaned_card, field, original_value)
+        
+        # Copy frequency_rank if it exists
+        if hasattr(original_card, 'frequency_rank'):
+            setattr(cleaned_card, 'frequency_rank', original_card.frequency_rank)
         
         # Copy German-specific fields (source language should never change)
         for field in german_fields:

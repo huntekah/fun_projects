@@ -6,6 +6,7 @@ and controlled audio autoplay, including Polish audio support.
 
 # Updated fields list includes Polish audio fields
 DTZ_MODEL_FIELDS = [
+    {"name": "frequency_rank"},
     {"name": "full_source"},
     {"name": "base_target"},
     {"name": "base_source"},
