@@ -27,38 +27,38 @@ def generate_complete_audio_for_card(card: AnkiCard, tts_generator: TTSGenerator
     # Create a copy of the card to modify
     updated_card = card.model_copy()
     
-    # Define all text fields that need audio generation
+    # Define all text fields that need audio generation with variable speeds
     audio_fields = [
-        # German fields -> German audio
-        ('full_source', 'german', 'full_source_audio'),
-        ('base_source', 'german', 'base_audio'),
-        ('s1_source', 'german', 's1_audio'),
-        ('s2_source', 'german', 's2_audio'),
-        ('s3_source', 'german', 's3_audio'),
-        ('s4_source', 'german', 's4_audio'),
-        ('s5_source', 'german', 's5_audio'),
-        ('s6_source', 'german', 's6_audio'),
-        ('s7_source', 'german', 's7_audio'),
-        ('s8_source', 'german', 's8_audio'),
-        ('s9_source', 'german', 's9_audio'),
+        # German fields -> German audio (slow for learning, normal for examples)
+        ('audio_text_d', 'german', 'full_source_audio', 0.95),
+        ('base_source', 'german', 'base_audio', 0.95),
+        ('s1_source', 'german', 's1_audio', 1.07),
+        ('s2_source', 'german', 's2_audio', 1.08),
+        ('s3_source', 'german', 's3_audio', 1.08),
+        ('s4_source', 'german', 's4_audio', 1.08),
+        ('s5_source', 'german', 's5_audio', 1.12),
+        ('s6_source', 'german', 's6_audio', 1.12),
+        ('s7_source', 'german', 's7_audio', 1.15),
+        ('s8_source', 'german', 's8_audio', 1.15),
+        ('s9_source', 'german', 's9_audio', 1.15),
         
-        # Polish fields -> Polish audio
-        ('base_target', 'polish', 'base_target_audio'),
-        ('s1_target', 'polish', 's1_target_audio'),
-        ('s2_target', 'polish', 's2_target_audio'),
-        ('s3_target', 'polish', 's3_target_audio'),
-        ('s4_target', 'polish', 's4_target_audio'),
-        ('s5_target', 'polish', 's5_target_audio'),
-        ('s6_target', 'polish', 's6_target_audio'),
-        ('s7_target', 'polish', 's7_target_audio'),
-        ('s8_target', 'polish', 's8_target_audio'),
-        ('s9_target', 'polish', 's9_target_audio'),
+        # Polish fields -> Polish audio (slow for translation, quick for examples)
+        ('base_target', 'polish', 'base_target_audio', 0.95),
+        ('s1_target', 'polish', 's1_target_audio', 1.15),
+        ('s2_target', 'polish', 's2_target_audio', 1.20),
+        ('s3_target', 'polish', 's3_target_audio', 1.20),
+        ('s4_target', 'polish', 's4_target_audio', 1.20),
+        ('s5_target', 'polish', 's5_target_audio', 1.25),
+        ('s6_target', 'polish', 's6_target_audio', 1.25),
+        ('s7_target', 'polish', 's7_target_audio', 1.30),
+        ('s8_target', 'polish', 's8_target_audio', 1.30),
+        ('s9_target', 'polish', 's9_target_audio', 1.30),
     ]
     
     generated_count = 0
     cached_count = 0
     
-    for text_field, language, audio_field in audio_fields:
+    for text_field, language, audio_field, speed in audio_fields:
         # Get text content
         text_content = getattr(card, text_field, "")
         
@@ -74,11 +74,11 @@ def generate_complete_audio_for_card(card: AnkiCard, tts_generator: TTSGenerator
         audio_path = audio_dir / audio_filename
         
         # Check if this is a cache hit by looking at TTS generator cache
-        cache_key = tts_generator._generate_cache_key(text_content, language)
+        cache_key = tts_generator._generate_cache_key(text_content, language, speed)
         is_cached = tts_generator.cache.get(cache_key) is not None
         
-        # Generate audio
-        success = tts_generator.synthesize_speech(text_content, language, audio_path)
+        # Generate audio with variable speed
+        success = tts_generator.synthesize_speech(text_content, language, audio_path, speed)
         
         if success:
             # Set audio field reference in Anki format
@@ -100,8 +100,8 @@ def generate_complete_audio_for_card(card: AnkiCard, tts_generator: TTSGenerator
 def generate_audio_for_entire_deck(
     input_deck_path: Path, 
     output_deck_path: Path,
-    audio_dir: Path = None,
-    limit_cards: int = None
+    audio_dir: Path |None = None,
+    limit_cards: int|None = None
 ) -> Dict:
     """
     Generate TTS audio for an entire Anki deck.
@@ -206,7 +206,7 @@ if __name__ == "__main__":
     output_deck = Path("data/DTZ_Goethe_B1_DE_PL_Complete_WithAudio.apkg")
     
     # For testing, start with a small number of cards
-    test_limit = None#10  # Set to None for full deck
+    test_limit = None #10  # Set to None for full deck
     
     if input_deck.exists():
         print(f"🚀 Starting complete TTS audio generation")

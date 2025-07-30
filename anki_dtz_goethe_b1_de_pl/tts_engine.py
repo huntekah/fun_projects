@@ -46,11 +46,14 @@ class TTSGenerator:
             audio_encoding=texttospeech.AudioEncoding.MP3
         )
     
-    def _generate_cache_key(self, text: str, language: str) -> str:
-        """Generate a cache key for text and voice configuration."""
+    def _generate_cache_key(self, text: str, language: str, speaking_rate: float = 1.0) -> str:
+        """Generate a cache key for text, voice configuration, and speaking rate."""
         voice_name = self.voices[language].name
-        # Create hash from text + voice name for unique cache key
-        content = f"{text}_{voice_name}"
+        # Smart backward compatibility: only include speed in key if != 1.0
+        if speaking_rate == 1.0:
+            content = f"{text}_{voice_name}"  # Same as old cache keys
+        else:
+            content = f"{text}_{voice_name}_{speaking_rate}"  # New cache keys for variable speed
         return hashlib.sha256(content.encode('utf-8')).hexdigest()
     
     def close(self):
@@ -73,7 +76,7 @@ class TTSGenerator:
             'cache_directory': str(self.cache.directory)
         }
     
-    def synthesize_speech(self, text: str, language: str, output_path: Path) -> bool:
+    def synthesize_speech(self, text: str, language: str, output_path: Path, speaking_rate: float = 1.0) -> bool:
         """
         Synthesize speech for given text in specified language with caching.
         
@@ -81,6 +84,7 @@ class TTSGenerator:
             text: Text to synthesize
             language: 'german' or 'polish'
             output_path: Path to save MP3 file
+            speaking_rate: Speech speed (0.25-2.0, default 1.0)
             
         Returns:
             True if successful, False otherwise
@@ -93,8 +97,8 @@ class TTSGenerator:
             print(f"❌ Unsupported language: {language}")
             return False
         
-        # Generate cache key
-        cache_key = self._generate_cache_key(text, language)
+        # Generate cache key including speaking rate
+        cache_key = self._generate_cache_key(text, language, speaking_rate)
         
         try:
             # Check cache first
@@ -117,12 +121,18 @@ class TTSGenerator:
             # Get voice for language
             voice = self.voices[language]
             
+            # Create audio config with variable speaking rate
+            audio_config = texttospeech.AudioConfig(
+                audio_encoding=texttospeech.AudioEncoding.MP3,
+                speaking_rate=speaking_rate
+            )
+            
             # Perform TTS request
-            print(f"🎤 Generating {language} audio: '{text[:50]}{'...' if len(text) > 50 else ''}'")
+            print(f"🎤 Generating {language} audio (speed {speaking_rate}): '{text[:50]}{'...' if len(text) > 50 else ''}'")
             response = self.client.synthesize_speech(
                 input=synthesis_input,
                 voice=voice, 
-                audio_config=self.audio_config
+                audio_config=audio_config
             )
             
             # Cache the audio data
