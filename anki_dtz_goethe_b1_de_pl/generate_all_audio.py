@@ -30,7 +30,7 @@ def generate_complete_audio_for_card(card: AnkiCard, tts_generator: TTSGenerator
     # Define all text fields that need audio generation with variable speeds
     audio_fields = [
         # German fields -> German audio (slow for learning, normal for examples)
-        ('audio_text_d', 'german', 'full_source_audio', 0.95),
+        ('audio_text_d', 'german', 'full_source_audio', 1.00),
         ('base_source', 'german', 'base_audio', 0.95),
         ('s1_source', 'german', 's1_audio', 1.07),
         ('s2_source', 'german', 's2_audio', 1.08),
@@ -43,8 +43,8 @@ def generate_complete_audio_for_card(card: AnkiCard, tts_generator: TTSGenerator
         ('s9_source', 'german', 's9_audio', 1.15),
         
         # Polish fields -> Polish audio (slow for translation, quick for examples)
-        ('base_target', 'polish', 'base_target_audio', 0.95),
-        ('s1_target', 'polish', 's1_target_audio', 1.15),
+        ('base_target', 'polish', 'base_target_audio', 1.00),
+        ('s1_target', 'polish', 's1_target_audio', 1.25),
         ('s2_target', 'polish', 's2_target_audio', 1.20),
         ('s3_target', 'polish', 's3_target_audio', 1.20),
         ('s4_target', 'polish', 's4_target_audio', 1.20),
