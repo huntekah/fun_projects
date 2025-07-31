@@ -62,15 +62,7 @@ DTZ_CARD_TEMPLATES = [
         # Shows article/plural for nouns and a context sentence with audio.
         # {{base_audio}} will autoplay here.
         "qfmt": """
-{{#artikel_d}}
-  <div class="german-word-title">{{artikel_d}} {{base_source}}, {{plural_d}}</div>
-{{/artikel_d}}
-
-{{^artikel_d}}
-  <div class="german-word-title">{{base_source}}</div>
-{{/artikel_d}}
-
-{{base_audio}}
+<div class="german-word-title">{{full_source}} {{full_source_audio}}</div>
 
 <hr class="faint-hr">
 <div class="example-context">{{s1_source}} {{s1_audio}}</div>
@@ -270,36 +262,45 @@ summary {
     color: #007aff;
 }
 
-/* --- Night Mode Overrides --- */
-.card.nightMode {
-    background-color: #2d3436; /* Dark grey-blue background */
-    color: #dfe6e9; /* Light grey text */
+.play-icon { 
+    cursor: pointer;
+    font-size: 16px;
+    color: #007aff;
 }
 
-.nightMode .german-word-title,
-.nightMode .german-word,
-.nightMode .examples-section .section-title,
-.nightMode .source-sentence {
-    color: #dfe6e9; /* Main light grey for German text */
-}
+/* --- Night Mode Overrides --- */
+
+/*
+By NOT defining rules for ".card.nightMode", we allow the card to correctly
+inherit the default background (e.g., pure black for AMOLED) and base text color
+(e.g., pure white) from the Anki application's settings.
+
+We only override the colors of specific elements below to ensure readability
+and maintain our color-coding against a dark background.
+*/
+
+/* German text elements in night mode can inherit the default white, so no rule is needed. */
+/* We only need to style the secondary text colors. */
 
 .nightMode .faint-hr,
 .nightMode hr {
-    border-top-color: #555; /* Darker border */
+    border-top-color: #444; /* A subtle border for dark mode */
 }
 
 .nightMode .polish-translation-front,
 .nightMode .main-info .polish-translation,
-.nightMode summary {
-    color: #74b9ff; /* Lighter blue for Polish text */
+.nightMode summary,
+.nightMode .play-icon {
+    color: #58a6ff; /* A lighter, more readable blue for dark backgrounds */
 }
 
 .nightMode .example-context,
+.nightMode .example-context-pl,
 .nightMode .target-sentence {
-    color: #b2bec3; /* Softer grey for context/translations */
+    color: #888; /* A darker grey for secondary/italic text to be less bright */
 }
 
 .nightMode details {
-    border-color: #555;
+    border-color: #444;
 }
 """
