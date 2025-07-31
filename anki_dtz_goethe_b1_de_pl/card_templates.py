@@ -74,64 +74,65 @@ DTZ_CARD_TEMPLATES = [
 <div style="display:none">[sound:_1-minute-of-silence.mp3]</div>
 
 <div class="main-info">
-    <div class="german-word">{{full_source}} {{full_source_audio}}</div>
+    <div class="german-word">{{full_source}}</div>
     <div class="polish-translation">{{base_target}} {{base_target_audio}}</div>
 </div>
 <hr>
 <div class="example-pair">
-    <div class="source-sentence">{{s1_source}} {{s1_audio}}</div>
+    <div class="source-sentence">{{s1_source}}</div>
     <div class="target-sentence">{{s1_target}} {{s1_target_audio}}</div>
 </div>
+
+{{#s2_source}}
+<div class="example-pair">
+    <div class="source-sentence">{{s2_source}} {{s2_audio}}</div>
+    <div class="target-sentence">{{s2_target}}</div>
+</div>
+{{/s2_source}}
 
 <details>
     <summary>Więcej Przykładów (More Examples)</summary>
     <div class="examples-section">
-        {{#s2_source}}
-            <div class="example-pair">
-                <div class="source-sentence">{{s2_source}} {{s2_audio}}</div>
-                <div class="target-sentence">{{s2_target}} {{s2_target_audio}}</div>
-            </div>
-        {{/s2_source}}
         {{#s3_source}}
             <div class="example-pair">
                 <div class="source-sentence">{{s3_source}} {{s3_audio}}</div>
-                <div class="target-sentence">{{s3_target}} {{s3_target_audio}}</div>
+                <div class="target-sentence">{{s3_target}}</div>
             </div>
         {{/s3_source}}
         {{#s4_source}}
             <div class="example-pair">
                 <div class="source-sentence">{{s4_source}} {{s4_audio}}</div>
-                <div class="target-sentence">{{s4_target}} {{s4_target_audio}}</div>
+                <div class="target-sentence">{{s4_target}}</div>
             </div>
         {{/s4_source}}
         {{#s5_source}}
             <div class="example-pair">
                 <div class="source-sentence">{{s5_source}} {{s5_audio}}</div>
-                <div class="target-sentence">{{s5_target}} {{s5_target_audio}}</div>
+                <div class="target-sentence">{{s5_target}}</div>
             </div>
         {{/s5_source}}
         {{#s6_source}}
             <div class="example-pair">
                 <div class="source-sentence">{{s6_source}} {{s6_audio}}</div>
-                <div class="target-sentence">{{s6_target}} {{s6_target_audio}}</div>
+                <div class="target-sentence">{{s6_target}}</div>
             </div>
         {{/s6_source}}
         {{#s7_source}}
             <div class="example-pair">
                 <div class="source-sentence">{{s7_source}} {{s7_audio}}</div>
-                <div class="target-sentence">{{s7_target}} {{s7_target_audio}}</div>
+                <div class="target-sentence">{{s7_target}}</div>
             </div>
         {{/s7_source}}
         {{#s8_source}}
             <div class="example-pair">
                 <div class="source-sentence">{{s8_source}} {{s8_audio}}</div>
-                <div class="target-sentence">{{s8_target}} {{s8_target_audio}}</div>
+                <div class="target-sentence">{{s8_target}}</div>
             </div>
         {{/s8_source}}
         {{#s9_source}}
             <div class="example-pair">
                 <div class="source-sentence">{{s9_source}} {{s9_audio}}</div>
-                <div class="target-sentence">{{s9_target}} {{s9_target_audio}}</div>
+                <div class="target-sentence">{{s9_target}}</div>
             </div>
         {{/s9_source}}
     </div>
