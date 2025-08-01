@@ -167,7 +167,11 @@ def load_deck_from_csv(csv_path: Path, media_dir: Optional[Path] = None) -> Anki
             card_data = {}
             for col in df.columns:
                 value = row[col]
-                if pd.isna(value):
+                try:
+                    is_na = bool(pd.isna(value))
+                except (ValueError, TypeError):
+                    is_na = pd.isna(value).any() if hasattr(pd.isna(value), 'any') else False
+                if is_na:
                     card_data[col] = ""
                 else:
                     card_data[col] = str(value)
@@ -182,7 +186,11 @@ def load_deck_from_csv(csv_path: Path, media_dir: Optional[Path] = None) -> Anki
             cards.append(card)
             
         except Exception as e:
-            print(f"⚠️  Warning: Failed to parse row {idx + 1}: {e}")
+            try:
+                row_num = int(idx) + 1  # type: ignore
+            except (ValueError, TypeError):
+                row_num = str(idx)
+            print(f"⚠️  Warning: Failed to parse row {row_num}: {e}")
             continue
     
     deck_name = csv_path.stem
@@ -226,7 +234,7 @@ def generate_apkg_from_csv(csv_path: Path, output_apkg_path: Path, media_dir: Op
         print(f"📁 Including media files from {media_dir}")
         # The save_anki_deck function will handle media inclusion
         
-    save_anki_deck(deck, output_apkg_path, original_apkg_path)
+    save_anki_deck(deck, output_apkg_path, original_apkg_path or Path())
     
     print(f"✅ Successfully generated {output_apkg_path}")
     file_size = output_apkg_path.stat().st_size / (1024 * 1024)

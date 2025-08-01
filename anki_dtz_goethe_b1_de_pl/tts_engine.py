@@ -16,7 +16,7 @@ from schema import AnkiCard
 class TTSGenerator:
     """Google Cloud Text-to-Speech generator with language-specific voices and caching."""
     
-    def __init__(self, cache_dir: Path = None):
+    def __init__(self, cache_dir: Path | None = None):
         """Initialize the TTS client and cache."""
         self.client = texttospeech.TextToSpeechClient()
         
@@ -70,7 +70,7 @@ class TTSGenerator:
     def cache_info(self) -> dict:
         """Get cache statistics."""
         return {
-            'cache_size': len(self.cache),
+            'cache_size': getattr(self.cache, 'size', 0),
             'cache_volume_mb': self.cache.volume() / (1024 * 1024),
             'cache_directory': str(self.cache.directory)
         }
@@ -106,7 +106,12 @@ class TTSGenerator:
                 print(f"💾 Using cached {language} audio: '{text[:50]}{'...' if len(text) > 50 else ''}'")
                 output_path.parent.mkdir(parents=True, exist_ok=True)
                 with open(output_path, "wb") as out:
-                    out.write(cached_audio)
+                    if isinstance(cached_audio, bytes):
+                        out.write(cached_audio)
+                    else:
+                        # Handle unexpected cached data type
+                        print(f"⚠️  Warning: Unexpected cached audio type: {type(cached_audio)}")
+                        return False
                 print(f"✅ Saved from cache: {output_path}")
                 return True
             
@@ -152,7 +157,7 @@ class TTSGenerator:
             return False
 
 
-def generate_audio_for_card(card: AnkiCard, output_dir: Path, tts_generator: TTSGenerator = None) -> dict:
+def generate_audio_for_card(card: AnkiCard, output_dir: Path, tts_generator: TTSGenerator | None = None) -> dict:
     """
     Generate TTS audio for key fields of an Anki card.
     
@@ -206,7 +211,7 @@ def generate_audio_for_card(card: AnkiCard, output_dir: Path, tts_generator: TTS
     return results
 
 
-def test_tts_with_random_card(deck_path: Path, output_dir: Path = None) -> None:
+def test_tts_with_random_card(deck_path: Path, output_dir: Path | None = None) -> None:
     """
     Test TTS generation with a random card from the deck.
     
@@ -272,7 +277,7 @@ def test_tts_with_random_card(deck_path: Path, output_dir: Path = None) -> None:
         print("   🎧 Test the audio quality and pronunciation!")
         print("   💡 Run again to see caching in action!")
     
-    return results
+    return results  # type: ignore
 
 
 if __name__ == "__main__":

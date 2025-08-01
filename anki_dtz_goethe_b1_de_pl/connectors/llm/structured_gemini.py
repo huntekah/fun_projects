@@ -65,7 +65,7 @@ class LLMClient:
         try:
             cache_size_mb = sum(cache.volume().values()) / (1024 * 1024) if cache.volume() else 0
             return {
-                "cache_items": len(cache),
+                "cache_items": getattr(cache, 'size', 0),
                 "cache_size_mb": round(cache_size_mb, 1),
                 "cache_directory": cache.directory
             }
@@ -91,7 +91,7 @@ class LLMClient:
             if cached_result is not None:
                 logger.debug(f"🎯 Cache hit for {schema.__name__} - using cached response")
                 try:
-                    return schema(**cached_result)
+                    return schema(**cached_result)  # type: ignore
                 except Exception as e:
                     logger.warning(f"Failed to deserialize cached response: {e}. Making fresh API call.")
                     # Continue to make API call if deserialization fails

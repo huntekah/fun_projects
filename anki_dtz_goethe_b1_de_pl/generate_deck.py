@@ -152,7 +152,11 @@ def load_cards_from_csv(csv_path: Path) -> List[dict]:
         card_data = {}
         for col in df.columns:
             value = row[col]
-            if pd.isna(value):
+            try:
+                is_na = bool(pd.isna(value))
+            except (ValueError, TypeError):
+                is_na = pd.isna(value).any() if hasattr(pd.isna(value), 'any') else False
+            if is_na:
                 card_data[col] = ""
             else:
                 card_data[col] = str(value)

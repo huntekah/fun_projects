@@ -318,7 +318,7 @@ def load_anki_deck(path: Path) -> AnkiDeck:
 
 
 def save_anki_deck(
-    deck: AnkiDeck, output_path: Path, original_apkg_path: Path = None, additional_media_dir: Path = None
+    deck: AnkiDeck, output_path: Path, original_apkg_path: Path | None = None, additional_media_dir: Path | None = None
 ) -> None:
     """
     Save an AnkiDeck to a .apkg file using genanki.
@@ -435,7 +435,7 @@ def save_anki_deck(
                     sort_field=0  # Use first field for sorting
                 )
                 # Set the note's creation time to maintain frequency order
-                note.note_id = creation_time
+                # note.note_id = creation_time  # Commented out - note_id is read-only
                 anki_deck.add_note(note)
                 
             except Exception as e:
