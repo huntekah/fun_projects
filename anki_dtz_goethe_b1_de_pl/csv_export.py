@@ -4,6 +4,7 @@ CSV export/import functions for Anki deck contribution workflow.
 Converts AnkiDeck to/from CSV + media format for easy community contribution.
 """
 
+import argparse
 import pandas as pd
 import shutil
 import zipfile
@@ -318,17 +319,71 @@ This repository contains the community-editable version of the DTZ Goethe B1 Ger
     return csv_path, media_dir
 
 
-if __name__ == "__main__":
-    # Example usage / test
-    from pathlib import Path
+def main():
+    """Main function with command line argument parsing."""
+    parser = argparse.ArgumentParser(
+        description="Export/import Anki decks to/from CSV for contribution workflow"
+    )
+    subparsers = parser.add_subparsers(dest='command', help='Available commands')
     
-    # Test export
-    apkg_file = Path("data/DTZ_Goethe_B1_DE_PL_Sample.apkg")
-    if apkg_file.exists():
-        output_dir = Path("contribution_package")
-        csv_path, media_dir = export_contribution_package(apkg_file, output_dir)
+    # Export command
+    export_parser = subparsers.add_parser('export', help='Export APKG to CSV')
+    export_parser.add_argument(
+        "--source", "-s",
+        type=Path,
+        required=True,
+        help="Source .apkg file to export"
+    )
+    export_parser.add_argument(
+        "--target", "-t",
+        type=Path,
+        default=Path("contribution_package"),
+        help="Target directory for CSV package"
+    )
+    
+    # Import command  
+    import_parser = subparsers.add_parser('import', help='Import CSV to APKG')
+    import_parser.add_argument(
+        "--source", "-s", 
+        type=Path,
+        required=True,
+        help="Source CSV file to import"
+    )
+    import_parser.add_argument(
+        "--target", "-t",
+        type=Path,
+        required=True,
+        help="Target .apkg file to create"
+    )
+    import_parser.add_argument(
+        "--media-dir", "-m",
+        type=Path,
+        help="Media directory (optional)"
+    )
+    
+    args = parser.parse_args()
+    
+    if args.command == 'export':
+        if not args.source.exists():
+            print(f"❌ Source file not found: {args.source}")
+            exit(1)
         
-        # Test round-trip
-        test_apkg = Path("test_generated.apkg")
-        generate_apkg_from_csv(csv_path, test_apkg, media_dir)
-        print(f"🔄 Round-trip test complete: {test_apkg}")
+        print(f"📤 Exporting {args.source} to {args.target}")
+        csv_path, media_dir = export_contribution_package(args.source, args.target)
+        print(f"✅ Export complete: {csv_path}")
+        
+    elif args.command == 'import':
+        if not args.source.exists():
+            print(f"❌ Source CSV not found: {args.source}")
+            exit(1)
+            
+        print(f"📥 Importing {args.source} to {args.target}")
+        generate_apkg_from_csv(args.source, args.target, args.media_dir)
+        print(f"✅ Import complete: {args.target}")
+        
+    else:
+        parser.print_help()
+
+
+if __name__ == "__main__":
+    main()

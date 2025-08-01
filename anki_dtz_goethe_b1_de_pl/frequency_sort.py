@@ -4,6 +4,7 @@ Frequency-based sorting for Anki cards using German word frequency data.
 Sorts cards by frequency rank to optimize learning order.
 """
 
+import argparse
 import re
 from pathlib import Path
 from typing import List, Dict, Tuple
@@ -290,24 +291,53 @@ def frequency_sort_deck(input_apkg: Path, output_apkg: Path, frequency_file: Pat
     return stats
 
 
-if __name__ == "__main__":
-    # Example usage / test
-    from pathlib import Path
+def main():
+    """Main function with command line argument parsing."""
+    parser = argparse.ArgumentParser(
+        description="Sort Anki deck by German word frequency"
+    )
+    parser.add_argument(
+        "--source", "-s",
+        type=Path,
+        default=Path("data/DTZ_Goethe_B1_DE_PL_Sample.apkg"),
+        help="Source .apkg file to sort"
+    )
+    parser.add_argument(
+        "--target", "-t",
+        type=Path,
+        default=Path("data/DTZ_Goethe_B1_DE_PL_Sample_FrequencySorted.apkg"),
+        help="Target .apkg file to create"
+    )
+    parser.add_argument(
+        "--frequency-file", "-f",
+        type=Path,
+        help="German frequency list file (auto-detects if not specified)"
+    )
     
-    # Test with sample data  
-    # Use full frequency list for better coverage (try de_full_frequency.txt if available)
-    frequency_file = Path("data/de_full_frequency.txt")
-    if not frequency_file.exists():
-        frequency_file = Path("data/de_50k_frequency.txt")
+    args = parser.parse_args()
     
-    input_apkg = Path("data/DTZ_Goethe_B1_DE_PL_Sample.apkg")
-    output_apkg = Path("data/DTZ_Goethe_B1_DE_PL_Sample_FrequencySorted.apkg")
-    
-    if input_apkg.exists():
+    # Auto-detect frequency file if not specified
+    if args.frequency_file is None:
+        frequency_file = Path("data/de_full_frequency.txt")
         if not frequency_file.exists():
-            print("❌ Frequency file not found. Run './get_frequency_list' first")
-        else:
-            stats = frequency_sort_deck(input_apkg, output_apkg, frequency_file)
-            print(f"📊 Final statistics: {stats}")
-    else:
-        print(f"❌ Input file not found: {input_apkg}")
+            frequency_file = Path("data/de_50k_frequency.txt")
+        args.frequency_file = frequency_file
+    
+    if not args.source.exists():
+        print(f"❌ Source file not found: {args.source}")
+        exit(1)
+        
+    if not args.frequency_file.exists():
+        print(f"❌ Frequency file not found: {args.frequency_file}")
+        print("   Run './get_frequency_list' first")
+        exit(1)
+    
+    print(f"📊 Sorting {args.source} → {args.target}")
+    print(f"   Using frequency file: {args.frequency_file}")
+    
+    stats = frequency_sort_deck(args.source, args.target, args.frequency_file)
+    print(f"📊 Final statistics: {stats}")
+
+
+if __name__ == "__main__":
+    main()

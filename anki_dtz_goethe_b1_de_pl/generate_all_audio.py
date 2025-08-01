@@ -2,8 +2,10 @@
 """
 Generate TTS audio for ALL fields in the frequency-sorted Anki deck.
 Creates audio for both German and Polish text across all cards.
+Supports parameterized source/target languages for contribution workflow.
 """
 
+import argparse
 from pathlib import Path
 from typing import Dict
 from tts_engine import TTSGenerator
@@ -11,7 +13,7 @@ from utilities import load_anki_deck, save_anki_deck
 from schema import AnkiCard, AnkiDeck
 
 
-def generate_complete_audio_for_card(card: AnkiCard, tts_generator: TTSGenerator, audio_dir: Path) -> AnkiCard:
+def generate_complete_audio_for_card(card: AnkiCard, tts_generator: TTSGenerator, audio_dir: Path, source_lang: str = "german", target_lang: str = "polish") -> AnkiCard:
     """
     Generate TTS audio for ALL text fields in an Anki card.
     
@@ -28,30 +30,30 @@ def generate_complete_audio_for_card(card: AnkiCard, tts_generator: TTSGenerator
     
     # Define all text fields that need audio generation with variable speeds
     audio_fields = [
-        # German fields -> German audio (slow for learning, normal for examples)
-        ('audio_text_d', 'german', 'full_source_audio', 1.00),
-        ('base_source', 'german', 'base_audio', 0.95),
-        ('s1_source', 'german', 's1_audio', 1.07),
-        ('s2_source', 'german', 's2_audio', 1.08),
-        ('s3_source', 'german', 's3_audio', 1.08),
-        ('s4_source', 'german', 's4_audio', 1.08),
-        ('s5_source', 'german', 's5_audio', 1.12),
-        ('s6_source', 'german', 's6_audio', 1.12),
-        ('s7_source', 'german', 's7_audio', 1.15),
-        ('s8_source', 'german', 's8_audio', 1.15),
-        ('s9_source', 'german', 's9_audio', 1.15),
+        # Source language fields -> source audio (slow for learning, normal for examples)
+        ('audio_text_d', source_lang, 'full_source_audio', 1.00),
+        ('base_source', source_lang, 'base_audio', 0.95),
+        ('s1_source', source_lang, 's1_audio', 1.07),
+        ('s2_source', source_lang, 's2_audio', 1.08),
+        ('s3_source', source_lang, 's3_audio', 1.08),
+        ('s4_source', source_lang, 's4_audio', 1.08),
+        ('s5_source', source_lang, 's5_audio', 1.12),
+        ('s6_source', source_lang, 's6_audio', 1.12),
+        ('s7_source', source_lang, 's7_audio', 1.15),
+        ('s8_source', source_lang, 's8_audio', 1.15),
+        ('s9_source', source_lang, 's9_audio', 1.15),
         
-        # Polish fields -> Polish audio (slow for translation, quick for examples)
-        ('base_target', 'polish', 'base_target_audio', 1.00),
-        ('s1_target', 'polish', 's1_target_audio', 1.25),
-        ('s2_target', 'polish', 's2_target_audio', 1.20),
-        ('s3_target', 'polish', 's3_target_audio', 1.20),
-        ('s4_target', 'polish', 's4_target_audio', 1.20),
-        ('s5_target', 'polish', 's5_target_audio', 1.25),
-        ('s6_target', 'polish', 's6_target_audio', 1.25),
-        ('s7_target', 'polish', 's7_target_audio', 1.30),
-        ('s8_target', 'polish', 's8_target_audio', 1.30),
-        ('s9_target', 'polish', 's9_target_audio', 1.30),
+        # Target language fields -> target audio (slow for translation, quick for examples)
+        ('base_target', target_lang, 'base_target_audio', 1.00),
+        ('s1_target', target_lang, 's1_target_audio', 1.25),
+        ('s2_target', target_lang, 's2_target_audio', 1.20),
+        ('s3_target', target_lang, 's3_target_audio', 1.20),
+        ('s4_target', target_lang, 's4_target_audio', 1.20),
+        ('s5_target', target_lang, 's5_target_audio', 1.25),
+        ('s6_target', target_lang, 's6_target_audio', 1.25),
+        ('s7_target', target_lang, 's7_target_audio', 1.30),
+        ('s8_target', target_lang, 's8_target_audio', 1.30),
+        ('s9_target', target_lang, 's9_target_audio', 1.30),
     ]
     
     generated_count = 0
@@ -100,7 +102,9 @@ def generate_audio_for_entire_deck(
     input_deck_path: Path, 
     output_deck_path: Path,
     audio_dir: Path |None = None,
-    limit_cards: int|None = None
+    limit_cards: int|None = None,
+    source_lang: str = "german",
+    target_lang: str = "polish"
 ) -> Dict:
     """
     Generate TTS audio for an entire Anki deck.
@@ -149,7 +153,7 @@ def generate_audio_for_entire_deck(
         for i, card in enumerate(cards_to_process, 1):
             print(f"\n🎤 Processing card {i}/{len(cards_to_process)}: {card.base_source}")
             
-            updated_card = generate_complete_audio_for_card(card, tts, audio_dir)
+            updated_card = generate_complete_audio_for_card(card, tts, audio_dir, source_lang, target_lang)
             processed_cards.append(updated_card)
             
             # Show progress every 50 cards
@@ -197,37 +201,76 @@ def generate_audio_for_entire_deck(
     return stats
 
 
-if __name__ == "__main__":
-    # Configuration
-    input_deck = Path("data/DTZ_Goethe_B1_DE_PL_Sample_FrequencySorted.apkg")
-    output_deck = Path("data/DTZ_Goethe_B1_DE_PL_Complete_WithAudio.apkg")
+def main():
+    """Main function with command line argument parsing."""
+    parser = argparse.ArgumentParser(
+        description="Generate TTS audio for Anki deck with configurable source/target languages"
+    )
+    parser.add_argument(
+        "--source", "-s", 
+        type=Path, 
+        default=Path("data/DTZ_Goethe_B1_DE_PL_Sample_FrequencySorted.apkg"),
+        help="Source .apkg file path"
+    )
+    parser.add_argument(
+        "--target", "-t",
+        type=Path,
+        default=Path("data/DTZ_Goethe_B1_DE_PL_Complete_WithAudio.apkg"),
+        help="Target .apkg file path"
+    )
+    parser.add_argument(
+        "--audio-dir", "-a",
+        type=Path,
+        default=Path("audio_files"),
+        help="Directory to save audio files"
+    )
+    parser.add_argument(
+        "--limit", "-l",
+        type=int,
+        help="Limit number of cards for testing"
+    )
+    parser.add_argument(
+        "--no-confirm", 
+        action="store_true",
+        help="Skip confirmation prompt"
+    )
     
-    # For testing, start with a small number of cards
-    test_limit = None #10  # Set to None for full deck
+    args = parser.parse_args()
     
-    if input_deck.exists():
-        print("🚀 Starting complete TTS audio generation")
-        print("⚠️  This will generate audio for ALL text fields in the deck")
-        print("💰 Estimated cost: ~$6-10 for full deck (depends on Google TTS pricing)")
-        
-        if test_limit:
-            print(f"🧪 TESTING MODE: Processing only {test_limit} cards")
-        
+    if not args.source.exists():
+        print(f"❌ Source file not found: {args.source}")
+        exit(1)
+    
+    print("🚀 Starting TTS audio generation")
+    print(f"   Source: {args.source}")
+    print(f"   Target: {args.target}")
+    print(f"   Languages: German → Polish")
+    print("⚠️  This will generate audio for ALL text fields in the deck")
+    print("💰 Estimated cost: ~$6-10 for full deck (depends on Google TTS pricing)")
+    
+    if args.limit:
+        print(f"🧪 TESTING MODE: Processing only {args.limit} cards")
+    
+    if not args.no_confirm:
         print("\nPress Enter to continue, Ctrl+C to cancel...")
         try:
             input()
         except KeyboardInterrupt:
             print("\n❌ Cancelled by user")
             exit(0)
-        
-        stats = generate_audio_for_entire_deck(
-            input_deck, 
-            output_deck,
-            limit_cards=test_limit
-        )
-        
-        print(f"\n🎉 Complete! Import {output_deck} into Anki to test the enhanced cards.")
-        
-    else:
-        print(f"❌ Input deck not found: {input_deck}")
-        print("   Make sure you have the frequency-sorted deck available")
+    
+    stats = generate_audio_for_entire_deck(
+        args.source, 
+        args.target,
+        audio_dir=args.audio_dir,
+        limit_cards=args.limit,
+        source_lang="german",
+        target_lang="polish"
+    )
+    
+    print(f"\n🎉 Complete! Import {args.target} into Anki to test the enhanced cards.")
+    print(f"📊 Statistics: {stats}")
+
+
+if __name__ == "__main__":
+    main()
