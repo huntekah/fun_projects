@@ -179,7 +179,6 @@ DTZ_CARD_CSS = """
     font-family: Arial, sans-serif;
     font-size: 20px;
     text-align: center;
-    background-color: #f9f9f9;
 }
 
 .german-word-title {
@@ -214,7 +213,7 @@ DTZ_CARD_CSS = """
     padding: 0 10px;
 }
 
-.main-info .polish-translation {
+.polish-translation {
     font-size: 24px;
     color: #007aff;
     font-weight: bold;
@@ -261,11 +260,6 @@ summary {
     color: #007aff;
 }
 
-.play-icon { 
-    cursor: pointer;
-    font-size: 16px;
-    color: #007aff;
-}
 
 /* --- Night Mode Overrides --- */
 .nightMode .faint-hr,
@@ -274,9 +268,8 @@ summary {
 }
 
 .nightMode .polish-translation-front,
-.nightMode .main-info .polish-translation,
-.nightMode summary,
-.nightMode .play-icon {
+.nightMode .polish-translation,
+.nightMode summary {
     color: #58a6ff;
 }
 
