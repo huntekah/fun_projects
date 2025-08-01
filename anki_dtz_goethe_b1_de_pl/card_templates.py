@@ -86,19 +86,18 @@ DTZ_CARD_TEMPLATES = [
 {{#s2_source}}
 <div class="example-pair">
     <div class="source-sentence">{{s2_source}} {{s2_audio}}</div>
-    <div class="target-sentence">{{s2_target}}</div>
+    <div class="target-sentence">{{s2_target}} {{s2_target_audio}}</div>
 </div>
 {{/s2_source}}
 
+{{#s3_source}}
 <details>
     <summary>Więcej Przykładów (More Examples)</summary>
     <div class="examples-section">
-        {{#s3_source}}
-            <div class="example-pair">
-                <div class="source-sentence">{{s3_source}} {{s3_audio}}</div>
-                <div class="target-sentence">{{s3_target}}</div>
-            </div>
-        {{/s3_source}}
+        <div class="example-pair">
+            <div class="source-sentence">{{s3_source}} {{s3_audio}}</div>
+            <div class="target-sentence">{{s3_target}}</div>
+        </div>
         {{#s4_source}}
             <div class="example-pair">
                 <div class="source-sentence">{{s4_source}} {{s4_audio}}</div>
@@ -137,6 +136,7 @@ DTZ_CARD_TEMPLATES = [
         {{/s9_source}}
     </div>
 </details>
+{{/s3_source}}
 """,
     },
     {
