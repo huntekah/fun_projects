@@ -169,7 +169,10 @@ DTZ_CARD_TEMPLATES = [
     },
 ]
 
-# # Version 1: Minimal colors - let Anki handle primary text
+# Optimized CSS - minimal colors for maximum compatibility
+# We intentionally avoid defining primary text colors (german-word-title, german-word, etc.)
+# so Anki automatically provides black/white based on user's light/dark mode preference.
+# We only define accent colors (Polish text) and secondary colors that need explicit styling.
 DTZ_CARD_CSS = """
 /* --- General Card Styling --- */
 .card {
@@ -265,137 +268,6 @@ summary {
 }
 
 /* --- Night Mode Overrides --- */
-.nightMode .faint-hr,
-.nightMode hr {
-    border-top-color: #444;
-}
-
-.nightMode .polish-translation-front,
-.nightMode .main-info .polish-translation,
-.nightMode summary,
-.nightMode .play-icon {
-    color: #58a6ff;
-}
-
-.nightMode .example-context,
-.nightMode .example-context-pl,
-.nightMode .target-sentence {
-    color: #888;
-}
-
-.nightMode details {
-    border-color: #444;
-}
-"""
-
-# Version 2: Explicit colors for all text elements  
-DTZ_CARD_CSS_V2 = """
-/* --- General Card Styling (Day Mode) --- */
-.card {
-    font-family: Arial, sans-serif;
-    font-size: 20px;
-    text-align: center;
-    background-color: #f9f9f9;
-    color: #333;
-}
-
-.german-word-title {
-    font-size: 28px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.faint-hr {
-    border: none;
-    border-top: 1px solid #ddd;
-    margin: 10px 40px;
-}
-
-.german-word {
-    font-size: 28px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 20px;
-}
-
-.polish-translation-front {
-    font-size: 28px;
-    font-weight: bold;
-    color: #007aff;
-    margin-bottom: 20px;
-}
-
-.example-context, .example-context-pl {
-    font-size: 22px;
-    color: #555;
-    margin-top: 15px;
-    padding: 0 10px;
-}
-
-.main-info .polish-translation {
-    font-size: 24px;
-    color: #007aff;
-    font-weight: bold;
-    margin-top: 10px;
-}
-
-hr {
-    border: none;
-    border-top: 1px solid #ccc;
-    margin: 20px 0;
-}
-
-.examples-section .section-title {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 15px;
-}
-
-.example-pair {
-    margin-bottom: 15px;
-}
-
-.source-sentence {
-    font-size: 18px;
-    color: #333;
-    margin-bottom: 5px;
-}
-
-.target-sentence {
-    font-size: 18px;
-    color: #666;
-    font-style: italic;
-}
-
-details {
-    margin-top: 20px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 10px;
-}
-
-summary {
-    font-weight: bold;
-    cursor: pointer;
-    color: #007aff;
-}
-
-.play-icon { 
-    cursor: pointer;
-    font-size: 16px;
-    color: #007aff;
-}
-
-/* --- Night Mode Overrides --- */
-.nightMode .german-word-title,
-.nightMode .german-word,
-.nightMode .examples-section .section-title,
-.nightMode .source-sentence {
-    color: #dfe6e9;
-}
-
 .nightMode .faint-hr,
 .nightMode hr {
     border-top-color: #444;
