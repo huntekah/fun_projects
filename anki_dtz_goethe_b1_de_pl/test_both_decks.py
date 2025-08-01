@@ -5,7 +5,7 @@ Test script to verify that load_anki_deck works with both field naming schemes.
 
 from pathlib import Path
 from utilities import load_anki_deck
-from csv_export import export_deck_to_csv, export_media_files
+from csv_export import export_deck_to_csv
 
 
 def test_both_deck_types():
@@ -27,7 +27,7 @@ def test_both_deck_types():
             # Show sample card to verify field mapping
             if original_deck.cards:
                 sample_card = original_deck.cards[0]
-                print(f"\n📄 Sample card from original deck:")
+                print("\n📄 Sample card from original deck:")
                 print(f"  note_id: {sample_card.note_id}")
                 print(f"  full_source: '{sample_card.full_source}'")
                 print(f"  base_source: '{sample_card.base_source}'")
@@ -62,7 +62,7 @@ def test_both_deck_types():
             # Show sample card to verify field mapping
             if translated_deck.cards:
                 sample_card = translated_deck.cards[0]
-                print(f"\n📄 Sample card from translated deck:")
+                print("\n📄 Sample card from translated deck:")
                 print(f"  note_id: {sample_card.note_id}")
                 print(f"  full_source: '{sample_card.full_source}'")
                 print(f"  base_source: '{sample_card.base_source}'")
@@ -107,13 +107,13 @@ def compare_field_mappings():
         original_deck = load_anki_deck(original_path)
         translated_deck = load_anki_deck(translated_path)
         
-        print(f"📊 Deck Comparison:")
+        print("📊 Deck Comparison:")
         print(f"  Original (DE-EN): {len(original_deck.cards)} cards")
         print(f"  Translated (DE-PL): {len(translated_deck.cards)} cards")
         
         # Compare first few cards if available
         if original_deck.cards and translated_deck.cards:
-            print(f"\n🔍 Field mapping comparison (first card):")
+            print("\n🔍 Field mapping comparison (first card):")
             
             orig_card = original_deck.cards[0]
             trans_card = translated_deck.cards[0]
@@ -131,7 +131,7 @@ def compare_field_mappings():
                 trans_val = getattr(trans_card, field, '')[:25] + '...' if len(getattr(trans_card, field, '')) > 25 else getattr(trans_card, field, '')
                 print(f"{field:<15} {orig_val:<30} {trans_val:<30}")
         
-        print(f"\n✅ Both deck types loaded successfully with unified schema!")
+        print("\n✅ Both deck types loaded successfully with unified schema!")
         
     except Exception as e:
         print(f"❌ Comparison failed: {e}")

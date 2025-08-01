@@ -203,23 +203,23 @@ def compare_old_vs_new_approach():
     text_model = sample_card.to_text_model()
     new_fields = len([field for field in text_model.model_fields.keys()])
     
-    print(f"🔢 FIELD COUNT:")
+    print("🔢 FIELD COUNT:")
     print(f"  Old approach (full AnkiCard): {old_fields} fields")
     print(f"  New approach (AnkiCardTextFields): {new_fields} fields")
     print(f"  Reduction: {old_fields - new_fields} fields ({((old_fields - new_fields) / old_fields * 100):.1f}%)")
     print()
     
-    print(f"🎯 ELIMINATED FIELDS (no longer sent to LLM):")
+    print("🎯 ELIMINATED FIELDS (no longer sent to LLM):")
     eliminated_fields = set(sample_card.model_fields.keys()) - set(text_model.model_fields.keys())
     for field in sorted(eliminated_fields):
         print(f"  • {field}")
     print()
     
-    print(f"💰 EFFICIENCY BENEFITS:")
-    print(f"  • Smaller prompts = lower token costs")
-    print(f"  • Faster processing = reduced latency")
-    print(f"  • No metadata corruption = 100% reliability")
-    print(f"  • Focused translation = better quality")
+    print("💰 EFFICIENCY BENEFITS:")
+    print("  • Smaller prompts = lower token costs")
+    print("  • Faster processing = reduced latency")
+    print("  • No metadata corruption = 100% reliability")
+    print("  • Focused translation = better quality")
 
 if __name__ == "__main__":
     test_text_model_conversion()

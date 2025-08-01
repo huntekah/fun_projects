@@ -5,9 +5,8 @@ Sorts cards by frequency rank to optimize learning order.
 """
 
 import re
-import csv
 from pathlib import Path
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Tuple
 from schema import AnkiCard, AnkiDeck
 from csv_export import export_deck_to_csv, load_deck_from_csv
 
@@ -41,7 +40,7 @@ def load_frequency_list(frequency_file: Path) -> Dict[str, int]:
             if len(parts) >= 2:
                 try:
                     word = parts[0].lower()
-                    frequency_count = int(parts[1])
+                    int(parts[1])
                     # Use line number as rank (1-based, lower = more frequent)
                     frequency_map[word] = line_num
                 except ValueError:
@@ -196,7 +195,7 @@ def sort_cards_by_frequency(cards: List[AnkiCard], frequency_map: Dict[str, int]
         'unmatched_words': unmatched_words
     }
     
-    print(f"✅ Frequency sorting complete:")
+    print("✅ Frequency sorting complete:")
     print(f"   📊 {found_count}/{len(cards)} cards matched frequency data ({stats['match_percentage']:.1f}%)")
     print(f"   🔝 Most frequent: '{sorted_cards[0].base_source}' (rank {sorted_cards_with_rank[0][1]})")
     if found_count > 1:

@@ -18,8 +18,6 @@ Example:
 import sys
 import pandas as pd
 import genanki
-import shutil
-import os
 from pathlib import Path
 from typing import List, Optional
 
@@ -258,7 +256,7 @@ def generate_apkg(cards: List[dict], output_path: Path, media_files: List[str]) 
         print(f"⚠️  {failed_cards} cards failed to convert")
     
     # Generate .apkg file
-    print(f"📦 Writing .apkg file...")
+    print("📦 Writing .apkg file...")
     try:
         package = genanki.Package(deck, media_files=media_files)
         package.write_to_file(str(output_path))

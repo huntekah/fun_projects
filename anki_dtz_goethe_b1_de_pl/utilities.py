@@ -148,7 +148,7 @@ def _map_fields_to_schema(raw_fields_dict: Dict[str, Any], note_id: int, model_i
         }
     else:
         # Fallback - try both schemes and use default values
-        print(f"  ⚠️  Could not detect field naming scheme - using fallback mapping")
+        print("  ⚠️  Could not detect field naming scheme - using fallback mapping")
         return {
             "note_id": note_id,
             "model_id": model_id,
@@ -230,7 +230,7 @@ def load_anki_deck(path: Path) -> AnkiDeck:
             db_path = os.path.join(tmpdir, "collection.anki2")
             
             if not os.path.exists(db_path):
-                raise FileNotFoundError(f"collection.anki2 not found in .apkg file")
+                raise FileNotFoundError("collection.anki2 not found in .apkg file")
 
             print(f"🗄️  Connecting to SQLite database: {db_path}")
             
@@ -284,11 +284,11 @@ def load_anki_deck(path: Path) -> AnkiDeck:
                             has_old_fields = any(field in raw_fields_dict for field in ['full_d', 'base_d', 'base_e'])
                             has_new_fields = any(field in raw_fields_dict for field in ['full_source', 'base_source', 'base_target'])
                             if has_new_fields and not has_old_fields:
-                                print(f"  📋 Detected new field naming scheme (full_source, base_target, etc.)")
+                                print("  📋 Detected new field naming scheme (full_source, base_target, etc.)")
                             elif has_old_fields:
-                                print(f"  📋 Detected old field naming scheme (full_d, base_e, etc.) - mapping to new schema")
+                                print("  📋 Detected old field naming scheme (full_d, base_e, etc.) - mapping to new schema")
                             else:
-                                print(f"  ⚠️  Could not detect field naming scheme - using fallback mapping")
+                                print("  ⚠️  Could not detect field naming scheme - using fallback mapping")
                             field_scheme_detected = True
                         
                         mapped_fields = _map_fields_to_schema(raw_fields_dict, note_id, model_id)
@@ -311,7 +311,7 @@ def load_anki_deck(path: Path) -> AnkiDeck:
         print(f"\n❌ ERROR loading Anki deck from {path}")
         print(f"Error type: {type(e).__name__}")
         print(f"Error message: {str(e)}")
-        print(f"\n🔍 Full traceback:")
+        print("\n🔍 Full traceback:")
         traceback.print_exc()
         print("-" * 80)
         raise
@@ -343,7 +343,7 @@ def save_anki_deck(
         # Ensure output directory exists
         output_path.parent.mkdir(parents=True, exist_ok=True)
         
-        print(f"📋 Creating genanki model and deck structure...")
+        print("📋 Creating genanki model and deck structure...")
         
         # Create genanki model that matches our card structure
         try:
@@ -451,7 +451,7 @@ def save_anki_deck(
         
         # Extract media files from original .apkg if provided
         if original_apkg_path and original_apkg_path.exists():
-            print(f"🎵 Extracting media files from original deck...")
+            print("🎵 Extracting media files from original deck...")
             original_media = _extract_media_files(original_apkg_path)
             for media_path in original_media:
                 filename = os.path.basename(media_path)
@@ -485,7 +485,7 @@ def save_anki_deck(
         media_files = list(referenced_media.values())
 
         # Generate the .apkg file
-        print(f"📦 Generating .apkg file...")
+        print("📦 Generating .apkg file...")
         try:
             genanki.Package(anki_deck, media_files=media_files).write_to_file(str(output_path))
         except Exception as e:
@@ -503,7 +503,7 @@ def save_anki_deck(
         print(f"\n❌ ERROR saving Anki deck to {output_path}")
         print(f"Error type: {type(e).__name__}")
         print(f"Error message: {str(e)}")
-        print(f"\n🔍 Full traceback:")
+        print("\n🔍 Full traceback:")
         traceback.print_exc()
         print("-" * 80)
         raise
@@ -598,7 +598,7 @@ def _get_referenced_media_files(deck: AnkiDeck, available_media: Dict[str, str])
     sound_pattern = re.compile(r'\[sound:([^\]]+)\]')
     
     # First, scan card templates for hardcoded media references
-    print(f"🔍 Scanning card templates for media references...")
+    print("🔍 Scanning card templates for media references...")
     template_media_count = 0
     for template in DTZ_CARD_TEMPLATES:
         # Check both question and answer formats
@@ -771,15 +771,15 @@ def copy_non_translation_fields_from_original(translated_card: AnkiCard, origina
                     print(f"    - ... and {len(empty_translations) - 2} more")
             
             if not issues_found and not empty_translations:
-                print(f"  ✅ No issues found - card is clean")
+                print("  ✅ No issues found - card is clean")
         
         return cleaned_card, total_issues
         
     except Exception as e:
-        print(f"\n❌ ERROR cleaning translated card:")
+        print("\n❌ ERROR cleaning translated card:")
         print(f"Error type: {type(e).__name__}")
         print(f"Error message: {str(e)}")
-        print(f"\n🔍 Full traceback:")
+        print("\n🔍 Full traceback:")
         traceback.print_exc()
         print("-" * 80)
         

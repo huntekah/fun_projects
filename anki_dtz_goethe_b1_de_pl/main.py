@@ -1,6 +1,5 @@
-import random
 from pathlib import Path
-from utilities import load_anki_deck, save_anki_deck, copy_non_translation_fields_from_original
+from utilities import load_anki_deck, save_anki_deck
 from connectors.llm.structured_gemini import LLMClient, VertexAIConfig
 from prompt import create_text_translation_prompt
 from schema import AnkiCard, AnkiDeck, AnkiCardTextFields
@@ -79,7 +78,6 @@ def main():
         # Translate cards
         translated_cards = []
         failed_cards = 0
-        total_cleaning_issues = 0
         
         for i, card in enumerate(cards_for_translation, 1):
             print(f"\nTranslating card {i}/{len(cards_for_translation)}...")
@@ -121,15 +119,15 @@ def main():
 
         # Save translated deck
         output_path = Path("data/DTZ_Goethe_B1_DE_PL_Sample.apkg")
-        print(f"\n=== SAVING TRANSLATED DECK ===")
+        print("\n=== SAVING TRANSLATED DECK ===")
         save_anki_deck(translated_deck, output_path, original_deck_path)
         print(f"Saved translated deck to {output_path}")
 
     except Exception as e:
-        print(f"\n💥 FATAL ERROR in main():")
+        print("\n💥 FATAL ERROR in main():")
         print(f"Error type: {type(e).__name__}")
         print(f"Error message: {str(e)}")
-        print(f"\n🔍 Full traceback:")
+        print("\n🔍 Full traceback:")
         traceback.print_exc()
         print("=" * 80)
         raise  # Re-raise to exit with error code

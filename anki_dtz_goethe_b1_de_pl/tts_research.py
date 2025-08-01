@@ -38,7 +38,7 @@ def calculate_tts_costs():
     
     total_chars = german_chars + polish_chars
     
-    print(f"🎯 TTS CHARACTER REQUIREMENTS:")
+    print("🎯 TTS CHARACTER REQUIREMENTS:")
     print(f"   German text: {german_chars:,} characters")
     print(f"   Polish text: {polish_chars:,} characters") 
     print(f"   Total needed: {total_chars:,} characters")
@@ -71,7 +71,7 @@ def calculate_tts_costs():
         }
     }
     
-    print(f"\n💰 TTS SERVICE COST ANALYSIS:")
+    print("\n💰 TTS SERVICE COST ANALYSIS:")
     
     for service_name, tiers in services.items():
         print(f"\n🔊 {service_name}:")
@@ -91,7 +91,7 @@ def calculate_tts_costs():
             print(f"   {tier_name.capitalize()}: {status} (free: {free_chars/1_000_000:.1f}M chars)")
     
     # Language support analysis
-    print(f"\n🌐 LANGUAGE SUPPORT ANALYSIS:")
+    print("\n🌐 LANGUAGE SUPPORT ANALYSIS:")
     
     language_support = {
         "Google Cloud TTS": {
@@ -128,21 +128,21 @@ def calculate_tts_costs():
         print(f"   Quality: {support['quality']}")
     
     # Recommendations
-    print(f"\n🎯 RECOMMENDATIONS:")
-    print(f"\n1. 🥇 BEST FREE OPTION: Amazon Polly Standard")
+    print("\n🎯 RECOMMENDATIONS:")
+    print("\n1. 🥇 BEST FREE OPTION: Amazon Polly Standard")
     print(f"   ✅ 5M free chars (our needs: {total_chars/1_000_000:.1f}M)")
-    print(f"   ✅ Excellent German & Polish support")
-    print(f"   ✅ Good quality standard voices")
-    print(f"   💰 Cost: FREE")
+    print("   ✅ Excellent German & Polish support")
+    print("   ✅ Good quality standard voices")
+    print("   💰 Cost: FREE")
     
-    print(f"\n2. 🥈 BEST QUALITY: Google Cloud Neural2")
+    print("\n2. 🥈 BEST QUALITY: Google Cloud Neural2")
     print(f"   ✅ 1M free chars (covers {min(1_000_000/total_chars*100, 100):.0f}% of needs)")
-    print(f"   ✅ Superior voice quality")
+    print("   ✅ Superior voice quality")
     print(f"   💰 Cost: ${((total_chars-1_000_000)/1_000_000*16):.2f} for excess")
     
-    print(f"\n3. 🚀 FASTEST SETUP: OpenAI TTS")
-    print(f"   ⚠️  No free tier")
-    print(f"   ✅ Simple API, fast generation")
+    print("\n3. 🚀 FASTEST SETUP: OpenAI TTS")
+    print("   ⚠️  No free tier")
+    print("   ✅ Simple API, fast generation")
     print(f"   💰 Cost: ${(total_chars/1_000_000*15):.2f} (tts-1)")
     
     return {

@@ -4,9 +4,8 @@ Generate TTS audio for ALL fields in the frequency-sorted Anki deck.
 Creates audio for both German and Polish text across all cards.
 """
 
-import os
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict
 from tts_engine import TTSGenerator
 from utilities import load_anki_deck, save_anki_deck
 from schema import AnkiCard, AnkiDeck
@@ -120,13 +119,13 @@ def generate_audio_for_entire_deck(
     
     audio_dir.mkdir(exist_ok=True)
     
-    print(f"🎵 Generating complete TTS audio for deck")
+    print("🎵 Generating complete TTS audio for deck")
     print(f"   Input: {input_deck_path}")
     print(f"   Output: {output_deck_path}")
     print(f"   Audio directory: {audio_dir}")
     
     # Load the frequency-sorted deck
-    print(f"\n📂 Loading deck...")
+    print("\n📂 Loading deck...")
     deck = load_anki_deck(input_deck_path)
     print(f"   Loaded {len(deck.cards)} cards")
     
@@ -140,14 +139,12 @@ def generate_audio_for_entire_deck(
     with TTSGenerator() as tts:
         # Show initial cache info
         cache_info = tts.cache_info()
-        print(f"\n💾 Cache info (before):")
+        print("\n💾 Cache info (before):")
         print(f"   Cached items: {cache_info['cache_size']}")
         print(f"   Cache size: {cache_info['cache_volume_mb']:.2f} MB")
         
         # Process all cards
         processed_cards = []
-        total_generated = 0
-        total_cached = 0
         
         for i, card in enumerate(cards_to_process, 1):
             print(f"\n🎤 Processing card {i}/{len(cards_to_process)}: {card.base_source}")
@@ -163,7 +160,7 @@ def generate_audio_for_entire_deck(
         
         # Final cache info
         cache_info = tts.cache_info()
-        print(f"\n💾 Cache info (after):")
+        print("\n💾 Cache info (after):")
         print(f"   Cached items: {cache_info['cache_size']}")
         print(f"   Cache size: {cache_info['cache_volume_mb']:.2f} MB")
     
@@ -175,7 +172,7 @@ def generate_audio_for_entire_deck(
     )
     
     # Save the deck with audio
-    print(f"\n💾 Saving deck with audio...")
+    print("\n💾 Saving deck with audio...")
     save_anki_deck(audio_deck, output_deck_path, input_deck_path, audio_dir)
     
     # Count audio files generated
@@ -190,7 +187,7 @@ def generate_audio_for_entire_deck(
         'audio_dir_size_mb': sum(f.stat().st_size for f in audio_files) / (1024 * 1024)
     }
     
-    print(f"\n🎯 COMPLETION SUMMARY:")
+    print("\n🎯 COMPLETION SUMMARY:")
     print(f"   📊 Processed: {stats['processed_cards']}/{stats['input_cards']} cards")
     print(f"   🎵 Audio files: {stats['audio_files_created']} files")
     print(f"   💾 Cache: {stats['cache_items']} items ({stats['cache_size_mb']:.1f} MB)")
@@ -209,18 +206,18 @@ if __name__ == "__main__":
     test_limit = None #10  # Set to None for full deck
     
     if input_deck.exists():
-        print(f"🚀 Starting complete TTS audio generation")
-        print(f"⚠️  This will generate audio for ALL text fields in the deck")
-        print(f"💰 Estimated cost: ~$6-10 for full deck (depends on Google TTS pricing)")
+        print("🚀 Starting complete TTS audio generation")
+        print("⚠️  This will generate audio for ALL text fields in the deck")
+        print("💰 Estimated cost: ~$6-10 for full deck (depends on Google TTS pricing)")
         
         if test_limit:
             print(f"🧪 TESTING MODE: Processing only {test_limit} cards")
         
-        print(f"\nPress Enter to continue, Ctrl+C to cancel...")
+        print("\nPress Enter to continue, Ctrl+C to cancel...")
         try:
             input()
         except KeyboardInterrupt:
-            print(f"\n❌ Cancelled by user")
+            print("\n❌ Cancelled by user")
             exit(0)
         
         stats = generate_audio_for_entire_deck(
@@ -233,4 +230,4 @@ if __name__ == "__main__":
         
     else:
         print(f"❌ Input deck not found: {input_deck}")
-        print(f"   Make sure you have the frequency-sorted deck available")
+        print("   Make sure you have the frequency-sorted deck available")

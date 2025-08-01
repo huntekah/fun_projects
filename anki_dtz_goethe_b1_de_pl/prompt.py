@@ -191,7 +191,7 @@ CARD {i}:
                 prompt += f"  - German example {j} (s{j}_source): {source_ex}\n"
                 prompt += f"  - English translation {j} (s{j}_target): {target_ex}\n"
 
-    prompt += f"""
+    prompt += """
 
 CONTEXT: This is for German language learners who speak Polish as their native language, studying for the DTZ (Deutsch-Test für Zuwanderer) at B1 level.
 

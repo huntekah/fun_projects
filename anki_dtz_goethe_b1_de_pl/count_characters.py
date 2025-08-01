@@ -51,17 +51,17 @@ def count_characters_in_deck(deck_path: Path):
     total_all = total_german + total_polish
     
     # Print results
-    print(f"\n📈 CHARACTER COUNT RESULTS:")
+    print("\n📈 CHARACTER COUNT RESULTS:")
     print(f"   Total cards analyzed: {len(deck.cards)}")
-    print(f"\n🇩🇪 GERMAN TEXT:")
+    print("\n🇩🇪 GERMAN TEXT:")
     print(f"   1. base_source (words): {german_base_chars:,} characters")
     print(f"   3. s1-s9_source (sentences): {german_sentences_chars:,} characters")
     print(f"   German total: {total_german:,} characters")
-    print(f"\n🇵🇱 POLISH TEXT:")
+    print("\n🇵🇱 POLISH TEXT:")
     print(f"   2. base_target (words): {polish_base_chars:,} characters")
     print(f"   4. s1-s9_target (sentences): {polish_sentences_chars:,} characters")
     print(f"   Polish total: {total_polish:,} characters")
-    print(f"\n📊 SUMMARY:")
+    print("\n📊 SUMMARY:")
     print(f"   Total characters: {total_all:,}")
     print(f"   German vs Polish ratio: {total_german/total_polish:.2f}:1" if total_polish > 0 else "   Polish has no content")
     

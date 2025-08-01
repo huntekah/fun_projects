@@ -1,4 +1,3 @@
-import datetime
 import logging
 import hashlib
 import os
@@ -9,7 +8,6 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai.types import (
     GenerateContentResponse,
-    GenerateContentResponseUsageMetadata,
     HttpOptions,
 )
 from pydantic import BaseModel
@@ -76,7 +74,6 @@ class LLMClient:
             return {"error": str(e)}
 
     def generate(self, text: str, schema: Type[T]) -> T:
-        import traceback
         
         try:
             logger.debug(f"Generating content for text: {text[:100]}{'...' if len(text) > 100 else ''}")

@@ -184,14 +184,14 @@ def test_prompt_structure():
     reference_context = prompt_lower.count('reference') + prompt_lower.count('context')
     avoid_chain = prompt_lower.count('not') + prompt_lower.count('avoid')
     
-    print(f"📊 PROMPT KEYWORD ANALYSIS:")
+    print("📊 PROMPT KEYWORD ANALYSIS:")
     print(f"  'direct' mentions: {direct_mentions}")
     print(f"  'german'/'polish' mentions: {german_to_polish}")
     print(f"  'reference'/'context' mentions: {reference_context}")
     print(f"  'not'/'avoid' mentions: {avoid_chain}")
     print()
     
-    print(f"📏 PROMPT STRUCTURE:")
+    print("📏 PROMPT STRUCTURE:")
     print(f"  Total length: {len(prompt)} characters")
     lines = prompt.split('\n')
     print(f"  Total lines: {len(lines)}")

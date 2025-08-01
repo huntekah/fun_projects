@@ -7,7 +7,6 @@ Test script to generate audio for a random card's key fields.
 import random
 import hashlib
 from pathlib import Path
-from typing import Optional
 from google.cloud import texttospeech
 from diskcache import Cache
 from utilities import load_anki_deck
@@ -218,7 +217,7 @@ def test_tts_with_random_card(deck_path: Path, output_dir: Path = None) -> None:
     if output_dir is None:
         output_dir = Path("test_audio")
     
-    print(f"🔊 Testing Google Cloud TTS with random card")
+    print("🔊 Testing Google Cloud TTS with random card")
     print(f"📁 Output directory: {output_dir}")
     
     # Load deck
@@ -238,7 +237,7 @@ def test_tts_with_random_card(deck_path: Path, output_dir: Path = None) -> None:
     random.seed(42)
     random_card = random.choice(cards_with_content)
     
-    print(f"\n📊 Selected random card:")
+    print("\n📊 Selected random card:")
     print(f"   German word: {random_card.base_source}")
     print(f"   Polish word: {random_card.base_target}")
     print(f"   German sentence: {random_card.s1_source}")
@@ -248,7 +247,7 @@ def test_tts_with_random_card(deck_path: Path, output_dir: Path = None) -> None:
     with TTSGenerator() as tts:
         # Show initial cache info
         cache_info = tts.cache_info()
-        print(f"\n💾 Cache info (before):")
+        print("\n💾 Cache info (before):")
         print(f"   Cached items: {cache_info['cache_size']}")
         print(f"   Cache size: {cache_info['cache_volume_mb']:.2f} MB")
         print(f"   Cache directory: {cache_info['cache_directory']}")
@@ -257,7 +256,7 @@ def test_tts_with_random_card(deck_path: Path, output_dir: Path = None) -> None:
         
         # Show final cache info
         cache_info = tts.cache_info()
-        print(f"\n💾 Cache info (after):")
+        print("\n💾 Cache info (after):")
         print(f"   Cached items: {cache_info['cache_size']}")
         print(f"   Cache size: {cache_info['cache_volume_mb']:.2f} MB")
     
@@ -265,13 +264,13 @@ def test_tts_with_random_card(deck_path: Path, output_dir: Path = None) -> None:
     successful = sum(1 for path in results.values() if path is not None)
     total = len(results)
     
-    print(f"\n📈 TTS Generation Summary:")
+    print("\n📈 TTS Generation Summary:")
     print(f"   Successful: {successful}/{total} files")
     
     if successful > 0:
         print(f"   Audio files saved in: {output_dir}")
-        print(f"   🎧 Test the audio quality and pronunciation!")
-        print(f"   💡 Run again to see caching in action!")
+        print("   🎧 Test the audio quality and pronunciation!")
+        print("   💡 Run again to see caching in action!")
     
     return results
 

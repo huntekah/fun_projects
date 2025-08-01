@@ -3,7 +3,6 @@
 Test the media filtering functionality to ensure only referenced files are included.
 """
 
-from pathlib import Path
 from utilities import _get_referenced_media_files
 from schema import AnkiCard, AnkiDeck
 
@@ -50,26 +49,26 @@ def test_media_filtering():
     # Test the filtering
     referenced = _get_referenced_media_files(test_deck, available_media)
     
-    print(f"📊 Media filtering test results:")
+    print("📊 Media filtering test results:")
     print(f"   Available media files: {len(available_media)}")
     print(f"   Referenced media files: {len(referenced)}")
-    print(f"   Expected referenced files: 6")
+    print("   Expected referenced files: 6")
     
     expected_files = {"audio1.mp3", "audio2.mp3", "audio3.mp3", "audio4.mp3", "audio5.mp3", "audio6.mp3"}
     actual_files = set(referenced.keys())
     
     if actual_files == expected_files:
-        print(f"   ✅ PASS: Correct files referenced")
+        print("   ✅ PASS: Correct files referenced")
         print(f"   Referenced files: {sorted(actual_files)}")
     else:
-        print(f"   ❌ FAIL: Incorrect files referenced")
+        print("   ❌ FAIL: Incorrect files referenced")
         print(f"   Expected: {sorted(expected_files)}")
         print(f"   Actual: {sorted(actual_files)}")
         print(f"   Missing: {expected_files - actual_files}")
         print(f"   Extra: {actual_files - expected_files}")
     
     # Test with missing files
-    print(f"\n📊 Testing missing files warning:")
+    print("\n📊 Testing missing files warning:")
     available_missing = {
         "audio1.mp3": "/path/to/audio1.mp3",
         # audio2.mp3 missing
