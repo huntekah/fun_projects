@@ -11,6 +11,7 @@ This is a comprehensive Anki flashcard system for German DTZ (Deutsch-Test für 
 3. **Generates bilingual TTS audio** for both German and Polish using Google Cloud TTS
 4. **Creates enhanced card templates** with improved UI, audio controls, and contextual information
 5. **Preserves study progress** through GUID preservation during deck transformations
+6. **Supports contribution workflow** for collaborative editing and deck maintenance
 
 ## Schema Design
 
@@ -39,49 +40,62 @@ This design works for any language pair and prevents LLM confusion during transl
 - Uses German frequency data from hermitdave/FrequencyWords (1.1M+ words)
 - 99.9% word coverage with smart normalization (handles articles, plurals, reflexive verbs)
 - Sorts cards by frequency rank (most common words first) for optimal learning
+- Parameterized with `--source`/`--target` file paths for flexible workflow
 
 ### **2. Bilingual TTS Audio Generation**
 - **German TTS**: Google Cloud Studio voice (`de-DE-Studio-C`)
 - **Polish TTS**: Google Cloud Standard voice (`pl-PL-Standard-G`)
 - **Disk caching**: Prevents duplicate API calls and saves costs
 - **Smart media filtering**: Only includes referenced audio files in .apkg
+- **Parameterized workflow**: `--source`/`--target` for contribution pipeline
 
 ### **3. Enhanced Card Templates**
 - **German → Polish**: Shows articles/plurals, context sentences, autoplay control
 - **Polish → German**: Production cards with context hints
 - **Audio controls**: Silence hack prevents unwanted autoplay
 - **Modern styling**: Clean typography, color coding, responsive design
+- **Night mode support**: Adaptive colors for dark theme
 
 ### **4. Study Progress Preservation**
 - **GUID preservation**: Maintains Anki study history during deck updates
 - **Note ID mapping**: Links translated cards to original progress
 - **Safe imports**: Users can update decks without losing learning data
 
+### **5. Contribution Workflow**
+- **CSV export/import**: Easy collaborative editing in spreadsheets
+- **Flexible file paths**: `--source`/`--target` parameters for any workflow
+- **Audio regeneration**: Automatic TTS for edited content
+- **Round-trip compatibility**: Anki ↔ CSV ↔ APKG seamlessly
+
 ## Development Commands
 
 ### **Core Operations:**
 - **Install dependencies**: `uv sync`
 - **Run main translation**: `uv run main.py`
-- **Sort by frequency**: `uv run frequency_sort.py`
-- **Generate TTS audio**: `uv run generate_all_audio.py`
+- **Sort by frequency**: `uv run frequency_sort.py --source input.apkg --target output.apkg`
+- **Generate TTS audio**: `uv run generate_all_audio.py --source input.apkg --target output.apkg`
+
+### **Contribution Workflow:**
+- **Export to CSV**: `uv run csv_export.py export --source deck.apkg --target contrib_dir/`
+- **Import from CSV**: `uv run csv_export.py import --source file.csv --target deck.apkg`
+- **Regenerate audio**: `uv run generate_all_audio.py --source edited.apkg --target final.apkg`
+
+### **Makefile Commands:**
+- **Core pipeline**: `make translate`, `make sort-frequency`, `make generate-audio`
+- **Contribution**: `make export-csv`, `make import-csv`, `make regen-audio`
+- **Quality**: `make check`, `make format`, `make lint-fix`, `make lint-fix-unsafe`
 
 ### **Utility Scripts:**
 - **Download frequency data**: `./get_frequency_list`
 - **Test TTS engine**: `uv run tts_engine.py`
-- **Export to CSV**: `uv run csv_export.py`
 - **Count characters**: `uv run count_characters.py`
-
-### **Quality Assurance:**
-- **Lint check**: `make check` or `uv run ruff check .`
-- **Format code**: `make format` or `uv run ruff format .`
-- **Full lint + format**: `make lint`
 
 ## Project Structure
 
 ### **Core Scripts:**
 - `main.py` - LLM translation pipeline (German-English → German-Polish)
-- `frequency_sort.py` - Sort cards by German word frequency
-- `generate_all_audio.py` - Complete TTS audio generation for all fields
+- `frequency_sort.py` - Sort cards by German word frequency with `--source`/`--target` params
+- `generate_all_audio.py` - Complete TTS audio generation with parameterized file paths
 - `tts_engine.py` - Google Cloud TTS with caching and voice management
 
 ### **Infrastructure:**
@@ -91,14 +105,14 @@ This design works for any language pair and prevents LLM confusion during transl
 - `prompt.py` - LLM prompts for German-Polish translation
 
 ### **Data Processing:**
-- `csv_export.py` - Export/import decks in CSV format for community editing
+- `csv_export.py` - Export/import decks with subcommands and `--source`/`--target` params
 - `count_characters.py` - Analyze text content for TTS cost estimation
 - `test_media_filtering.py` - Verify media file inclusion logic
 
 ### **Configuration:**
 - `get_frequency_list` - Download German frequency data
-- `pyproject.toml` - Dependencies (genanki, google-cloud-texttospeech, diskcache)
-- `Makefile` - Development workflow automation
+- `pyproject.toml` - Dependencies and ruff configuration
+- `Makefile` - Development workflow automation with contribution commands
 
 ## Key Dependencies
 
@@ -112,44 +126,71 @@ This design works for any language pair and prevents LLM confusion during transl
 - **google-genai**: Gemini LLM integration for translation
 - **beautifulsoup4**: HTML parsing for card templates
 
-## Architecture Workflow
+### **Development:**
+- **ruff**: Fast Python linting and formatting
+- **pyright**: Type checking
+- **pandas**: CSV data processing
 
-### **1. Translation Pipeline:**
-```
-Original Deck → LLM Translation → Translated Deck
-(DE-EN)         (Gemini)         (DE-PL)
-```
+## Architecture Workflows
 
-### **2. Frequency Sorting:**
+### **1. Original Creation Pipeline:**
 ```
-Translated Deck → Frequency Data → Sorted Deck
-(DE-PL)          (1.1M German)    (Optimized Order)
-```
-
-### **3. Audio Generation:**
-```
-Sorted Deck → TTS Engine → Complete Deck
-(Text Only)   (DE+PL Audio)   (Full Media)
+Original Deck → LLM Translation → Frequency Sort → Audio Generation → Published Deck
+(DE-EN)         (Gemini)         (Optimized)     (TTS)            (AnkiWeb)
 ```
 
-### **4. Final Output:**
-- **Enhanced cards**: Beautiful templates with context and audio
-- **Study-ready**: Preserves progress, optimized learning order
-- **Complete media**: All audio files properly embedded
+### **2. Contribution Workflow:**
+```
+Published Deck → Export CSV → Edit in Spreadsheet → Import APKG → Regenerate Audio → Updated Deck
+(AnkiWeb)       (Community)   (Fix translations)   (Validate)     (TTS sync)       (Share)
+```
+
+### **3. Direct Anki Editing:**
+```
+Anki Desktop → Edit Cards → Export Deck → Regenerate Audio → Share
+(Quick fixes)  (Text only)  (APKG)       (TTS for changes)  (Updated)
+```
 
 ## Data Flow
 
 ### **Input:**
 - `data/B1_Wortliste_DTZ_Goethe_vocabsentensesaudiotranslation.apkg` (Original DE-EN deck)
 
-### **Intermediate:**
+### **Pipeline Outputs:**
 - `data/DTZ_Goethe_B1_DE_PL_Sample.apkg` (Translated DE-PL deck)
 - `data/DTZ_Goethe_B1_DE_PL_Sample_FrequencySorted.apkg` (Frequency-sorted deck)
-
-### **Final Output:**
 - `data/DTZ_Goethe_B1_DE_PL_Complete_WithAudio.apkg` (Complete deck with audio)
+
+### **Contribution Artifacts:**
+- `contribution_package/` (CSV + media for community editing)
+- `data/DTZ_Goethe_B1_DE_PL_Edited.apkg` (Imported from edited CSV)
+- `data/DTZ_Goethe_B1_DE_PL_Final.apkg` (With regenerated audio)
+
+### **Supporting Files:**
 - `audio_files/` (Generated TTS audio files)
-- `tts_cache/` (Cached TTS responses)
+- `tts_cache/` (Cached TTS responses for cost optimization)
+
+## Command Line Interface
+
+All major scripts now support flexible file paths with `--source` and `--target` parameters:
+
+### **Audio Generation:**
+```bash
+uv run generate_all_audio.py --source input.apkg --target output.apkg [--audio-dir dir] [--limit N] [--no-confirm]
+```
+
+### **CSV Export/Import:**
+```bash
+uv run csv_export.py export --source deck.apkg --target contrib_dir/
+uv run csv_export.py import --source file.csv --target deck.apkg [--media-dir dir]
+```
+
+### **Frequency Sorting:**
+```bash
+uv run frequency_sort.py --source input.apkg --target sorted.apkg [--frequency-file freq.txt]
+```
+
+This enables flexible workflows for both initial creation and ongoing maintenance.
 
 ## LLM Output Cleaning
 
@@ -179,3 +220,14 @@ This ensures clean, properly formatted output even when the LLM makes mistakes.
 - **Template scanning**: Detects hardcoded media references (silence files)
 - **Field analysis**: Finds all `[sound:filename.mp3]` references
 - **Efficient packaging**: Only includes used media files in .apkg
+
+## Type Safety
+
+The project uses comprehensive type checking:
+
+- **pyright**: Static type analysis configured in pyproject.toml
+- **Pydantic**: Runtime validation with type hints
+- **Type annotations**: Full coverage across all modules
+- **Error handling**: Proper handling of pandas, cache, and file operations
+
+All type errors have been resolved for maintainable, reliable code.

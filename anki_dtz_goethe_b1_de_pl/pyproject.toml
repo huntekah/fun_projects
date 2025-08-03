@@ -1,9 +1,23 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
-name = "anki-dtz-goethe-b1-de-pl"
+name = "anki-deck-factory"
 version = "0.1.0"
-description = "Add your description here"
+description = "A comprehensive system for creating and managing German-Polish Anki flashcards"
 readme = "README.md"
 requires-python = ">=3.12"
+authors = [
+    {name = "Krzysztof Jurkiewicz"}
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Education",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+]
 dependencies = [
     "diskcache>=5.6.3",
     "genanki>=0.13.1",
@@ -13,14 +27,26 @@ dependencies = [
     "pydantic>=2.11.7",
     "pyright>=1.1.403",
     "python-dotenv>=1.0.0",
+    "typer>=0.9.0",  # For future CLI
+    "pyyaml>=6.0",   # For configuration files
 ]
 
-[tool.ruff]
-lint.ignore = ["E741"]
+[project.scripts]
+anki-deck-factory = "anki_deck_factory.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "ruff>=0.1.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/anki_deck_factory"]
 
 [tool.pyright]
-include = ["."]
-exclude = ["**/__pycache__",".venv"]
+include = [".", "src"]
+exclude = ["**/__pycache__", ".venv", "build", "dist"]
 typeCheckingMode = "basic"
 reportMissingImports = true
 reportMissingTypeStubs = false
@@ -32,3 +58,6 @@ reportPrivateImportUsage = false
 strictListInference = true
 strictDictionaryInference = true
 strictParameterNoneValue = true
+
+[tool.ruff.lint]
+ignore = ["E741"]
