@@ -244,7 +244,7 @@ def main():
     print("🚀 Starting TTS audio generation")
     print(f"   Source: {args.source}")
     print(f"   Target: {args.target}")
-    print(f"   Languages: German → Polish")
+    print("   Languages: German → Polish")
     print("⚠️  This will generate audio for ALL text fields in the deck")
     print("💰 Estimated cost: ~$6-10 for full deck (depends on Google TTS pricing)")
     

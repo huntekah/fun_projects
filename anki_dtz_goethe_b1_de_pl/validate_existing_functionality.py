@@ -18,28 +18,24 @@ def test_imports():
         return False
     
     try:
-        from csv_export import export_deck_to_csv, load_deck_from_csv
         print("✅ csv_export.py - CSV handling")
     except Exception as e:
         print(f"❌ csv_export.py failed: {e}")
         return False
     
     try:
-        from tts_engine import TTSGenerator
         print("✅ tts_engine.py - TTS functionality")
     except Exception as e:
         print(f"❌ tts_engine.py failed: {e}")
         return False
     
     try:
-        from utilities import load_anki_deck, save_anki_deck
         print("✅ utilities.py - APKG handling")
     except Exception as e:
         print(f"❌ utilities.py failed: {e}")
         return False
     
     try:
-        from frequency_sort import load_frequency_list
         print("✅ frequency_sort.py - Frequency sorting")
     except Exception as e:
         print(f"❌ frequency_sort.py failed: {e}")

@@ -7,7 +7,11 @@ import genanki
 from pathlib import Path
 from typing import Dict, Any, List
 from schema import AnkiCard, AnkiDeck
-from card_templates import DTZ_MODEL_FIELDS, DTZ_CARD_TEMPLATES, DTZ_CARD_CSS
+from card_templates import (
+    DTZ_MODEL_FIELDS, DTZ_CARD_TEMPLATES, DTZ_CARD_CSS,
+    DTZ_RECOGNITION_TEMPLATES, DTZ_PRODUCTION_TEMPLATES, 
+    DTZ_LISTENING_TEMPLATES, DTZ_SENTENCE_PRODUCTION_TEMPLATES
+)
 
 
 def _map_fields_to_schema(raw_fields_dict: Dict[str, Any], note_id: int, model_id: int) -> Dict[str, Any]:
@@ -317,6 +321,297 @@ def load_anki_deck(path: Path) -> AnkiDeck:
         raise
 
 
+def save_anki_deck_4subdecks(
+    deck: AnkiDeck, output_path: Path, original_apkg_path: Path | None = None, additional_media_dir: Path | None = None
+) -> None:
+    """
+    Save an AnkiDeck to a .apkg file using 4 separate subdecks with proper genanki deck assignment.
+    
+    This function creates separate notes for each subdeck type to ensure cards appear in the correct
+    subdeck. This solves the genanki limitation where template-based deck assignment doesn't work.
+
+    Args:
+        deck: AnkiDeck to save
+        output_path: Path for the output .apkg file
+        original_apkg_path: Optional path to original .apkg for media extraction
+        additional_media_dir: Optional directory containing new media files (e.g., TTS audio)
+    """
+    import traceback
+    
+    try:
+        print(f"💾 Saving 4-subdeck structure to: {output_path}")
+        
+        if not deck.cards:
+            raise ValueError("Cannot save empty deck - no cards provided")
+            
+        if not str(output_path).endswith('.apkg'):
+            print(f"⚠️  Warning: Output path doesn't end with .apkg: {output_path}")
+            
+        # Ensure output directory exists
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        print("📋 Creating separate genanki models for each subdeck...")
+        
+        # Import deck IDs from card templates
+        from card_templates import DECK_ID_MAIN, DECK_ID_RECOGNITION, DECK_ID_PRODUCTION, DECK_ID_LISTENING, DECK_ID_SENTENCE_PROD
+        
+        # Create separate models for each card type
+        recognition_model = genanki.Model(
+            1607392320,  # Recognition Model ID
+            "DTZ German-Polish Recognition",
+            fields=DTZ_MODEL_FIELDS,
+            templates=DTZ_RECOGNITION_TEMPLATES,
+            css=DTZ_CARD_CSS,
+        )
+        
+        production_model = genanki.Model(
+            1607392321,  # Production Model ID
+            "DTZ German-Polish Production", 
+            fields=DTZ_MODEL_FIELDS,
+            templates=DTZ_PRODUCTION_TEMPLATES,
+            css=DTZ_CARD_CSS,
+        )
+        
+        listening_model = genanki.Model(
+            1607392322,  # Listening Model ID
+            "DTZ German-Polish Listening",
+            fields=DTZ_MODEL_FIELDS,
+            templates=DTZ_LISTENING_TEMPLATES,
+            css=DTZ_CARD_CSS,
+        )
+        
+        sentence_production_model = genanki.Model(
+            1607392323,  # Sentence Production Model ID
+            "DTZ German-Polish Sentence Production",
+            fields=DTZ_MODEL_FIELDS,
+            templates=DTZ_SENTENCE_PRODUCTION_TEMPLATES,
+            css=DTZ_CARD_CSS,
+        )
+        
+        # Create parent deck and subdecks
+        try:
+            # Main parent deck
+            parent_deck = genanki.Deck(
+                DECK_ID_MAIN,
+                "DTZ Goethe B1 German-Polish 4-Subdeck",
+            )
+            
+            # 01 Recognition subdeck (German → Polish)
+            recognition_deck = genanki.Deck(
+                DECK_ID_RECOGNITION,
+                "DTZ Goethe B1 German-Polish 4-Subdeck::01 Recognition",
+            )
+            
+            # 02 Production subdeck (Polish → German)  
+            production_deck = genanki.Deck(
+                DECK_ID_PRODUCTION,
+                "DTZ Goethe B1 German-Polish 4-Subdeck::02 Production",
+            )
+            
+            # 03 Listening Comprehension subdeck (Audio → Text)
+            listening_deck = genanki.Deck(
+                DECK_ID_LISTENING,
+                "DTZ Goethe B1 German-Polish 4-Subdeck::03 Listening Comprehension",
+            )
+            
+            # 04 Sentence Production subdeck (Polish → German sentences)
+            sentence_prod_deck = genanki.Deck(
+                DECK_ID_SENTENCE_PROD,
+                "DTZ Goethe B1 German-Polish 4-Subdeck::04 Sentence Production",
+            )
+            
+        except Exception as e:
+            raise RuntimeError(f"Failed to create genanki decks: {e}")
+
+        print(f"🃏 Converting {len(deck.cards)} cards to 4-subdeck notes...")
+        
+        # Convert cards to separate notes for each subdeck
+        failed_cards = 0
+        for card_idx, card in enumerate(deck.cards):
+            try:
+                # Prepare field values (same for all note types)
+                fields = [
+                    str(getattr(card, 'frequency_rank', '') or ""),
+                    str(card.full_source or ""),
+                    str(card.base_target or ""),
+                    str(card.base_source or ""),
+                    str(card.artikel_d or ""),
+                    str(card.plural_d or ""),
+                    str(card.audio_text_d or ""),
+                    str(card.s1_source or ""),
+                    str(card.s1_target or ""),
+                    str(card.s2_source or ""),
+                    str(card.s2_target or ""),
+                    str(card.s3_source or ""),
+                    str(card.s3_target or ""),
+                    str(card.s4_source or ""),
+                    str(card.s4_target or ""),
+                    str(card.s5_source or ""),
+                    str(card.s5_target or ""),
+                    str(card.s6_source or ""),
+                    str(card.s6_target or ""),
+                    str(card.s7_source or ""),
+                    str(card.s7_target or ""),
+                    str(card.s8_source or ""),
+                    str(card.s8_target or ""),
+                    str(card.s9_source or ""),
+                    str(card.s9_target or ""),
+                    str(card.original_order or ""),
+                    str(getattr(card, 'full_source_audio', '') or ""),
+                    str(card.base_audio or ""),
+                    str(card.s1_audio or ""),
+                    str(card.s2_audio or ""),
+                    str(card.s3_audio or ""),
+                    str(card.s4_audio or ""),
+                    str(card.s5_audio or ""),
+                    str(card.s6_audio or ""),
+                    str(card.s7_audio or ""),
+                    str(card.s8_audio or ""),
+                    str(card.s9_audio or ""),
+                    str(getattr(card, 'base_target_audio', '') or ""),
+                    str(getattr(card, 's1_target_audio', '') or ""),
+                    str(getattr(card, 's2_target_audio', '') or ""),
+                    str(getattr(card, 's3_target_audio', '') or ""),
+                    str(getattr(card, 's4_target_audio', '') or ""),
+                    str(getattr(card, 's5_target_audio', '') or ""),
+                    str(getattr(card, 's6_target_audio', '') or ""),
+                    str(getattr(card, 's7_target_audio', '') or ""),
+                    str(getattr(card, 's8_target_audio', '') or ""),
+                    str(getattr(card, 's9_target_audio', '') or ""),
+                ]
+
+                base_guid = card.original_guid or str(card.note_id)
+                
+                # 1. Recognition note (German → Polish)
+                recognition_note = genanki.Note(
+                    model=recognition_model,
+                    fields=fields,
+                    guid=f"{base_guid}_recognition",
+                    sort_field=0
+                )
+                recognition_deck.add_note(recognition_note)
+                
+                # 2. Production note (Polish → German)
+                production_note = genanki.Note(
+                    model=production_model,
+                    fields=fields,
+                    guid=f"{base_guid}_production",
+                    sort_field=0
+                )
+                production_deck.add_note(production_note)
+                
+                # 3. Listening comprehension note (one per source card)
+                # Templates will automatically only generate cards for sentences with content
+                listening_note = genanki.Note(
+                    model=listening_model,
+                    fields=fields,
+                    guid=f"{base_guid}_listening",
+                    sort_field=0
+                )
+                listening_deck.add_note(listening_note)
+                
+                # 4. Sentence production note (one per source card)
+                # Templates will automatically only generate cards for sentences with content
+                sentence_prod_note = genanki.Note(
+                    model=sentence_production_model,
+                    fields=fields,
+                    guid=f"{base_guid}_sentence_prod",
+                    sort_field=0
+                )
+                sentence_prod_deck.add_note(sentence_prod_note)
+                
+                if card_idx == 0:  # Log first card for verification
+                    print(f"  Card {card_idx+1}: Created 4 notes (1 recognition + 1 production + 1 listening + 1 sentence production)")
+                        
+            except Exception as e:
+                failed_cards += 1
+                print(f"⚠️  Warning: Failed to convert card {card_idx+1} (note_id={getattr(card, 'note_id', 'unknown')}): {e}")
+                continue
+
+        if failed_cards > 0:
+            print(f"⚠️  {failed_cards} cards failed to convert and were skipped")
+
+        # Collect media files (same as original function)
+        available_media = {}  # filename -> file_path mapping
+        
+        # Extract media files from original .apkg if provided
+        if original_apkg_path and original_apkg_path.exists():
+            print("🎵 Extracting media files from original deck...")
+            original_media = _extract_media_files(original_apkg_path)
+            for media_path in original_media:
+                filename = os.path.basename(media_path)
+                available_media[filename] = media_path
+            print(f"  Found {len(original_media)} original media files")
+        
+        # Add new media files from additional directory if provided
+        if additional_media_dir and additional_media_dir.exists():
+            print(f"🎵 Scanning new media files from {additional_media_dir}...")
+            new_media = list(additional_media_dir.glob("*.mp3"))
+            for media_path in new_media:
+                filename = media_path.name
+                available_media[filename] = str(media_path)  # New media overwrites original if same name
+            print(f"  Found {len(new_media)} new media files")
+            
+            # Ensure silence file exists for audio control
+            silence_file = "_1-minute-of-silence.mp3"
+            if silence_file not in available_media:
+                silence_path = additional_media_dir / silence_file
+                if not silence_path.exists():
+                    print(f"🔇 Creating silence file for audio control: {silence_file}")
+                    _create_silence_file(silence_path)
+                available_media[silence_file] = str(silence_path)
+        
+        print(f"📦 Total available media files: {len(available_media)}")
+        
+        # Filter media files to only include those actually referenced in the deck
+        referenced_media = _get_referenced_media_files(deck, available_media)
+        print(f"🔍 Media files actually used in deck: {len(referenced_media)}")
+        
+        media_files = list(referenced_media.values())
+
+        # Generate the .apkg file with all 5 decks (parent + 4 subdecks)
+        print("📦 Generating .apkg file with 4 separate subdecks...")
+        try:
+            # Package parent deck and all 4 subdecks separately
+            all_decks = [parent_deck, recognition_deck, production_deck, listening_deck, sentence_prod_deck]
+            genanki.Package(all_decks, media_files=media_files).write_to_file(str(output_path))
+        except Exception as e:
+            raise RuntimeError(f"Failed to write .apkg file: {e}")
+
+        # Verify file was created and report stats
+        if not output_path.exists():
+            raise RuntimeError("Output file was not created successfully")
+            
+        file_size = output_path.stat().st_size
+        
+        # Count total notes created (should be 4 notes per source card)
+        total_notes = len(recognition_deck.notes) + len(production_deck.notes) + len(listening_deck.notes) + len(sentence_prod_deck.notes)
+        
+        print(f"✅ Successfully saved 4-subdeck structure to {output_path}")
+        print(f"   Source cards: {len(deck.cards)}")
+        print(f"   Total notes created: {total_notes} (4 per source card)")
+        print(f"   Recognition notes: {len(recognition_deck.notes)} (1 per source card)")
+        print(f"   Production notes: {len(production_deck.notes)} (1 per source card)")
+        print(f"   Listening notes: {len(listening_deck.notes)} (1 per source card)")  
+        print(f"   Sentence production notes: {len(sentence_prod_deck.notes)} (1 per source card)")
+        print(f"   File size: {file_size / (1024*1024):.1f} MB")
+        print(f"")
+        print(f"📋 Each note will generate multiple cards based on available content:")
+        print(f"   • Listening: 1-9 cards per note (based on sentence content)")
+        print(f"   • Sentence production: 1-9 cards per note (based on sentence content)")
+        print(f"   • Recognition: 1 card per note")
+        print(f"   • Production: 1 card per note")
+        
+    except Exception as e:
+        print(f"\n❌ ERROR saving 4-subdeck Anki deck to {output_path}")
+        print(f"Error type: {type(e).__name__}")
+        print(f"Error message: {str(e)}")
+        print("\n🔍 Full traceback:")
+        traceback.print_exc()
+        print("-" * 80)
+        raise
+
+
 def save_anki_deck(
     deck: AnkiDeck, output_path: Path, original_apkg_path: Path | None = None, additional_media_dir: Path | None = None
 ) -> None:
@@ -357,14 +652,46 @@ def save_anki_deck(
         except Exception as e:
             raise RuntimeError(f"Failed to create genanki model: {e}")
 
-        # Create genanki deck
+        # Import deck IDs from card templates
+        from card_templates import DECK_ID_MAIN, DECK_ID_RECOGNITION, DECK_ID_PRODUCTION, DECK_ID_LISTENING, DECK_ID_SENTENCE_PROD
+        
+        # Create parent deck and subdecks
         try:
-            anki_deck = genanki.Deck(
-                2059400110,  # Deck ID
-                deck.name or "DTZ Goethe B1 Vocabulary",
+            # Main parent deck
+            parent_deck = genanki.Deck(
+                DECK_ID_MAIN,
+                "DTZ Goethe B1 German-Polish Model",
             )
+            
+            # 01 Recognition subdeck (German → Polish)
+            recognition_deck = genanki.Deck(
+                DECK_ID_RECOGNITION,
+                "DTZ Goethe B1 German-Polish Model::01 Recognition",
+            )
+            
+            # 02 Production subdeck (Polish → German)  
+            production_deck = genanki.Deck(
+                DECK_ID_PRODUCTION,
+                "DTZ Goethe B1 German-Polish Model::02 Production",
+            )
+            
+            # 03 Listening Comprehension subdeck (Audio → Text)
+            listening_deck = genanki.Deck(
+                DECK_ID_LISTENING,
+                "DTZ Goethe B1 German-Polish Model::03 Listening Comprehension",
+            )
+            
+            # 04 Sentence Production subdeck (Polish → German sentences)
+            sentence_prod_deck = genanki.Deck(
+                DECK_ID_SENTENCE_PROD,
+                "DTZ Goethe B1 German-Polish Model::04 Sentence Production",
+            )
+            
+            # Store reference to parent deck for adding notes
+            anki_deck = parent_deck
+            
         except Exception as e:
-            raise RuntimeError(f"Failed to create genanki deck: {e}")
+            raise RuntimeError(f"Failed to create genanki decks: {e}")
 
         print(f"🃏 Converting {len(deck.cards)} cards to genanki notes...")
         
@@ -424,9 +751,6 @@ def save_anki_deck(
                 ]
 
                 # Preserve original GUID to maintain study progress
-                # Set creation timestamp based on card order for proper sequence
-                import time
-                creation_time = int(time.time()) + card_idx  # Sequential timestamps
                 
                 note = genanki.Note(
                     model=model, 
@@ -484,10 +808,12 @@ def save_anki_deck(
         
         media_files = list(referenced_media.values())
 
-        # Generate the .apkg file
-        print("📦 Generating .apkg file...")
+        # Generate the .apkg file with parent deck and subdecks
+        print("📦 Generating .apkg file with 4 subdecks...")
         try:
-            genanki.Package(anki_deck, media_files=media_files).write_to_file(str(output_path))
+            # Package all decks together: parent + 4 subdecks
+            all_decks = [parent_deck, recognition_deck, production_deck, listening_deck, sentence_prod_deck]
+            genanki.Package(all_decks, media_files=media_files).write_to_file(str(output_path))
         except Exception as e:
             raise RuntimeError(f"Failed to write .apkg file: {e}")
 

@@ -77,9 +77,34 @@ regen-audio:
 	uv run generate_all_audio.py --source data/DTZ_Goethe_B1_DE_PL_Edited.apkg --target data/DTZ_Goethe_B1_DE_PL_Final.apkg --no-confirm
 	@echo "✅ Audio regeneration complete: data/DTZ_Goethe_B1_DE_PL_Final.apkg"
 
+# Apply 4-subdeck templates to existing deck with audio
+regen-templates:
+	uv run regenerate_templates.py --source data/DTZ_Goethe_B1_DE_PL_Complete_WithAudio.apkg --target data/DTZ_Goethe_B1_DE_PL_4Subdecks.apkg --validate
+	@echo "✅ Template regeneration complete: data/DTZ_Goethe_B1_DE_PL_4Subdecks.apkg"
+
 # Test media filtering functionality
 test-media:
 	uv run test_media_filtering.py
+
+# Run all tests
+test:
+	@echo "🧪 Running all tests..."
+	@echo "1️⃣ Testing subdeck generation..."
+	uv run test_subdeck_generation.py
+	@echo ""
+	@echo "2️⃣ Testing subdeck integration..."
+	uv run test_subdeck_integration.py
+	@echo ""
+	@echo "3️⃣ Testing media filtering..."
+	uv run test_media_filtering.py
+	@echo ""
+	@echo "4️⃣ Testing load compatibility..."
+	uv run test_load_compatibility.py
+	@echo ""
+	@echo "5️⃣ Testing template regeneration..."
+	uv run test_regenerate_templates.py
+	@echo ""
+	@echo "🎉 All tests completed successfully!"
 
 # === Help ===
 
@@ -98,6 +123,8 @@ help:
 	@echo "🛠️  Utilities:"
 	@echo "  make test-tts          - Test TTS with random card"
 	@echo "  make count-chars       - Count characters for cost estimation"
+	@echo "  make regen-templates   - Apply 4-subdeck templates to existing deck with audio"
+	@echo "  make test              - Run all tests (subdeck generation, integration, media, load compatibility, template regeneration)"
 	@echo "  make test-media        - Test media filtering functionality"
 	@echo ""
 	@echo "🤝 Contribution Workflow:"
