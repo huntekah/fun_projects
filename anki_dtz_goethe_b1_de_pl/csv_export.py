@@ -13,10 +13,17 @@ import os
 from pathlib import Path
 from typing import List, Optional, Tuple
 from src.anki_deck_factory.domain.models import AnkiCard, AnkiDeck
+from src.anki_deck_factory.io.csv_handler import CSVHandler
 from utilities import load_anki_deck, save_anki_deck
 
 
 def export_deck_to_csv(deck: AnkiDeck, output_path: Path) -> None:
+    """Export AnkiDeck to CSV format using the CSV handler."""
+    handler = CSVHandler()
+    handler.export_deck_to_csv(deck, output_path)
+
+
+def export_deck_to_csv_legacy(deck: AnkiDeck, output_path: Path) -> None:
     """
     Export AnkiDeck to CSV format for contribution repository.
     
@@ -90,6 +97,12 @@ def export_deck_to_csv(deck: AnkiDeck, output_path: Path) -> None:
 
 
 def export_media_files(apkg_path: Path, media_output_dir: Path) -> List[str]:
+    """Export media files using the CSV handler."""
+    handler = CSVHandler()
+    return handler.export_media_files(apkg_path, media_output_dir)
+
+
+def export_media_files_legacy(apkg_path: Path, media_output_dir: Path) -> List[str]:
     """
     Extract media files from .apkg file to media directory.
     
@@ -137,6 +150,12 @@ def export_media_files(apkg_path: Path, media_output_dir: Path) -> List[str]:
 
 
 def load_deck_from_csv(csv_path: Path, media_dir: Optional[Path] = None) -> AnkiDeck:
+    """Load deck from CSV using the CSV handler."""
+    handler = CSVHandler()
+    return handler.load_deck_from_csv(csv_path, media_dir)
+
+
+def load_deck_from_csv_legacy(csv_path: Path, media_dir: Optional[Path] = None) -> AnkiDeck:
     """
     Load AnkiDeck from CSV file and optional media directory.
     
@@ -243,6 +262,12 @@ def generate_apkg_from_csv(csv_path: Path, output_apkg_path: Path, media_dir: Op
 
 
 def export_contribution_package(apkg_path: Path, output_dir: Path) -> Tuple[Path, Path]:
+    """Export contribution package using the CSV handler."""
+    handler = CSVHandler()
+    return handler.export_contribution_package(apkg_path, output_dir)
+
+
+def export_contribution_package_legacy(apkg_path: Path, output_dir: Path) -> Tuple[Path, Path]:
     """
     Export complete contribution package: CSV + media files.
     

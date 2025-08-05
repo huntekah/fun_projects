@@ -7,6 +7,7 @@ import genanki
 from pathlib import Path
 from typing import Dict, Any, List
 from src.anki_deck_factory.domain.models import AnkiCard, AnkiDeck
+from src.anki_deck_factory.io.apkg_handler import APKGHandler
 from card_templates import (
     DTZ_MODEL_FIELDS, DTZ_CARD_TEMPLATES, DTZ_CARD_CSS,
     DTZ_RECOGNITION_TEMPLATES, DTZ_PRODUCTION_TEMPLATES, 
@@ -197,6 +198,12 @@ def _map_fields_to_schema(raw_fields_dict: Dict[str, Any], note_id: int, model_i
 
 
 def load_anki_deck(path: Path) -> AnkiDeck:
+    """Load an Anki deck from a .apkg file using the APKG handler."""
+    handler = APKGHandler()
+    return handler.load_deck(path)
+
+
+def load_anki_deck_legacy(path: Path) -> AnkiDeck:
     """
     Load an Anki deck from a .apkg file.
 
@@ -836,6 +843,12 @@ def save_anki_deck(
 
 
 def _extract_media_files(apkg_path: Path) -> List[str]:
+    """Extract media files from an .apkg file using the APKG handler."""
+    handler = APKGHandler()
+    return handler.extract_media_files(apkg_path)
+
+
+def _extract_media_files_legacy(apkg_path: Path) -> List[str]:
     """
     Extract media files from an existing .apkg file.
 
