@@ -124,35 +124,35 @@ This document breaks down the FAANG principal architect's refactoring manifesto 
 
 ---
 
-## TASK 003: Abstract Connector Interfaces 🔵
+## TASK 003: Abstract Connector Interfaces ✅
 **Business Value**: Enable future flexibility to swap LLM/TTS providers without code changes
 
 ### Sub-tasks:
-1. **003.1**: Create LLM connector interface
+1. **003.1**: Create LLM connector interface ✅
    - Create `src/anki_deck_factory/connectors/llm/base.py`
    - Define `AbstractTranslator` with `translate()` method
    - **Atomic commits**: LLM base interface
 
-2. **003.2**: Create TTS connector interface  
+2. **003.2**: Create TTS connector interface ✅
    - Create `src/anki_deck_factory/connectors/tts/base.py`
    - Define `AbstractTTS` with `synthesize()` method
    - **Atomic commits**: TTS base interface
 
-3. **003.3**: Implement Gemini connector
-   - Move `structured_gemini.py` to `src/anki_deck_factory/connectors/llm/gemini.py`
+3. **003.3**: Implement Gemini connector ✅
+   - Create `src/anki_deck_factory/connectors/llm/gemini.py`
    - Implement `AbstractTranslator` interface
    - **Atomic commits**: 
      - Create gemini.py implementation
-     - Remove old structured_gemini.py
-     - Update imports
+     - Keep structured_gemini.py for compatibility
+     - Support both old and new imports
 
-4. **003.4**: Implement Google TTS connector
-   - Move `tts_engine.py` to `src/anki_deck_factory/connectors/tts/google.py`
+4. **003.4**: Implement Google TTS connector ✅
+   - Create `src/anki_deck_factory/connectors/tts/google.py`
    - Implement `AbstractTTS` interface
    - **Atomic commits**:
      - Create google.py implementation  
-     - Remove old tts_engine.py
-     - Update imports
+     - Keep tts_engine.py for compatibility
+     - Support both old and new imports
 
 **Critical Questions & Clarifications**:
 - What's the right abstraction level? Should `translate()` take individual cards or entire decks?
