@@ -88,23 +88,7 @@ test-media:
 
 # Run all tests
 test:
-	@echo "🧪 Running all tests..."
-	@echo "1️⃣ Testing subdeck generation..."
-	uv run test_subdeck_generation.py
-	@echo ""
-	@echo "2️⃣ Testing subdeck integration..."
-	uv run test_subdeck_integration.py
-	@echo ""
-	@echo "3️⃣ Testing media filtering..."
-	uv run test_media_filtering.py
-	@echo ""
-	@echo "4️⃣ Testing load compatibility..."
-	uv run test_load_compatibility.py
-	@echo ""
-	@echo "5️⃣ Testing template regeneration..."
-	uv run test_regenerate_templates.py
-	@echo ""
-	@echo "🎉 All tests completed successfully!"
+	uv run pytest tests/ -v --disable-warnings
 
 # === Help ===
 

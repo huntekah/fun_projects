@@ -27,8 +27,10 @@ dependencies = [
     "pydantic>=2.11.7",
     "pyright>=1.1.403",
     "python-dotenv>=1.0.0",
-    "typer>=0.9.0",  # For future CLI
-    "pyyaml>=6.0",   # For configuration files
+    "typer>=0.9.0", # For future CLI
+    "pyyaml>=6.0", # For configuration files
+    "pytest>=8.4.1",
+    "langdetect>=1.0.9",
 ]
 
 [project.scripts]
