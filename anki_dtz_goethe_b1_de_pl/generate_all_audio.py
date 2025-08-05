@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Dict
 from tts_engine import TTSGenerator
 from utilities import load_anki_deck, save_anki_deck
-from schema import AnkiCard, AnkiDeck
+from src.anki_deck_factory.domain.models import AnkiCard, AnkiDeck
 
 
 def generate_complete_audio_for_card(card: AnkiCard, tts_generator: TTSGenerator, audio_dir: Path, source_lang: str = "german", target_lang: str = "polish") -> AnkiCard:

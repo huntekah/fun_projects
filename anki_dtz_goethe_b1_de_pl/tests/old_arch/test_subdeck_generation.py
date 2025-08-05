@@ -4,7 +4,7 @@ Test script to verify subdeck generation functionality.
 Creates a minimal test deck with subdecks to validate our implementation.
 """
 
-from schema import AnkiCard, AnkiDeck
+from src.anki_deck_factory.domain.models import AnkiCard, AnkiDeck
 from utilities import save_anki_deck
 from pathlib import Path
 

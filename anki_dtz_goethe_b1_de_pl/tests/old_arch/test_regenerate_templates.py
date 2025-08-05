@@ -8,7 +8,7 @@ and verifying the output.
 """
 
 from pathlib import Path
-from schema import AnkiCard, AnkiDeck
+from src.anki_deck_factory.domain.models import AnkiCard, AnkiDeck
 from utilities import save_anki_deck, load_anki_deck
 import subprocess
 import sys

@@ -12,7 +12,7 @@ import tempfile
 import os
 from pathlib import Path
 from typing import List, Optional, Tuple
-from schema import AnkiCard, AnkiDeck
+from src.anki_deck_factory.domain.models import AnkiCard, AnkiDeck
 from utilities import load_anki_deck, save_anki_deck
 
 

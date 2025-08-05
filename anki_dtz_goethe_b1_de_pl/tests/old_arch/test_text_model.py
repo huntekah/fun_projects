@@ -4,7 +4,7 @@ Test script to demonstrate the new AnkiCardTextFields approach.
 Shows how it improves efficiency by only sending text fields to LLM.
 """
 
-from schema import AnkiCard, AnkiCardTextFields
+from src.anki_deck_factory.domain.models import AnkiCard, AnkiCardTextFields
 from prompt import create_text_translation_prompt
 
 def test_text_model_conversion():

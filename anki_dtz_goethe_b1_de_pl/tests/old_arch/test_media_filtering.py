@@ -4,7 +4,7 @@ Test the media filtering functionality to ensure only referenced files are inclu
 """
 
 from utilities import _get_referenced_media_files
-from schema import AnkiCard, AnkiDeck
+from src.anki_deck_factory.domain.models import AnkiCard, AnkiDeck
 
 def test_media_filtering():
     """Test that only referenced media files are included."""

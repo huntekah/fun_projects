@@ -8,7 +8,7 @@ import argparse
 import re
 from pathlib import Path
 from typing import List, Dict, Tuple
-from schema import AnkiCard, AnkiDeck
+from src.anki_deck_factory.domain.models import AnkiCard, AnkiDeck
 from csv_export import export_deck_to_csv, load_deck_from_csv
 
 

@@ -4,7 +4,7 @@ Integration test to verify subdeck generation works with existing pipeline.
 This validates that our changes don't break the existing workflow.
 """
 
-from schema import AnkiCard, AnkiDeck
+from src.anki_deck_factory.domain.models import AnkiCard, AnkiDeck
 from utilities import save_anki_deck, load_anki_deck
 from card_templates import DTZ_CARD_TEMPLATES, DECK_ID_RECOGNITION, DECK_ID_PRODUCTION, DECK_ID_LISTENING, DECK_ID_SENTENCE_PROD
 from pathlib import Path

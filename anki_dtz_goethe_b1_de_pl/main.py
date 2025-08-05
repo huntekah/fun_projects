@@ -2,7 +2,7 @@ from pathlib import Path
 from utilities import load_anki_deck, save_anki_deck
 from connectors.llm.structured_gemini import LLMClient, VertexAIConfig
 from prompt import create_text_translation_prompt
-from schema import AnkiCard, AnkiDeck, AnkiCardTextFields
+from src.anki_deck_factory.domain.models import AnkiCard, AnkiDeck, AnkiCardTextFields
 
 
 def translate_card_with_llm(card: AnkiCard, llm_client: LLMClient) -> AnkiCard:

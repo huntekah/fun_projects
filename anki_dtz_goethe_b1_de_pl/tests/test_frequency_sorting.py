@@ -10,7 +10,7 @@ This test validates the frequency sorting functionality that will be preserved d
 import pytest
 from pathlib import Path
 from typing import List, Dict
-from schema import AnkiCard, AnkiDeck
+from src.anki_deck_factory.domain.models import AnkiCard, AnkiDeck
 from utilities import load_anki_deck, save_anki_deck
 from frequency_sort import (
     load_frequency_list, 

@@ -1,4 +1,4 @@
-from schema import AnkiCard, AnkiCardTextFields
+from src.anki_deck_factory.domain.models import AnkiCard, AnkiCardTextFields
 
 
 def create_text_translation_prompt(text_model: AnkiCardTextFields) -> str:

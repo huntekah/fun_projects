@@ -9,7 +9,7 @@ def test_imports():
     print("🧪 Testing module imports...")
     
     try:
-        import schema
+        import src.anki_deck_factory.domain.models as schema
         print("✅ schema.py - Core data models")
         assert hasattr(schema, 'AnkiCard')
         assert hasattr(schema, 'AnkiDeck')

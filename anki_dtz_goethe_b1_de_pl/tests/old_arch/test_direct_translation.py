@@ -4,7 +4,7 @@ Test script to demonstrate the improved direct German→Polish translation appro
 Shows how avoiding the DE→EN→PL chain improves translation quality.
 """
 
-from schema import AnkiCard, AnkiCardTextFields
+from src.anki_deck_factory.domain.models import AnkiCard, AnkiCardTextFields
 from prompt import create_text_translation_prompt
 
 def test_direct_translation_approach():

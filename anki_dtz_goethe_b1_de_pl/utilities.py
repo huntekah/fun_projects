@@ -6,7 +6,7 @@ import json
 import genanki
 from pathlib import Path
 from typing import Dict, Any, List
-from schema import AnkiCard, AnkiDeck
+from src.anki_deck_factory.domain.models import AnkiCard, AnkiDeck
 from card_templates import (
     DTZ_MODEL_FIELDS, DTZ_CARD_TEMPLATES, DTZ_CARD_CSS,
     DTZ_RECOGNITION_TEMPLATES, DTZ_PRODUCTION_TEMPLATES, 

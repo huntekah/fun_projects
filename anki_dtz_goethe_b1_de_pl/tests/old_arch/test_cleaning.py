@@ -4,7 +4,7 @@ Test script to demonstrate the copy_non_translation_fields_from_original functio
 Shows how it fixes LLM hallucinations like 'string' in audio fields.
 """
 
-from schema import AnkiCard
+from src.anki_deck_factory.domain.models import AnkiCard
 from utilities import copy_non_translation_fields_from_original
 
 def test_cleaning_function():

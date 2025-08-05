@@ -11,7 +11,7 @@ import pytest
 from pathlib import Path
 from typing import List
 from langdetect import detect
-from schema import AnkiCard, AnkiDeck
+from src.anki_deck_factory.domain.models import AnkiCard, AnkiDeck
 from utilities import load_anki_deck, save_anki_deck
 from main import main as run_translation
 

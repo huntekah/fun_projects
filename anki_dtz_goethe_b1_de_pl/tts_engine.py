@@ -10,7 +10,7 @@ from pathlib import Path
 from google.cloud import texttospeech
 from diskcache import Cache
 from utilities import load_anki_deck
-from schema import AnkiCard
+from src.anki_deck_factory.domain.models import AnkiCard
 
 
 class TTSGenerator:
