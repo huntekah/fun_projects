@@ -9,11 +9,9 @@ This test validates the core translation functionality that will be preserved du
 
 import pytest
 from pathlib import Path
-from typing import List
 from langdetect import detect
-from schema import AnkiCard, AnkiDeck
-from utilities import load_anki_deck, save_anki_deck
-from main import main as run_translation
+from schema import AnkiCard
+from utilities import load_anki_deck
 
 
 class TestTranslationPipeline:
@@ -100,7 +98,7 @@ class TestTranslationPipeline:
         assert test_card.base_target, "Source card should have base_target (English word)"
         assert test_card.s1_target, "Source card should have s1_target (English sentence)"
         
-        print(f"   ✅ Input validation passed")
+        print("   ✅ Input validation passed")
         print(f"   🇩🇪 German: {test_card.base_source}")
         print(f"   🇬🇧 English: {test_card.base_target}")
         print(f"   📝 Example: {test_card.s1_source}")
@@ -220,7 +218,7 @@ class TestTranslationPipeline:
             detected_lang = detect(translated_card.base_target)
             assert detected_lang != 'en', \
                 f"base_target appears to be English (detected: {detected_lang}): {translated_card.base_target}"
-        except:
+        except Exception:
             # If langdetect fails, use simple check
             assert translated_card.base_target.lower() not in ['from', 'off', 'the', 'and'], \
                 f"base_target appears to be English: {translated_card.base_target}"

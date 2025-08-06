@@ -9,7 +9,6 @@ This test validates the audio generation functionality that will be preserved du
 
 import pytest
 from pathlib import Path
-from typing import List, Dict
 from unittest.mock import patch, MagicMock
 from schema import AnkiCard, AnkiDeck
 from utilities import load_anki_deck, save_anki_deck

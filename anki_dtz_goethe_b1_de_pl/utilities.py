@@ -67,6 +67,7 @@ def _map_fields_to_schema(raw_fields_dict: Dict[str, Any], note_id: int, model_i
             "s8_target": raw_fields_dict.get("s8_target", ""),
             "s9_source": raw_fields_dict.get("s9_source", ""),
             "s9_target": raw_fields_dict.get("s9_target", ""),
+            "full_source_audio": raw_fields_dict.get("full_source_audio", ""),
             "base_audio": raw_fields_dict.get("base_audio", ""),
             "s1_audio": raw_fields_dict.get("s1_audio", ""),
             "s2_audio": raw_fields_dict.get("s2_audio", ""),
@@ -126,6 +127,7 @@ def _map_fields_to_schema(raw_fields_dict: Dict[str, Any], note_id: int, model_i
             "s9_source": raw_fields_dict.get("s9", ""),
             "s9_target": raw_fields_dict.get("s9e", ""),
             # Map audio fields
+            "full_source_audio": raw_fields_dict.get("full_source_a", raw_fields_dict.get("full_a", "")),
             "base_audio": raw_fields_dict.get("base_a", ""),
             "s1_audio": raw_fields_dict.get("s1a", ""),
             "s2_audio": raw_fields_dict.get("s2a", ""),
@@ -182,6 +184,7 @@ def _map_fields_to_schema(raw_fields_dict: Dict[str, Any], note_id: int, model_i
             "s8_target": raw_fields_dict.get("s8_target", raw_fields_dict.get("s8e", "")),
             "s9_source": raw_fields_dict.get("s9_source", raw_fields_dict.get("s9", "")),
             "s9_target": raw_fields_dict.get("s9_target", raw_fields_dict.get("s9e", "")),
+            "full_source_audio": raw_fields_dict.get("full_source_audio", raw_fields_dict.get("full_source_a", raw_fields_dict.get("full_a", ""))),
             "base_audio": raw_fields_dict.get("base_audio", raw_fields_dict.get("base_a", "")),
             "s1_audio": raw_fields_dict.get("s1_audio", raw_fields_dict.get("s1a", "")),
             "s2_audio": raw_fields_dict.get("s2_audio", raw_fields_dict.get("s2a", "")),
@@ -430,63 +433,75 @@ def save_anki_deck_4subdecks(
         for card_idx, card in enumerate(deck.cards):
             try:
                 # Prepare field values (same for all note types)
+                # IMPORTANT: Order must match DTZ_MODEL_FIELDS exactly!
                 fields = [
-                    str(getattr(card, 'frequency_rank', '') or ""),
-                    str(card.full_source or ""),
-                    str(card.base_target or ""),
-                    str(card.base_source or ""),
-                    str(card.artikel_d or ""),
-                    str(card.plural_d or ""),
-                    str(card.audio_text_d or ""),
-                    str(card.s1_source or ""),
-                    str(card.s1_target or ""),
-                    str(card.s2_source or ""),
-                    str(card.s2_target or ""),
-                    str(card.s3_source or ""),
-                    str(card.s3_target or ""),
-                    str(card.s4_source or ""),
-                    str(card.s4_target or ""),
-                    str(card.s5_source or ""),
-                    str(card.s5_target or ""),
-                    str(card.s6_source or ""),
-                    str(card.s6_target or ""),
-                    str(card.s7_source or ""),
-                    str(card.s7_target or ""),
-                    str(card.s8_source or ""),
-                    str(card.s8_target or ""),
-                    str(card.s9_source or ""),
-                    str(card.s9_target or ""),
-                    str(card.original_order or ""),
-                    str(getattr(card, 'full_source_audio', '') or ""),
-                    str(card.base_audio or ""),
-                    str(card.s1_audio or ""),
-                    str(card.s2_audio or ""),
-                    str(card.s3_audio or ""),
-                    str(card.s4_audio or ""),
-                    str(card.s5_audio or ""),
-                    str(card.s6_audio or ""),
-                    str(card.s7_audio or ""),
-                    str(card.s8_audio or ""),
-                    str(card.s9_audio or ""),
-                    str(getattr(card, 'base_target_audio', '') or ""),
-                    str(getattr(card, 's1_target_audio', '') or ""),
-                    str(getattr(card, 's2_target_audio', '') or ""),
-                    str(getattr(card, 's3_target_audio', '') or ""),
-                    str(getattr(card, 's4_target_audio', '') or ""),
-                    str(getattr(card, 's5_target_audio', '') or ""),
-                    str(getattr(card, 's6_target_audio', '') or ""),
-                    str(getattr(card, 's7_target_audio', '') or ""),
-                    str(getattr(card, 's8_target_audio', '') or ""),
-                    str(getattr(card, 's9_target_audio', '') or ""),
+                    str(getattr(card, 'frequency_rank', '') or ""),         # 0
+                    str(card.full_source or ""),                            # 1
+                    str(card.base_target or ""),                            # 2
+                    str(card.base_source or ""),                            # 3
+                    str(card.artikel_d or ""),                              # 4
+                    str(card.plural_d or ""),                               # 5
+                    str(card.audio_text_d or ""),                           # 6
+                    str(card.s1_source or ""),                              # 7
+                    str(card.s1_target or ""),                              # 8
+                    str(card.s2_source or ""),                              # 9
+                    str(card.s2_target or ""),                              # 10
+                    str(card.s3_source or ""),                              # 11
+                    str(card.s3_target or ""),                              # 12
+                    str(card.s4_source or ""),                              # 13
+                    str(card.s4_target or ""),                              # 14
+                    str(card.s5_source or ""),                              # 15
+                    str(card.s5_target or ""),                              # 16
+                    str(card.s6_source or ""),                              # 17
+                    str(card.s6_target or ""),                              # 18
+                    str(card.s7_source or ""),                              # 19
+                    str(card.s7_target or ""),                              # 20
+                    str(card.s8_source or ""),                              # 21
+                    str(card.s8_target or ""),                              # 22
+                    str(card.s9_source or ""),                              # 23
+                    str(card.s9_target or ""),                              # 24
+                    str(card.original_order or ""),                         # 25
+                    str(getattr(card, 'full_source_audio', '') or ""),      # 26 - CRITICAL: full_source_audio
+                    str(card.base_audio or ""),                             # 27
+                    str(card.s1_audio or ""),                               # 28
+                    str(card.s2_audio or ""),                               # 29
+                    str(card.s3_audio or ""),                               # 30
+                    str(card.s4_audio or ""),                               # 31
+                    str(card.s5_audio or ""),                               # 32
+                    str(card.s6_audio or ""),                               # 33
+                    str(card.s7_audio or ""),                               # 34
+                    str(card.s8_audio or ""),                               # 35
+                    str(card.s9_audio or ""),                               # 36
+                    str(getattr(card, 'base_target_audio', '') or ""),      # 37
+                    str(getattr(card, 's1_target_audio', '') or ""),        # 38
+                    str(getattr(card, 's2_target_audio', '') or ""),        # 39
+                    str(getattr(card, 's3_target_audio', '') or ""),        # 40
+                    str(getattr(card, 's4_target_audio', '') or ""),        # 41
+                    str(getattr(card, 's5_target_audio', '') or ""),        # 42
+                    str(getattr(card, 's6_target_audio', '') or ""),        # 43
+                    str(getattr(card, 's7_target_audio', '') or ""),        # 44
+                    str(getattr(card, 's8_target_audio', '') or ""),        # 45
+                    str(getattr(card, 's9_target_audio', '') or ""),        # 46
                 ]
 
-                base_guid = card.original_guid or str(card.note_id)
+                # Extract base GUID, removing any existing subdeck suffixes
+                raw_guid = card.original_guid or str(card.note_id)
+                # Note: _recognition is excluded because recognition cards use the original GUID
+                subdeck_suffixes = ['_production', '_listening', '_sentence_prod']
+                
+                # Remove existing subdeck suffix if present (for regen-templates on 4-deck files)
+                base_guid = raw_guid
+                for suffix in subdeck_suffixes:
+                    if raw_guid.endswith(suffix):
+                        base_guid = raw_guid[:-len(suffix)]
+                        break
                 
                 # 1. Recognition note (German → Polish)
+                # Use original GUID (no suffix) to preserve single-deck recognition progress
                 recognition_note = genanki.Note(
                     model=recognition_model,
                     fields=fields,
-                    guid=f"{base_guid}_recognition",
+                    guid=base_guid,
                     sort_field=0
                 )
                 recognition_deck.add_note(recognition_note)
@@ -595,12 +610,12 @@ def save_anki_deck_4subdecks(
         print(f"   Listening notes: {len(listening_deck.notes)} (1 per source card)")  
         print(f"   Sentence production notes: {len(sentence_prod_deck.notes)} (1 per source card)")
         print(f"   File size: {file_size / (1024*1024):.1f} MB")
-        print(f"")
-        print(f"📋 Each note will generate multiple cards based on available content:")
-        print(f"   • Listening: 1-9 cards per note (based on sentence content)")
-        print(f"   • Sentence production: 1-9 cards per note (based on sentence content)")
-        print(f"   • Recognition: 1 card per note")
-        print(f"   • Production: 1 card per note")
+        print("")
+        print("📋 Each note will generate multiple cards based on available content:")
+        print("   • Listening: 1-9 cards per note (based on sentence content)")
+        print("   • Sentence production: 1-9 cards per note (based on sentence content)")
+        print("   • Recognition: 1 card per note")
+        print("   • Production: 1 card per note")
         
     except Exception as e:
         print(f"\n❌ ERROR saving 4-subdeck Anki deck to {output_path}")
@@ -700,54 +715,55 @@ def save_anki_deck(
         for card_idx, card in enumerate(deck.cards):
             try:
                 # Ensure all fields are strings and handle None/empty values
+                # IMPORTANT: Order must match DTZ_MODEL_FIELDS exactly!
                 fields = [
-                    str(getattr(card, 'frequency_rank', '') or ""),
-                    str(card.full_source or ""),
-                    str(card.base_target or ""),
-                    str(card.base_source or ""),
-                    str(card.artikel_d or ""),
-                    str(card.plural_d or ""),
-                    str(card.audio_text_d or ""),
-                    str(card.s1_source or ""),
-                    str(card.s1_target or ""),
-                    str(card.s2_source or ""),
-                    str(card.s2_target or ""),
-                    str(card.s3_source or ""),
-                    str(card.s3_target or ""),
-                    str(card.s4_source or ""),
-                    str(card.s4_target or ""),
-                    str(card.s5_source or ""),
-                    str(card.s5_target or ""),
-                    str(card.s6_source or ""),
-                    str(card.s6_target or ""),
-                    str(card.s7_source or ""),
-                    str(card.s7_target or ""),
-                    str(card.s8_source or ""),
-                    str(card.s8_target or ""),
-                    str(card.s9_source or ""),
-                    str(card.s9_target or ""),
-                    str(card.original_order or ""),
-                    str(getattr(card, 'full_source_audio', '') or ""),
-                    str(card.base_audio or ""),
-                    str(card.s1_audio or ""),
-                    str(card.s2_audio or ""),
-                    str(card.s3_audio or ""),
-                    str(card.s4_audio or ""),
-                    str(card.s5_audio or ""),
-                    str(card.s6_audio or ""),
-                    str(card.s7_audio or ""),
-                    str(card.s8_audio or ""),
-                    str(card.s9_audio or ""),
-                    str(getattr(card, 'base_target_audio', '') or ""),
-                    str(getattr(card, 's1_target_audio', '') or ""),
-                    str(getattr(card, 's2_target_audio', '') or ""),
-                    str(getattr(card, 's3_target_audio', '') or ""),
-                    str(getattr(card, 's4_target_audio', '') or ""),
-                    str(getattr(card, 's5_target_audio', '') or ""),
-                    str(getattr(card, 's6_target_audio', '') or ""),
-                    str(getattr(card, 's7_target_audio', '') or ""),
-                    str(getattr(card, 's8_target_audio', '') or ""),
-                    str(getattr(card, 's9_target_audio', '') or ""),
+                    str(getattr(card, 'frequency_rank', '') or ""),         # 0
+                    str(card.full_source or ""),                            # 1
+                    str(card.base_target or ""),                            # 2
+                    str(card.base_source or ""),                            # 3
+                    str(card.artikel_d or ""),                              # 4
+                    str(card.plural_d or ""),                               # 5
+                    str(card.audio_text_d or ""),                           # 6
+                    str(card.s1_source or ""),                              # 7
+                    str(card.s1_target or ""),                              # 8
+                    str(card.s2_source or ""),                              # 9
+                    str(card.s2_target or ""),                              # 10
+                    str(card.s3_source or ""),                              # 11
+                    str(card.s3_target or ""),                              # 12
+                    str(card.s4_source or ""),                              # 13
+                    str(card.s4_target or ""),                              # 14
+                    str(card.s5_source or ""),                              # 15
+                    str(card.s5_target or ""),                              # 16
+                    str(card.s6_source or ""),                              # 17
+                    str(card.s6_target or ""),                              # 18
+                    str(card.s7_source or ""),                              # 19
+                    str(card.s7_target or ""),                              # 20
+                    str(card.s8_source or ""),                              # 21
+                    str(card.s8_target or ""),                              # 22
+                    str(card.s9_source or ""),                              # 23
+                    str(card.s9_target or ""),                              # 24
+                    str(card.original_order or ""),                         # 25
+                    str(getattr(card, 'full_source_audio', '') or ""),      # 26 - CRITICAL: full_source_audio
+                    str(card.base_audio or ""),                             # 27
+                    str(card.s1_audio or ""),                               # 28
+                    str(card.s2_audio or ""),                               # 29
+                    str(card.s3_audio or ""),                               # 30
+                    str(card.s4_audio or ""),                               # 31
+                    str(card.s5_audio or ""),                               # 32
+                    str(card.s6_audio or ""),                               # 33
+                    str(card.s7_audio or ""),                               # 34
+                    str(card.s8_audio or ""),                               # 35
+                    str(card.s9_audio or ""),                               # 36
+                    str(getattr(card, 'base_target_audio', '') or ""),      # 37
+                    str(getattr(card, 's1_target_audio', '') or ""),        # 38
+                    str(getattr(card, 's2_target_audio', '') or ""),        # 39
+                    str(getattr(card, 's3_target_audio', '') or ""),        # 40
+                    str(getattr(card, 's4_target_audio', '') or ""),        # 41
+                    str(getattr(card, 's5_target_audio', '') or ""),        # 42
+                    str(getattr(card, 's6_target_audio', '') or ""),        # 43
+                    str(getattr(card, 's7_target_audio', '') or ""),        # 44
+                    str(getattr(card, 's8_target_audio', '') or ""),        # 45
+                    str(getattr(card, 's9_target_audio', '') or ""),        # 46
                 ]
 
                 # Preserve original GUID to maintain study progress
