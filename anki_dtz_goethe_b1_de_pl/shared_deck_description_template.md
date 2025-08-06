@@ -25,6 +25,9 @@ Ta talia Anki zawiera kompletny zestaw słownictwa z oficjalnej listy DTZ (Deuts
 
 ## Kluczowe Funkcje
 
+* **4 Zorganizowane Podtalię**
+    Talia została podzielona na 4 wyspecjalizowane podtalię: 01 Rozpoznawanie (DE→PL), 02 Produkcja (PL→DE), 03 Rozumienie ze słuchu oraz 04 Produkcja zdań. Struktura ta pozwala skupić się na różnych obszarach nauki według potrzeb.
+
 * **Kolejność nauki według częstotliwości**
     Słowa są uporządkowane na podstawie częstotliwości ich występowania w języku niemieckim, co pozwala na priorytetowe przyswajanie najbardziej użytecznego słownictwa.
 
@@ -40,8 +43,8 @@ Ta talia Anki zawiera kompletny zestaw słownictwa z oficjalnej listy DTZ (Deuts
 * **Przykładowe zdania w kontekście**
     Większość słów jest zilustrowana zdaniami przykładowymi, które pokazują ich praktyczne użycie.
 
-* **Karty dwukierunkowe**
-    Talia ma karty w obu kierunkach (DE → PL oraz PL → DE), co umożliwia zarówno pasywne rozpoznawanie słów, jak i aktywne ich przywoływanie z pamięci.
+* **Różnorodne typy kart**
+    Każda nota generuje do 20 różnych kart: rozpoznawanie słów, produkcja słów, rozumienie ze słuchu oraz produkcja zdań - wszystko w ramach zorganizowanych podtalii.
 
 ## Struktura Notatek
 
@@ -62,14 +65,20 @@ Prędkość odtwarzania audio została celowo zróżnicowana w zależności od r
 
 ## 📘 Jak Efektywnie Korzystać z Talii
 
-### Karta "Niemiecki → Polski" (Rozpoznawanie)
+### 01 Rozpoznawanie (DE→PL)
 Podczas nauki zachęcam, by skupić się na przypomnieniu sobie **głównego niemieckiego słowa**, traktując zdanie przykładowe jako **podpowiedź kontekstową** – nie jako materiał do zapamiętywania. Na tylnej stronie karty kluczowe informacje są widoczne od razu, a dodatkowe przykłady ukryte w sekcji "Więcej Przykładów".
 
-### Karta "Polski → Niemiecki" (Produkcja)
-Ta karta sprawdza umiejętność aktywnego przywoływania niemieckiego słowa. Polska fraza kontekstowa oznaczona jako "Hint:" pomaga w przypomnieniu właściwego znaczenia.
+### 02 Produkcja (PL→DE)
+Ta podtalia sprawdza umiejętność aktywnego przywoływania niemieckiego słowa. Polska fraza kontekstowa oznaczona jako "Hint:" pomaga w przypomnieniu właściwego znaczenia.
 
-### 💡 Wskazówka dla Początkujących: Wstrzymanie Kart Produkcyjnych
-Należy zacząć naukę od najprostszych rzeczy. Ponieważ zrozumienie słowa (DE→PL) jest łatwiejsze niż jego zapamiętanie (produkcja), dla osób które dopiero zaczynają naukę polecam wstrzymać pokazywanie kart typu PL→DE do czasu, gdy przejdą przez karty typu DE→PL. Aby to zrobić, można posłużyć się [tym tutorialem](https://www.reddit.com/r/Anki/comments/sdhn9f/comment/hufqhga/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button), ustawiając filtr jako `card:2 deck:nazwa_talii`.
+### 03 Rozumienie ze słuchu
+Karty audio, gdzie uczysz się rozpoznawać niemieckie zdania ze słuchu i przypisywać im znaczenie.
+
+### 04 Produkcja zdań
+Nauka tłumaczenia polskich zdań na niemiecki, co rozwija umiejętności aktywnego używania języka.
+
+### 💡 Wskazówka dla Początkujących: Fokus na Jednej Podtalii
+Struktura podtalii pozwala na skupienie się na konkretnych umiejętnościach. Początkujący mogą zacząć od podtalii "01 Rozpoznawanie", a następnie stopniowo włączać kolejne. Aby ukryć określone podtalię, można je wstrzymać w ustawieniach Anki.
 
 To podejście wynika z zasad efektywnej nauki stosowanych m.in. w SuperMemo i Anki:
 * **Pytanie pozostaje proste:** Odpowiadasz tylko na pytanie "co znaczy to słowo?".
@@ -97,6 +106,13 @@ To podejście wynika z zasad efektywnej nauki stosowanych m.in. w SuperMemo i An
 * **Postęp w nauce:** Po zaimportowaniu talii upewnij się, że używasz opcji "Aktualizuj notatki" i "Importuj postęp w nauce", aby zachować swoją historię nauki przy aktualizacjach talii.
 
 W przypadku znalezienia jednoznacznego błędu, proszę o pozostawienie komentarza z podaniem numeru `frequency_rank` danej karty w celu ułatwienia jego poprawy.
+
+# Change log:
+
+* wciąż pracuję nad tą talią, więc feedback jest mile widziany. *
+
+- 01.08.2025 - fix: 'Pokaż więcej' czyta tylko w języku niemieckim, dla oszczędności czasu.
+- 31.07.2025 - poprawiono wyświetlanie talii w trybie dark mode.
 ```
 
 ---
