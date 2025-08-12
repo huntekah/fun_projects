@@ -11,7 +11,7 @@
 ## DESCRIPTION
 
 ```
-[Frequency Sorted] DTZ Goethe B1 | German-Polish + Audio
+# [Frequency Sorted] DTZ Goethe B1 | German-Polish + Audio
 
 This deck was created to support Polish speakers preparing for the Goethe-Zertifikat B1 exam. It serves as a Polish-language alternative to popular English-based B1 decks, featuring frequency-sorted vocabulary and complete TTS audio.
 
@@ -110,7 +110,7 @@ W przypadku znalezienia jednoznacznego błędu, proszę o pozostawienie komentar
 # Change log:
 
 * wciąż pracuję nad tą talią, więc feedback jest mile widziany. *
-
+- 06.08.2025 - dodano wersję 2.0.0 z podziałem na 4 podtalie.
 - 01.08.2025 - fix: 'Pokaż więcej' czyta tylko w języku niemieckim, dla oszczędności czasu.
 - 31.07.2025 - poprawiono wyświetlanie talii w trybie dark mode.
 ```
