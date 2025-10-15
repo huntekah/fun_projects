@@ -1,29 +1,28 @@
 """
-Test script for text cleaning functionality.
-Tests the preprocessor on Chapter 2 text file.
+Test script for text cleaning pipeline.
+Tests the complete chunked cleaning pipeline on Chapter 2.
 """
 
-import logging
 from pathlib import Path
 from src.processing.preprocessor import clean_chapter_text
+from src.processing.splitter import split_to_chunks
+from src.processing.merger import merge_chunks
 from dotenv import load_dotenv
 
-
 load_dotenv()
-# Set up logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
+
+WINDOW_SIZE = 6000
+OVERLAP = 2000
 
 
-def test_chapter_2_cleaning():
-    """Test text cleaning on Chapter 2."""
+def test_chunked_cleaning_pipeline():
+    """Test the complete chunked cleaning pipeline on Chapter 2."""
     
     print("=" * 60)
-    print("Testing Text Cleaning on Chapter 2")
+    print("Testing Chunked Cleaning Pipeline on Chapter 2")
     print("=" * 60)
     
     try:
-        # Load raw chapter 2 text
         project_root = Path(__file__).parent
         chapter_2_file = project_root / "data" / "slp3" / "txt" / "chapter_2.txt"
         
@@ -32,50 +31,48 @@ def test_chapter_2_cleaning():
             return False
         
         with open(chapter_2_file, 'r', encoding='utf-8') as f:
-            raw_text = f.read()
+            raw_text = f.read()[:20000]
         
         print(f"📖 Loaded Chapter 2: {len(raw_text)} characters")
-        print(f"📝 Preview of raw text:")
-        print("-" * 40)
-        print(raw_text[:500] + "...")
-        print("-" * 40)
+        print(f"⚙️ Pipeline config: window={WINDOW_SIZE}, overlap={OVERLAP}")
         
-        # Clean the text using our function
-        print("\n🧹 Starting text cleaning with Gemini...")
-        cleaned_text = clean_chapter_text("chapter_2", raw_text[:5000])
+        print("\n📄 Step 1: Splitting into chunks...")
+        chunks = list(split_to_chunks(raw_text, WINDOW_SIZE, OVERLAP))
+        print(f"   Created {len(chunks)} chunks")
         
-        print(f"✅ Cleaning completed!")
+        print("\n🧹 Step 2: Cleaning chunks with LLM...")
+        cleaned_chunks = []
+        for i, chunk in enumerate(chunks):
+            print(f"   Cleaning chunk {i+1}/{len(chunks)} ({len(chunk)} chars)...")
+            cleaned_chunk = clean_chapter_text("chapter_2", chunk)
+            cleaned_chunks.append(cleaned_chunk)
+        
+        print("\n🔗 Step 3: Merging cleaned chunks...")
+        merged_text = merge_chunks(cleaned_chunks, OVERLAP)
+        
+        print(f"✅ Pipeline completed!")
         print(f"📊 Results:")
         print(f"   - Original length: {len(raw_text)} characters")
-        print(f"   - Cleaned length: {len(cleaned_text)} characters")
-        print(f"   - Change: {len(cleaned_text) - len(raw_text):+d} characters")
+        print(f"   - Final length: {len(merged_text)} characters")
+        print(f"   - Change: {len(merged_text) - len(raw_text):+d} characters")
+        print(f"   - Processed {len(chunks)} chunks")
         
-        print(f"\n📝 Preview of cleaned text:")
-        print("-" * 40)
-        print(cleaned_text[:500] + "...")
-        print("-" * 40)
-        
-        # Save the cleaned text for inspection
-        output_file = project_root / "data" / "slp3" / "chapter_2_test_cleaned.txt"
+        output_file = project_root / "data" / "slp3" / "chapter_2_pipeline_cleaned.txt"
         output_file.parent.mkdir(parents=True, exist_ok=True)
         
         with open(output_file, 'w', encoding='utf-8') as f:
-            f.write(cleaned_text)
+            f.write(merged_text)
         
-        print(f"\n💾 Saved cleaned text to: {output_file}")
-        print("✅ Test completed successfully!")
+        print(f"\n💾 Saved final result to: {output_file}")
+        print("✅ Pipeline test completed successfully!")
         
         return True
         
     except Exception as e:
-        print(f"❌ Test failed with error: {e}")
-        logger.exception("Full error details:")
+        print(f"❌ Pipeline test failed with error: {e}")
         return False
 
 
-
-
 if __name__ == "__main__":
-
-    success1 = test_chapter_2_cleaning()
+    test_chunked_cleaning_pipeline()
     
