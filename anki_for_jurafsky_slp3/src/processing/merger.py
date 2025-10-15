@@ -3,20 +3,34 @@ from typing import List
 
 
 def merge_overlapping_chunks(chunk1: str, chunk2: str, overlap_size: int) -> str:
-    """Merges two overlapping text chunks by finding the longest common substring."""
-    overlap1 = chunk1[-overlap_size:]
-    overlap2 = chunk2[:overlap_size]
+    """
+    Merges two potentially slightly different, overlapping text chunks.
 
-    matcher = SequenceMatcher(None, overlap1, overlap2)
+    This is designed for cases where a non-deterministic process (like an LLM)
+    has cleaned or altered the chunks, so the overlapping text may not be identical.
+    It uses SequenceMatcher to find the best point of alignment.
+    """
+    print(f"{len(chunk1)=}, {len(chunk2)=}, {overlap_size=}")
+    search_window = min(len(chunk1), len(chunk2), overlap_size)
+
+    overlap1 = chunk1[-search_window:]
+    overlap2 = chunk2[:search_window]
+
+    matcher = SequenceMatcher(None, overlap1, overlap2, autojunk=False)
     match = matcher.find_longest_match(0, len(overlap1), 0, len(overlap2))
 
-    if match.size < 20:
-        raise ValueError("Could not find a reliable overlap to merge chunks.")
+    min_match_threshold = 20
+    if match.size < min_match_threshold:
+        raise ValueError(
+            f"Could not find a reliable overlap (best match: {match.size} chars). "
+            "Chunks may be too dissimilar or the overlap is too small."
+        )
 
-    start_of_match_in_chunk1_overlap = match.a
-    cut_off_point_in_chunk1 = len(chunk1) - overlap_size + start_of_match_in_chunk1_overlap
-    
-    merged_text = chunk1[:cut_off_point_in_chunk1] + chunk2
+    cut_point_in_chunk1 = len(chunk1) - search_window + match.a
+    start_point_in_chunk2 = match.b
+
+    merged_text = chunk1[:cut_point_in_chunk1] + chunk2[start_point_in_chunk2:]
+    print(f"Merged length: {len(merged_text)}")
     return merged_text
 
 

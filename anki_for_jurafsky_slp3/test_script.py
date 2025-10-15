@@ -7,12 +7,13 @@ from pathlib import Path
 from src.processing.preprocessor import clean_chapter_text
 from src.processing.splitter import split_to_chunks
 from src.processing.merger import merge_chunks
+from src.processing.semantic_chunker import split_markdown_into_sections, sanitize_filename
 from dotenv import load_dotenv
 
 load_dotenv()
 
 WINDOW_SIZE = 6000
-OVERLAP = 2000
+OVERLAP = 3000
 
 
 def test_chunked_cleaning_pipeline():
@@ -31,7 +32,7 @@ def test_chunked_cleaning_pipeline():
             return False
         
         with open(chapter_2_file, 'r', encoding='utf-8') as f:
-            raw_text = f.read()[:20000]
+            raw_text = f.read()[:5000]
         
         print(f"📖 Loaded Chapter 2: {len(raw_text)} characters")
         print(f"⚙️ Pipeline config: window={WINDOW_SIZE}, overlap={OVERLAP}")
@@ -43,9 +44,14 @@ def test_chunked_cleaning_pipeline():
         print("\n🧹 Step 2: Cleaning chunks with LLM...")
         cleaned_chunks = []
         for i, chunk in enumerate(chunks):
-            print(f"   Cleaning chunk {i+1}/{len(chunks)} ({len(chunk)} chars)...")
             cleaned_chunk = clean_chapter_text("chapter_2", chunk)
+            print(f"   Cleaning chunk {i+1}/{len(chunks)} ({len(chunk)} chars)... -> {len(cleaned_chunk)} chars")
             cleaned_chunks.append(cleaned_chunk)
+        
+        with open(project_root / "data" / "slp3" / "chapter_2_cleaned_chunks.txt", 'w', encoding='utf-8') as f:
+            for i, c in enumerate(cleaned_chunks):
+                f.write(f"--- Chunk {i+1} ---\n")
+                f.write(c + "\n\n")
         
         print("\n🔗 Step 3: Merging cleaned chunks...")
         merged_text = merge_chunks(cleaned_chunks, OVERLAP)
@@ -64,6 +70,30 @@ def test_chunked_cleaning_pipeline():
             f.write(merged_text)
         
         print(f"\n💾 Saved final result to: {output_file}")
+        
+        # # Step 4: Semantic chunking (commented out)
+        # print("\n📚 Step 4: Semantic chunking...")
+        # sections = split_markdown_into_sections(merged_text)
+        # print(f"   Found {len(sections)} semantic sections")
+        # 
+        # # Save each section to semantic_chunks directory
+        # semantic_chunks_dir = project_root / "data" / "slp3" / "semantic_chunks"
+        # semantic_chunks_dir.mkdir(parents=True, exist_ok=True)
+        # 
+        # for i, section in enumerate(sections):
+        #     heading = section['heading']
+        #     content = section.get('content', '')
+        #     level = section['level']
+        #     
+        #     filename = f"{i:02d}_{sanitize_filename(heading)}.txt"
+        #     section_file = semantic_chunks_dir / filename
+        #     
+        #     with open(section_file, 'w', encoding='utf-8') as f:
+        #         f.write(f"# {heading}\n\n")
+        #         f.write(content)
+        #     
+        #     print(f"   Saved section: {filename} (Level {level}, {len(content)} chars)")
+        
         print("✅ Pipeline test completed successfully!")
         
         return True

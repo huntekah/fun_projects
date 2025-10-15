@@ -13,13 +13,14 @@ def create_text_cleaning_prompt(chapter_name: str, text: str) -> str:
     else:
         chapter_id = chapter_name
     
-    prompt = f"""You are a text-cleaning assistant. The following text is {chapter_id} extracted from a PDF. It contains formatting errors like random headers, footers, and unnecessary line breaks that interrupt sentences.
+    prompt = f"""You are a text-cleaning assistant. The following text is a chunk of {chapter_id} extracted from a PDF. It contains formatting errors like random headers, footers, and unnecessary line breaks that interrupt sentences.
 
 Your task is to:
-1. Remove any headers or footers (e.g., "Chapter 5," page numbers, publication titles).
+1. Remove any headers or footers (e.g., "Chapter 5," if its not the beginning of the chapter, page numbers, publication titles).
 2. Join sentences that have been split across multiple lines.
 3. Ensure paragraphs are properly formatted.
-4. Make sure each chapter, sub-chapter is defined with proper markdown `#` like `# Chapter 5`, `## 8.1 Attention` or `### 13.2.1 RNN in production`
+4. Make sure each chapter, sub-chapter is defined with proper markdown like `# Chapter 5`, `## 8.1 Attention` or `### 13.2.1 RNN in production`. 
+The beginning of the chapter may not be included in this chunk, so only add chapter headers if they are clearly indicated. Since chunks will be merged later, do not worry about cutting off mid-sentence when working on this chunk.
 
 Do not change the wording or summarize the content. Simply return the cleaned, corrected text.
 
