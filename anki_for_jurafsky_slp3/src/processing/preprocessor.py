@@ -1,0 +1,40 @@
+from pathlib import Path
+from connectors.llm.structured_gemini import LLMClient
+from pydantic import BaseModel
+
+
+
+
+def create_text_cleaning_prompt(chapter_name: str, text: str) -> str:
+    if chapter_name.startswith("chapter_"):
+        chapter_id = chapter_name.replace("chapter_", "Chapter ")
+    elif chapter_name.startswith("appendix_"):
+        chapter_id = chapter_name.replace("appendix_", "Appendix ")
+    else:
+        chapter_id = chapter_name
+    
+    prompt = f"""You are a text-cleaning assistant. The following text is {chapter_id} extracted from a PDF. It contains formatting errors like random headers, footers, and unnecessary line breaks that interrupt sentences.
+
+Your task is to:
+1. Remove any headers or footers (e.g., "Chapter 5," page numbers, publication titles).
+2. Join sentences that have been split across multiple lines.
+3. Ensure paragraphs are properly formatted.
+4. Make sure each chapter, sub-chapter is defined with proper markdown `#` like `# Chapter 5`, `## 8.1 Attention` or `### 13.2.1 RNN in production`
+
+Do not change the wording or summarize the content. Simply return the cleaned, corrected text.
+
+Here is the text:
+\"\"\"
+{text}
+\"\"\"
+"""
+    
+    return prompt
+
+
+def clean_chapter_text(chapter_name: str, raw_text: str) -> str:
+    llm_client = LLMClient()
+    prompt = create_text_cleaning_prompt(chapter_name, raw_text)
+    result, latency = llm_client.generate(prompt, str)
+    return result
+
