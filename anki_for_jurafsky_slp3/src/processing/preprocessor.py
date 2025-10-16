@@ -21,6 +21,7 @@ Your task is to:
 3. Ensure paragraphs are properly formatted.
 4. Make sure each chapter, sub-chapter is defined with proper markdown like `# Chapter 5`, `## 8.1 Attention` or `### 13.2.1 RNN in production`. 
 The beginning of the chapter may not be included in this chunk, so only add chapter headers if they are clearly indicated. Since chunks will be merged later, do not worry about cutting off mid-sentence when working on this chunk.
+5. If an array or a sample starts with literal `#` like an array row  `# e x e c u t i o n` or a python comment fragment, then escape the `#` with a backslash like `\\# e x e c u t i o n` so it is not interpreted as a header.
 
 Do not change the wording or summarize the content. Simply return the cleaned, corrected text.
 

@@ -21,6 +21,7 @@ dependencies = [
     "mistune>=3.1.4",
     "openai>=2.3.0",
     "pandas>=2.3.3",
+    "pick>=2.4.0",
     "pydantic>=2.11.7",
     "pymupdf>=1.26.5",
     "python-dotenv>=1.0.0",
