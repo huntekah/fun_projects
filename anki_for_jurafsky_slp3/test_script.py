@@ -32,7 +32,7 @@ def test_chunked_cleaning_pipeline():
             return False
         
         with open(chapter_2_file, 'r', encoding='utf-8') as f:
-            raw_text = f.read()[:5000]
+            raw_text = f.read()[:]
         
         print(f"📖 Loaded Chapter 2: {len(raw_text)} characters")
         print(f"⚙️ Pipeline config: window={WINDOW_SIZE}, overlap={OVERLAP}")
@@ -71,28 +71,27 @@ def test_chunked_cleaning_pipeline():
         
         print(f"\n💾 Saved final result to: {output_file}")
         
-        # # Step 4: Semantic chunking (commented out)
-        # print("\n📚 Step 4: Semantic chunking...")
-        # sections = split_markdown_into_sections(merged_text)
-        # print(f"   Found {len(sections)} semantic sections")
-        # 
-        # # Save each section to semantic_chunks directory
-        # semantic_chunks_dir = project_root / "data" / "slp3" / "semantic_chunks"
-        # semantic_chunks_dir.mkdir(parents=True, exist_ok=True)
-        # 
-        # for i, section in enumerate(sections):
-        #     heading = section['heading']
-        #     content = section.get('content', '')
-        #     level = section['level']
-        #     
-        #     filename = f"{i:02d}_{sanitize_filename(heading)}.txt"
-        #     section_file = semantic_chunks_dir / filename
-        #     
-        #     with open(section_file, 'w', encoding='utf-8') as f:
-        #         f.write(f"# {heading}\n\n")
-        #         f.write(content)
-        #     
-        #     print(f"   Saved section: {filename} (Level {level}, {len(content)} chars)")
+        print("\n📚 Step 4: Semantic chunking...")
+        sections = split_markdown_into_sections(merged_text)
+        print(f"   Found {len(sections)} semantic sections")
+        
+        # Save each section to semantic_chunks directory
+        semantic_chunks_dir = project_root / "data" / "slp3" / "semantic_chunks"
+        semantic_chunks_dir.mkdir(parents=True, exist_ok=True)
+        
+        for i, section in enumerate(sections):
+            heading = section['heading']
+            content = section.get('content', '')
+            level = section['level']
+            
+            filename = f"{i:02d}_{sanitize_filename(heading)}.txt"
+            section_file = semantic_chunks_dir / filename
+            
+            with open(section_file, 'w', encoding='utf-8') as f:
+                f.write(f"# {heading}\n\n")
+                f.write(content)
+            
+            print(f"   Saved section: {filename} (Level {level}, {len(content)} chars)")
         
         print("✅ Pipeline test completed successfully!")
         

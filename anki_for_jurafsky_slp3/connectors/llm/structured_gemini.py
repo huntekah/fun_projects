@@ -23,27 +23,26 @@ T = TypeVar("T", bound=BaseModel)
 
 
 class LLMClient:
-    def __init__(self, model: str = None) -> None:
+    def __init__(self, model: str | None = None) -> None:
         self.model: str = model or os.getenv("LLM_MODEL", "gemini-2.5-flash")
         self.client = genai.Client()
 
     def _make_api_call(
         self, text: str, schema: Any, generation_config: Dict[str, Any] | None = None
-    ) -> Tuple[GenerateContentResponse, float]:
-        config: dict[str, Any] = {
-            "response_mime_type": "application/json",
-            "response_schema": schema,
-        }
-        if generation_config:
-            config.update(generation_config)
+    ) -> GenerateContentResponse:
+        if generation_config is None:
+            config: dict[str, Any] = {
+                "response_mime_type": "application/json",
+                "response_schema": schema,
+            }
+        else:
+            config = generation_config
 
-        start_time = time.time()
         response = self.client.models.generate_content(
             model=self.model, contents=text, config=config
         )
-        api_latency = time.time() - start_time
 
-        return response, api_latency
+        return response
 
     def _parse_basemodel_response(
         self, response: GenerateContentResponse, schema: Type[T]
@@ -63,11 +62,20 @@ class LLMClient:
     )
     def _generate_with_retry(
         self, text: str, schema: Any, generation_config: Dict[str, Any] | None = None
-    ) -> Tuple[GenerateContentResponse, float]:
+    ) -> GenerateContentResponse:
         return self._make_api_call(text, schema, generation_config)
 
     @disk_cache
-    def generate(self, text: str, schema: Type[T]) -> Tuple[T, float]:
-        response, latency = self._generate_with_retry(text, schema)
+    def generate(self, text: str, schema: Type[T]) -> T:
+        response = self._generate_with_retry(text, schema)
         parsed_response = self._parse_basemodel_response(response, schema)
-        return parsed_response, latency
+        return parsed_response
+    
+    def generate_raw(self, text: str) -> str:
+        try:
+            return self._generate_with_retry(text, str, {"response_mime_type": "text/plain"}).text
+        except Exception as e:
+            import traceback
+            logger.error(f"Failed to generate raw text: {e}")
+            logger.error(traceback.format_exc())
+            raise e
