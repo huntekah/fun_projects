@@ -59,13 +59,15 @@ def merge_chunks(cleaned_chunks: List[str], overlap: int) -> str:
     """Merge a list of cleaned chunks into a single document."""
     if not cleaned_chunks:
         return ""
-    
+
     if len(cleaned_chunks) == 1:
         return cleaned_chunks[0]
 
     merged_document = cleaned_chunks[0]
 
     for i in range(1, len(cleaned_chunks)):
-        merged_document = merge_overlapping_chunks(merged_document, cleaned_chunks[i], overlap)
+        merged_document = merge_overlapping_chunks(
+            merged_document, cleaned_chunks[i], overlap
+        )
 
     return merged_document

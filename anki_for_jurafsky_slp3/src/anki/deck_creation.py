@@ -9,18 +9,15 @@ from src.models.cards import CardType, QACard, ClozeCard, EnumerationCard
 
 def print_warning_details(w: List[warnings.WarningMessage], card: CardType) -> None:
     """Print details about the card that triggered a warning."""
-    print(f"\n⚠️  Warning triggered by card:")
+    print("\n⚠️  Warning triggered by card:")
     print(f"Card type: {type(card).__name__}")
     print(f"Card: {card}")
     print(f"Warning: {w[0].message}")
     print("=" * 50)
 
 
-
-
-
 # A simple, clean CSS for all card types
-SHARED_CSS = '''
+SHARED_CSS = """
 .card {
     font-family: Arial, sans-serif;
     font-size: 20px;
@@ -35,42 +32,42 @@ SHARED_CSS = '''
     display: inline-block;
     text-align: left;
 }
-'''
+"""
 
 # Model for Basic Q&A Cards
 basic_model = genanki.Model(
     random.randrange(1 << 30, 1 << 31),  # Unique model ID
-    'Simple Q&A Model',
+    "Simple Q&A Model",
     fields=[
-        {'name': 'Question'},
-        {'name': 'Answer'},
+        {"name": "Question"},
+        {"name": "Answer"},
     ],
     templates=[
         {
-            'name': 'Q&A Card',
-            'qfmt': '<div class="card-front">{{Question}}</div>',
-            'afmt': '{{FrontSide}}<hr id="answer"><div class="card-back">{{Answer}}</div>',
+            "name": "Q&A Card",
+            "qfmt": '<div class="card-front">{{Question}}</div>',
+            "afmt": '{{FrontSide}}<hr id="answer"><div class="card-back">{{Answer}}</div>',
         },
     ],
-    css=SHARED_CSS
+    css=SHARED_CSS,
 )
 
 # Model for Enumeration Cards
 enumeration_model = genanki.Model(
-    random.randrange(1 << 30, 1 << 31), # Unique model ID
-    'Enumeration Model',
+    random.randrange(1 << 30, 1 << 31),  # Unique model ID
+    "Enumeration Model",
     fields=[
-        {'name': 'Prompt'},
-        {'name': 'ItemsHTML'}, # We will store the list as pre-formatted HTML
+        {"name": "Prompt"},
+        {"name": "ItemsHTML"},  # We will store the list as pre-formatted HTML
     ],
     templates=[
         {
-            'name': 'Enumeration Card',
-            'qfmt': '<div class="card-front">{{Prompt}}</div>',
-            'afmt': '{{FrontSide}}<hr id="answer"><div class="card-back">{{ItemsHTML}}</div>',
+            "name": "Enumeration Card",
+            "qfmt": '<div class="card-front">{{Prompt}}</div>',
+            "afmt": '{{FrontSide}}<hr id="answer"><div class="card-back">{{ItemsHTML}}</div>',
         },
     ],
-    css=SHARED_CSS
+    css=SHARED_CSS,
 )
 
 
@@ -84,32 +81,32 @@ def create_anki_deck(cards: List[CardType], deck_name: str, output_filename: str
     """
     deck_id = random.randrange(1 << 30, 1 << 31)
     anki_deck = genanki.Deck(deck_id, deck_name)
-    
+
     # We need to collect all models used in the deck
     models_in_use = {basic_model, enumeration_model, genanki.CLOZE_MODEL}
 
     for card in cards:
         note = None
         if isinstance(card, QACard):
-            note = genanki.Note(
-                model=basic_model,
-                fields=[card.q, card.a]
-            )
+            note = genanki.Note(model=basic_model, fields=[card.q, card.a])
         elif isinstance(card, ClozeCard):
             note = genanki.Note(
                 # Use the built-in Cloze model
                 model=genanki.CLOZE_MODEL,
-                fields=[card.text]
+                fields=[card.text],
             )
         elif isinstance(card, EnumerationCard):
             # Convert the list of items into an HTML list
-            list_tag = 'ol' if card.ordered else 'ul'
-            items_html = f"<{list_tag}>" + "".join(f"<li>{item}</li>" for item in card.items) + f"</{list_tag}>"
-            note = genanki.Note(
-                model=enumeration_model,
-                fields=[card.prompt, items_html]
+            list_tag = "ol" if card.ordered else "ul"
+            items_html = (
+                f"<{list_tag}>"
+                + "".join(f"<li>{item}</li>" for item in card.items)
+                + f"</{list_tag}>"
             )
-        
+            note = genanki.Note(
+                model=enumeration_model, fields=[card.prompt, items_html]
+            )
+
         if note:
             with warnings.catch_warnings(record=True) as w:
                 warnings.simplefilter("always")
@@ -119,7 +116,7 @@ def create_anki_deck(cards: List[CardType], deck_name: str, output_filename: str
 
     # Create the package
     anki_package = genanki.Package(anki_deck)
-    
+
     # Add all the models that were used to the package
     anki_package.models = list(models_in_use)
 

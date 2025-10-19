@@ -1,7 +1,7 @@
 import hashlib
 import logging
 from functools import wraps
-from typing import Any, Callable, Type, TypeVar, Union
+from typing import Callable, Type, TypeVar
 
 import diskcache as dc
 from pydantic import BaseModel
@@ -41,11 +41,11 @@ def disk_cache(func: Callable[..., T]) -> Callable[..., T]:
         result: T = func(self, text, schema)
 
         try:
-            if hasattr(result, 'model_dump'):
+            if hasattr(result, "model_dump"):
                 cache.set(cache_key, result.model_dump())
             else:
                 cache.set(cache_key, result)
-            
+
             logger.debug(f"💾 Cached {schema.__name__} response")
         except Exception as e:
             logger.warning(f"Failed to cache response: {e}")

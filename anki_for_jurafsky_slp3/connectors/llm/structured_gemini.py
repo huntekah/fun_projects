@@ -1,13 +1,11 @@
 import logging
 import os
-import time
-from typing import Any, Dict, Tuple, Type, TypeVar, overload
+from typing import Any, Dict, Type, TypeVar
 
 from google import genai
 from google.genai.types import GenerateContentResponse
 from pydantic import BaseModel
 from tenacity import (
-    RetryError,
     retry,
     retry_if_exception_type,
     stop_after_attempt,
@@ -68,10 +66,11 @@ class LLMClient:
     @disk_cache
     def generate(self, text: str, schema: Type[T]) -> T:
         if schema is str:
-            response = self._generate_with_retry(text, str, {"response_mime_type": "text/plain"})
+            response = self._generate_with_retry(
+                text, str, {"response_mime_type": "text/plain"}
+            )
             return response.text
         else:
             response = self._generate_with_retry(text, schema)
             parsed_response = self._parse_basemodel_response(response, schema)
             return parsed_response
-    

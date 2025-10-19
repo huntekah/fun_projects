@@ -6,10 +6,10 @@ from src.models.cards import AtomicCards, CardType
 def extract_atomic_cards(chunk: str) -> List[CardType]:
     """
     Extract atomic knowledge cards from a text chunk.
-    
+
     Args:
         chunk: Text chunk to process
-        
+
     Returns:
         List of atomic flashcards extracted from the chunk
     """
@@ -111,19 +111,18 @@ BEGIN PROMPT
 Based on all the rules and examples above, process the following text chunk:
 
 {chunk}"""
-    
+
     result = llm_client.generate(prompt, AtomicCards)
     return result.cards
-
 
 
 def fix_card(source: str, card: CardType) -> CardType:
     """
     Read the card. fix any mistakes, if there are some. apply math nice formatting for html.
-    
+
     Args:
         chunk: Text chunk to process
-        
+
     Returns:
         List of atomic flashcards extracted from the chunk
     """
