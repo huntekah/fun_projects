@@ -1,5 +1,6 @@
 import argparse
 import sys
+import json
 from pathlib import Path
 from pick import pick
 
@@ -64,12 +65,57 @@ def run_create_cards_command():
     create_cards_for_chapters(selected_chapters)
 
 
+def run_make_deck_command(chapter_num: int):
+    """Load cards for a chapter and create an Anki deck."""
+    from src.anki.deck_creation import create_anki_deck
+    from src.models.cards import QACard, ClozeCard, EnumerationCard
+    
+    # Check if cards file exists
+    cards_file = Path(f"data/slp3/cards/chapter_{chapter_num}/atomic_cards.json")
+    if not cards_file.exists():
+        print(f"❌ Cards file not found: {cards_file}")
+        print(f"Please run --create-cards first to generate cards for chapter {chapter_num}")
+        sys.exit(1)
+    
+    print(f"📖 Loading cards for Chapter {chapter_num}...")
+    
+    # Load cards from JSON
+    with open(cards_file, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    
+    cards_data = data.get('cards', [])
+    if not cards_data:
+        print(f"❌ No cards found in {cards_file}")
+        sys.exit(1)
+    
+    # Convert JSON data back to CardType objects
+    cards = []
+    for card_data in cards_data:
+        card_type = card_data.get('type')
+        if card_type == 'Q&A':
+            cards.append(QACard(**card_data))
+        elif card_type == 'Cloze':
+            cards.append(ClozeCard(**card_data))
+        elif card_type == 'Enumeration':
+            cards.append(EnumerationCard(**card_data))
+    
+    print(f"✅ Loaded {len(cards)} cards")
+    
+    # Create Anki deck
+    deck_name = f"{chapter_num:02d} chapter slp3"
+    output_filename = f"data/slp3/anki_decks/chapter_{chapter_num}.apkg"
+    
+    create_anki_deck(cards, deck_name, output_filename)
+
+
 def create_parser():
     """Create and configure the argument parser."""
     parser = argparse.ArgumentParser(description="Anki flashcard generator for Jurafsky & Martin SLP3")
-    parser.add_argument("--fetch", action="store_true", help="Fetch content from specified source")
-    parser.add_argument("--source", type=str, choices=["slp3"], help="Source to fetch content from")
+    parser.add_argument("--fetch", "-f", action="store_true", help="Fetch content from specified source")
+    parser.add_argument("--source", "-s", type=str, choices=["slp3"], help="Source to fetch content from")
     parser.add_argument("--create-cards", "-c", action="store_true", help="Interactive chapter selection for card generation")
+    parser.add_argument("--make-deck", "-m", action="store_true", help="Create Anki deck from existing cards")
+    parser.add_argument("--chapter", "-ch", type=int, help="Chapter number for deck creation")
     return parser
 
 
@@ -85,6 +131,11 @@ def main():
         run_fetch_command(args.source)
     elif args.create_cards:
         run_create_cards_command()
+    elif args.make_deck:
+        if not args.chapter:
+            print("❌ --chapter is required when using --make-deck")
+            sys.exit(1)
+        run_make_deck_command(args.chapter)
     else:
         parser.print_help()
 

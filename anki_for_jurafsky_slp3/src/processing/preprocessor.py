@@ -37,6 +37,6 @@ Here is the text:
 def clean_chapter_text(chapter_name: str, raw_text: str) -> str:
     llm_client = LLMClient()
     prompt = create_text_cleaning_prompt(chapter_name, raw_text)
-    result = llm_client.generate_raw(prompt)
+    result = llm_client.generate(prompt,str)
     return result
 

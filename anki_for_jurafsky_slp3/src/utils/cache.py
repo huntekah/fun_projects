@@ -10,22 +10,7 @@ logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
 
-cache = dc.Cache(".llm_cache", size_limit=1_000_000_000)
-
-
-def get_cache_stats() -> dict:
-    try:
-        cache_size_mb = (
-            sum(cache.volume().values()) / (1024 * 1024) if cache.volume() else 0
-        )
-        return {
-            "cache_items": getattr(cache, "size", 0),
-            "cache_size_mb": round(cache_size_mb, 1),
-            "cache_directory": cache.directory,
-        }
-    except Exception as e:
-        logger.warning(f"Failed to get cache stats: {e}")
-        return {"error": str(e)}
+cache = dc.Cache(".llm_cache", size_limit=2_000_000_000)
 
 
 def create_cache_key(model: str, text: str, schema: Type[T]) -> str:

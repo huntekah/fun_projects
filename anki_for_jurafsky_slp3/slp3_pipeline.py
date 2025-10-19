@@ -9,8 +9,8 @@ from src.processing.splitter import split_to_chunks
 from src.processing.preprocessor import clean_chapter_text
 from src.processing.merger import merge_chunks
 from src.processing.semantic_chunker import split_markdown_into_sections
-from src.processing.atomic_chunker import extract_atomic_cards
-from src.models.cards import CardType
+from src.processing.atomic_chunker import extract_atomic_cards, fix_card
+from src.models.cards import CardType, ClozeCard, EnumerationCard, QACard
 from tqdm import tqdm
 
 
@@ -58,16 +58,25 @@ def chapter_pipeline(raw_chapter_text: str, chapter_name: str, window_size: int 
         try:
             section_text = f"# {heading}\n\n{content}"
             cards = extract_atomic_cards(section_text)
-            all_cards.extend(cards)
+            card_info = [(section_text, card) for card in cards]
+            all_cards.extend(card_info)
         except Exception as e:
             # Log error but continue processing other sections
             print(f"Warning: Failed to extract cards from section '{heading}': {e}")
             continue
     
+    new_cards = []
+    for section_text, card in all_cards:
+        fixed_card: QACard | ClozeCard | EnumerationCard = fix_card(section_text, card)
+        new_cards.append(fixed_card)
+        
+    all_cards = new_cards    
+        
+    
     return all_cards
 
 
-def create_cards_for_chapters(chapter_numbers: List[int], data_dir: Path = None) -> None:
+def create_cards_for_chapters(chapter_numbers: List[int], data_dir: Path | None = None) -> None:
     """
     Create atomic cards for selected chapters and save them to organized directories.
     

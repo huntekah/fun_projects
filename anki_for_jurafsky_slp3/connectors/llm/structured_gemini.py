@@ -1,7 +1,7 @@
 import logging
 import os
 import time
-from typing import Any, Dict, Tuple, Type, TypeVar
+from typing import Any, Dict, Tuple, Type, TypeVar, overload
 
 from google import genai
 from google.genai.types import GenerateContentResponse
@@ -67,15 +67,11 @@ class LLMClient:
 
     @disk_cache
     def generate(self, text: str, schema: Type[T]) -> T:
-        response = self._generate_with_retry(text, schema)
-        parsed_response = self._parse_basemodel_response(response, schema)
-        return parsed_response
+        if schema is str:
+            response = self._generate_with_retry(text, str, {"response_mime_type": "text/plain"})
+            return response.text
+        else:
+            response = self._generate_with_retry(text, schema)
+            parsed_response = self._parse_basemodel_response(response, schema)
+            return parsed_response
     
-    def generate_raw(self, text: str) -> str:
-        try:
-            return self._generate_with_retry(text, str, {"response_mime_type": "text/plain"}).text
-        except Exception as e:
-            import traceback
-            logger.error(f"Failed to generate raw text: {e}")
-            logger.error(traceback.format_exc())
-            raise e
