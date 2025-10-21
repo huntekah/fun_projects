@@ -65,22 +65,6 @@ LEETCODE_CSS = """
     padding: 25px;
 }
 
-pre {
-    background-color: var(--bg-secondary);
-    border: 1px solid var(--border-color);
-    padding: 15px;
-    border-radius: 5px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-}
-
-code {
-    font-family: 'Fira Code', 'Courier New', monospace;
-    font-size: 16px;
-    /* Code text color needs to be set explicitly */
-    color: var(--text-primary);
-}
-
 /* --------------------------------------------------
    3. COMPONENT STYLES
    -------------------------------------------------- */
@@ -219,6 +203,10 @@ leetcode_model = genanki.Model(
                         {{Tags}}
                     </div>
                 </div>
+                
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-dark.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/python.min.js"></script>
+<script>hljs.highlightAll();</script>
             ''',
         },
     ],
