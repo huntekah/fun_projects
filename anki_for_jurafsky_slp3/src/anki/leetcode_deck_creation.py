@@ -205,7 +205,7 @@ leetcode_model = genanki.Model(
                     </div>
                     <div class="solution-section">
                         <h3>Strategy</h3>
-                        {{text:Strategy}}
+                        {{Strategy}}
                     </div>
                     <div class="solution-section">
                         <h3>Implementation</h3>
@@ -213,7 +213,7 @@ leetcode_model = genanki.Model(
                     </div>
                     <div class="solution-section">
                         <h3>Complexity</h3>
-                        {{text:Complexity}}
+                        {{Complexity}}
                     </div>
                     <div class="solution-tags">
                         {{Tags}}
@@ -249,6 +249,10 @@ def create_leetcode_note(card: AnkiLeetcodeCard) -> LeetCodeNote:
     # Format tags for HTML display
     tags_html = "".join(f'<span class="tag">{tag}</span>' for tag in card.tags)
     
+    # Convert line breaks to HTML <br> tags for proper Anki display
+    problem_description_html = card.problem_description.replace('\n', '<br>')
+    strategy_html = card.strategy.replace('\n', '<br>')
+    
     return LeetCodeNote(
         model=leetcode_model,
         fields=[
@@ -256,10 +260,10 @@ def create_leetcode_note(card: AnkiLeetcodeCard) -> LeetCodeNote:
             card.title,
             card.description_url,
             card.difficulty,
-            card.problem_description,
+            problem_description_html,
             card.solution_type,
             card.key_insight,
-            card.strategy,
+            strategy_html,
             card.code,
             card.complexity,
             tags_html
