@@ -11,7 +11,25 @@ from tqdm import tqdm
 from src.models.leetcode_cards import LeetcodeCard, FetchedLeetcodeProblem
 from connectors.llm.structured_gemini import LLMClient
 
-LEETCODE_CARD_PROMPT = r"""
+
+
+
+def create_leetcode_card(problem_text: str) -> LeetcodeCard:
+    """
+    Generate a LeetcodeCard from a problem description using LLM analysis.
+    
+    Args:
+        problem_text: The complete LeetCode problem description including
+                     title, difficulty, topics, statement, examples, etc.
+    
+    Returns:
+        LeetcodeCard: Structured flashcard with problem summary and solution approaches
+    """
+    # Initialize the LLM client
+    llm_client = LLMClient()
+    
+    
+    LEETCODE_CARD_PROMPT = f"""
 Persona
 You are an expert programmer and computer science educator with deep knowledge of algorithms, data structures, and competitive programming. Your primary skill is breaking down complex problems into their core concepts and explaining them with clarity and precision. You are creating content for educational flashcards aimed at helping users learn and internalize algorithmic patterns.
 
@@ -22,7 +40,10 @@ Context
 The generated output is for educational "flashcards." The most crucial element is the key_insight, which should capture the "aha!" moment or the core idea required to unlock the solution. The strategy should be a clear, step-by-step algorithm that is easy to follow. The code must be a minimal, clean implementation of the strategy in Python; it should be unadorned with comments unless they clarify a point not obvious from the strategy itself.
 
 Always provide multiple solutions if they represent fundamentally different or common approaches (e.g., brute-force vs. optimized, greedy vs. dynamic programming).
-Use \(\) for inline math (e.g., \(E=mc^2\)) and \[\] for display/block math.
+
+Formatting
+- Use \(\) for inline math (e.g., \(E=mc^2\)) and \[\] for display/block math.
+- use <code>...</code> tags for inline code snippets, or simple HTML formatting if needed in the problem description.
 
 EXAMPLES
 Here are two high-quality examples of the desired output for two different LeetCode problems.
@@ -45,19 +66,18 @@ Input: s = "aaab"
 Output: ""
 
 [Expected Output]
-{
-  "problem_description": "Given a string `s`, rearrange its characters so that no two adjacent characters are the same. Return the rearranged string or an empty string if impossible. 
-  Constraints: `1 <= s.length <= 500`, `s` consists of lowercase English letters.",
+{{
+  "problem_description": "Given a string <code>s</code>, rearrange its characters so that no two adjacent characters are the same. Return the rearranged string or an empty string if impossible. Constraints: <code>1 <= s.length <= 500</code>, <code>s</code> consists of lowercase English letters.",
   "solutions": [
-    {
-      "key_insight": "The rearrangement is impossible if any single character appears more than \\((n + 1) // 2\\) times. If the most frequent char `c` has $freq(c) > (n + 1) // 2$, there aren't enough 'other' characters to place between its occurrences. If it's possible, a greedy approach of placing characters at alternating indices (first all even, then all odd) will guarantee separation.",
-      "strategy": "1. Count character frequencies and sort them from most to least frequent.\\n2. Check the impossibility condition: if the count of the most frequent character is greater than \\((n + 1) // 2\\), return `\\\"\\\"`.\\n3. Create an empty result array `res` of size `n`.\\n4. Iterate through the sorted characters. For each character, place its occurrences into the `res` array, starting at index 0 and skipping every other position (0, 2, 4, ...).\\n5. If the end of the array is reached, wrap around to the first odd index (1, 3, 5, ...) and continue placing characters.\\n6. Join and return the `res` array.",
-      "complexity": "Time: \\(O(n + k \\log k)\\) where $n$ is the length of the string and $k$ is the number of unique characters (for counting and sorting frequencies). Space: \\(O(n)\\) for the result array.",
-      "code": "import collections\\nclass Solution:\\n    def reorganizeString(self, s: str) -> str:\\n        n = len(s)\\n        counts = collections.Counter(s)\\n        most_common = counts.most_common()\\n        \\n        max_freq = most_common[0][1]\\n        if 2 * max_freq > n + 1:\\n            return \\\"\\\"\\n\\n        res = [\\\"\\\"]*n\\n        idx = 0\\n        \\n        for char, count in most_common:\\n            for _ in range(count):\\n                if idx >= n:\\n                    idx = 1\\n                \\n                res[idx] = char\\n                idx += 2\\n                \\n        return \\\"\\\".join(res)",
+    {{
+      "key_insight": "The rearrangement is impossible if any single character appears more than \\((n + 1) // 2\\) times. If the most frequent char <code>c</code> has \\(freq(c) > (n + 1) // 2\\), there aren't enough 'other' characters to place between its occurrences. If it's possible, a greedy approach of placing characters at alternating indices (first all even, then all odd) will guarantee separation.",
+      "strategy": "1. Count character frequencies and sort them from most to least frequent.\n2. Check the impossibility condition: if the count of the most frequent character is greater than \\((n + 1) // 2\\), return <code>\\\"\\\"</code>.\n3. Create an empty result array <code>res</code> of size <code>n</code>.\n4. Iterate through the sorted characters. For each character, place its occurrences into the <code>res</code> array, starting at index 0 and skipping every other position (0, 2, 4, ...).\n5. If the end of the array is reached, wrap around to the first odd index (1, 3, 5, ...) and continue placing characters.\n6. Join and return the <code>res</code> array.",
+      "complexity": "Time: \\(O(n + k \\log k)\\) where \\(n\\) is the length of the string and \\(k\\) is the number of unique characters (for counting and sorting frequencies).\nSpace: \\(O(n)\\) for the result array.",
+      "code": "import collections\nclass Solution:\n    def reorganizeString(self, s: str) -> str:\n        n = len(s)\n        counts = collections.Counter(s)\n        most_common = counts.most_common()\n        \n        max_freq = most_common[0][1]\n        if 2 * max_freq > n + 1:\n            return \\\"\\\"\n\n        res = [\\\"\\\"]*n\n        idx = 0\n        \n        for char, count in most_common:\n            for _ in range(count):\n                if idx >= n:\n                    idx = 1\n                \n                res[idx] = char\n                idx += 2\n                \n        return \\\"\\\".join(res)",
       "solution_type": "greedy"
-    }
+    }}
   ]
-}
+}}
 
 Example 2: Two Sum
 [Problem Input]
@@ -75,47 +95,32 @@ Output: [0,1]
 Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].
 
 [Expected Output]
-{
-  "problem_description": "Given an array of integers `nums` and an integer `target`, find the indices of two numbers in the array that sum up to the `target`. Each input has exactly one solution, and the same element cannot be used twice.",
+{{
+  "problem_description": "Given an array of integers <code>nums</code> and an integer <code>target</code>, find the indices of two numbers in the array that sum up to the <code>target</code>. Each input has exactly one solution, and the same element cannot be used twice.",
   "solutions": [
-    {
+    {{
       "key_insight": "The most straightforward approach is to check every possible pair of numbers in the array to see if they sum to the target.",
-      "strategy": "1. Iterate through each element at index `i` in the array.\\n2. For each element at `i`, iterate through the rest of the array starting from index `j = i + 1`.\\n3. Check if `nums[i] + nums[j] == target`.\\n4. If they sum to the target, return the indices `[i, j]`.",
-      "complexity": "Time: \\(O(n^2)\\) because the nested loops check every pair of elements. Space: \\(O(1)\\) as no extra space proportional to the input size is used.",
-      "code": "class Solution:\\n    def twoSum(self, nums, target):\\n        n = len(nums)\\n        for i in range(n):\\n            for j in range(i + 1, n):\\n                if nums[i] + nums[j] == target:\\n                    return [i, j]",
+      "strategy": "1. Iterate through each element at index <code>i</code> in the array.\n2. For each element at <code>i</code>, iterate through the rest of the array starting from index <code>j = i + 1</code>.\n3. Check if <code>nums[i] + nums[j] == target</code>.\n4. If they sum to the target, return the indices <code>[i, j]</code>.",
+      "complexity": "Time: \\(O(n^2)\\) because the nested loops check every pair of elements.\nSpace: \\(O(1)\\) as no extra space proportional to the input size is used.",
+      "code": "class Solution:\n    def twoSum(self, nums, target):\n        n = len(nums)\n        for i in range(n):\n            for j in range(i + 1, n):\n                if nums[i] + nums[j] == target:\n                    return [i, j]",
       "solution_type": "brute force"
-    },
-    {
-      "key_insight": "To find a complement (`target - current_num`) in constant time, we can use a hash map. By storing numbers we've already seen and their indices, we can check for the complement's existence in \\(O(1)\\) time as we iterate through the array.",
-      "strategy": "1. Initialize an empty hash map `seen_map` to store `{value: index}` pairs.\\n2. Iterate through the `nums` array, getting both the index `i` and value `num`.\\n3. For each number, calculate its required `complement = target - num`.\\n4. Check if this `complement` already exists as a key in `seen_map`.\\n5. If it exists, we have found our pair. Return its stored index and the current index: `[seen_map[complement], i]`.\\n6. If it does not exist, add the current `num` and its index `i` to the `seen_map` for future checks.",
-      "complexity": "Time: \\(O(n)\\) because we iterate through the list of $n$ elements only once. Each hash map operation (lookup and insertion) is \\(O(1)\\) on average. Space: \\(O(n)\\) to store up to $n$ elements in the hash map in the worst case.",
-      "code": "class Solution:\\n    def twoSum(self, nums, target):\\n        seen = {}\\n        for i, num in enumerate(nums):\\n            complement = target - num\\n            if complement in seen:\\n                return [seen[complement], i]\\n            seen[num] = i",
+    }},
+    {{
+      "key_insight": "To find a complement (<code>target - current_num</code>) in constant time, we can use a hash map. By storing numbers we've already seen and their indices, we can check for the complement's existence in \\(O(1)\\) time as we iterate through the array.",
+      "strategy": "1. Initialize an empty hash map <code>seen_map</code> to store <code>{{value: index}}</code> pairs.\n2. Iterate through the <code>nums</code> array, getting both the index <code>i</code> and value <code>num</code>.\n3. For each number, calculate its required <code>complement = target - num</code>.\n4. Check if this <code>complement</code> already exists as a key in <code>seen_map</code>.\n5. If it exists, we have found our pair. Return its stored index and the current index: <code>[seen_map[complement], i]</code>.\n6. If it does not exist, add the current <code>num</code> and its index <code>i</code> to the <code>seen_map</code> for future checks.",
+      "complexity": "Time: \\(O(n)\\) because we iterate through the list of $n$ elements only once. Each hash map operation (lookup and insertion) is \\(O(1)\\) on average.\nSpace: \\(O(n)\\) to store up to $n$ elements in the hash map in the worst case.",
+      "code": "class Solution:\n    def twoSum(self, nums, target):\n        seen = {{}}\n        for i, num in enumerate(nums):\n            complement = target - num\n            if complement in seen:\n                return [seen[complement], i]\n            seen[num] = i",
       "solution_type": "hash map"
-    }
+    }}
   ]
-}
+}}
 
 Now analyze the following LeetCode problem and provide the structured output:
 
+{problem_text}
 """
-
-
-def create_leetcode_card(problem_text: str) -> LeetcodeCard:
-    """
-    Generate a LeetcodeCard from a problem description using LLM analysis.
     
-    Args:
-        problem_text: The complete LeetCode problem description including
-                     title, difficulty, topics, statement, examples, etc.
-    
-    Returns:
-        LeetcodeCard: Structured flashcard with problem summary and solution approaches
-    """
-    # Initialize the LLM client
-    llm_client = LLMClient()
-    
-    # Format the prompt with the problem text
-    formatted_prompt = LEETCODE_CARD_PROMPT + problem_text
+    formatted_prompt = LEETCODE_CARD_PROMPT
     
     # Generate structured response
     try:
