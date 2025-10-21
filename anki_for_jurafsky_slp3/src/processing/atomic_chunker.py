@@ -126,7 +126,7 @@ def fix_card(source: str, card: CardType) -> CardType:
     Returns:
         List of atomic flashcards extracted from the chunk
     """
-    llm_client = LLMClient(model="gemini-2.5-flash")
+    llm_client = LLMClient(model="gemini-2.5-pro")
     prompt = f"""You are a meticulous Senior Machine Learning Engineer and expert educator, acting as a final quality check for flashcards. 
     Your task is to review and polish a single, pre-existing flashcard by cross-referencing it against its original source text to ensure it is technically flawless, clear, and maximally effective for learning.
 

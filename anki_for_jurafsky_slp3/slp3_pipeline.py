@@ -71,7 +71,7 @@ def chapter_pipeline(
             continue
 
     new_cards = []
-    for section_text, card in all_cards:
+    for section_text, card in tqdm(all_cards, desc="Fixing extracted cards"):
         fixed_card: QACard | ClozeCard | EnumerationCard = fix_card(section_text, card)
         new_cards.append(fixed_card)
 
