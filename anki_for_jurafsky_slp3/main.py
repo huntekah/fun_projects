@@ -81,47 +81,6 @@ def run_process_leetcode_command(source: str):
         sys.exit(1)
 
 
-def run_make_slp3_deck_command(chapter_num: int):
-    """Create Anki deck from SLP3 cards."""
-    from src.anki.slp3_deck_creation import create_anki_deck
-    from src.models.cards import QACard, ClozeCard, EnumerationCard
-
-    # Check if cards file exists
-    cards_file = Path(f"data/slp3/cards/chapter_{chapter_num}/atomic_cards.json")
-    if not cards_file.exists():
-        print(f"❌ Cards file not found: {cards_file}")
-        print(f"Please run --create-cards first to generate cards for chapter {chapter_num}")
-        sys.exit(1)
-
-    print(f"📖 Loading cards for Chapter {chapter_num}...")
-
-    # Load cards from JSON
-    with open(cards_file, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    cards_data = data.get("cards", [])
-    if not cards_data:
-        print(f"❌ No cards found in {cards_file}")
-        sys.exit(1)
-
-    # Convert JSON data back to CardType objects
-    cards = []
-    for card_data in cards_data:
-        card_type = card_data.get("type")
-        if card_type == "Q&A":
-            cards.append(QACard(**card_data))
-        elif card_type == "Cloze":
-            cards.append(ClozeCard(**card_data))
-        elif card_type == "Enumeration":
-            cards.append(EnumerationCard(**card_data))
-
-    print(f"✅ Loaded {len(cards)} cards")
-
-    # Create Anki deck
-    deck_name = f"{chapter_num:02d} chapter slp3"
-    output_filename = f"data/slp3/anki_decks/chapter_{chapter_num}.apkg"
-
-    create_anki_deck(cards, deck_name, output_filename)
 
 
 def run_make_neetcode_deck_command():
@@ -204,8 +163,8 @@ def run_create_cards_command():
     create_cards_for_chapters(selected_chapters)
 
 
-def run_make_deck_command(chapter_num: int):
-    """Load cards for a chapter and create an Anki deck."""
+def run_make_slp3_deck_command(chapter_num: int):
+    """Create Anki deck from SLP3 cards."""
     from src.anki.slp3_deck_creation import create_anki_deck
     from src.models.cards import QACard, ClozeCard, EnumerationCard
 

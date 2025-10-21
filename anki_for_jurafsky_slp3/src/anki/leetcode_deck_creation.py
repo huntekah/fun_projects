@@ -14,14 +14,50 @@ import genanki
 from src.models.leetcode_cards import AnkiLeetcodeCard
 
 
-# Styled CSS for professional-looking LeetCode cards
 LEETCODE_CSS = """
+/* --------------------------------------------------
+   1. VARIABLES & THEME DEFINITIONS
+   -------------------------------------------------- */
+
+/* :root contains the default (Day Mode) theme colors */
+:root {
+    --text-primary: #333;
+    --text-secondary: #555;
+    --bg-primary: #fcfcfc;
+    --bg-secondary: #f5f5f5;
+    --border-color: #eee;
+    --accent-primary: #007BFF;
+    --accent-primary-bg: #e9f7ff;
+    --accent-primary-text: #004085;
+    --tag-bg: #e9ecef;
+    --tag-text: #495057;
+}
+
+/* .nightMode overrides the variables for a dark theme */
+.nightMode {
+    --text-primary: #e0e0e0;
+    --text-secondary: #b0b0b0;
+    --bg-primary: #2c2c2c;
+    --bg-secondary: #3a3a3a;
+    --border-color: #444;
+    --accent-primary: #58a6ff;
+    --accent-primary-bg: #1c3d5e;
+    --accent-primary-text: #a8d1ff;
+    --tag-bg: #4f5b66;
+    --tag-text: #d8dee4;
+}
+
+/* --------------------------------------------------
+   2. GLOBAL & CARD STYLES
+   -------------------------------------------------- */
+
 .card {
     font-family: 'Inter', Arial, sans-serif;
     font-size: 18px;
     text-align: left;
-    color: #333;
-    background-color: #fcfcfc;
+    /* We now use our variables! */
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
     line-height: 1.6;
 }
 
@@ -29,11 +65,31 @@ LEETCODE_CSS = """
     padding: 25px;
 }
 
+pre {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    padding: 15px;
+    border-radius: 5px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+code {
+    font-family: 'Fira Code', 'Courier New', monospace;
+    font-size: 16px;
+    /* Code text color needs to be set explicitly */
+    color: var(--text-primary);
+}
+
+/* --------------------------------------------------
+   3. COMPONENT STYLES
+   -------------------------------------------------- */
+
 .problem-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
     padding-bottom: 10px;
     margin-bottom: 20px;
 }
@@ -50,9 +106,10 @@ LEETCODE_CSS = """
     padding: 4px 10px;
     border-radius: 15px;
     font-weight: 500;
-    color: white;
+    color: white; /* White text works on all these backgrounds */
 }
 
+/* Difficulty colors are fine as-is */
 .difficulty-Easy { background-color: #4CAF50; }
 .difficulty-Medium { background-color: #FFC107; }
 .difficulty-Hard { background-color: #F44336; }
@@ -61,55 +118,41 @@ LEETCODE_CSS = """
     margin-bottom: 20px;
 }
 
+/* A more subtle prompt on the front */
 .solution-prompt {
     margin-top: 25px;
-    padding: 15px;
-    background-color: #e9f7ff;
-    border-left: 4px solid #007BFF;
-    border-radius: 4px;
+    padding: 10px 0;
+    border-top: 1px solid var(--border-color);
     font-style: italic;
-    color: #004085;
+    color: var(--text-secondary);
 }
 
 .solution-section {
     margin-bottom: 20px;
-    border-left: 3px solid #007BFF;
+    border-left: 3px solid var(--accent-primary);
     padding-left: 15px;
 }
 
 .solution-section h3 {
     font-size: 20px;
-    color: #000;
+    color: var(--text-primary);
     margin-top: 0;
 }
 
 .solution-tags {
     margin-top: 25px;
-    border-top: 1px solid #eee;
+    border-top: 1px solid var(--border-color);
     padding-top: 15px;
 }
 
 .tag {
     display: inline-block;
-    background-color: #e9ecef;
-    color: #495057;
+    background-color: var(--tag-bg);
+    color: var(--tag-text);
     padding: 4px 10px;
     border-radius: 5px;
     font-size: 14px;
     margin-right: 8px;
-}
-
-pre {
-    background-color: #f5f5f5;
-    padding: 15px;
-    border-radius: 5px;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-}
-
-code {
-    font-family: 'Fira Code', 'Courier New', monospace;
-    font-size: 16px;
 }
 """
 
@@ -158,11 +201,11 @@ leetcode_model = genanki.Model(
                     </div>
                     <div class="solution-section">
                         <h3>Key Insight</h3>
-                        {{KeyInsight}}
+                        {{text:KeyInsight}}
                     </div>
                     <div class="solution-section">
                         <h3>Strategy</h3>
-                        {{Strategy}}
+                        {{text:Strategy}}
                     </div>
                     <div class="solution-section">
                         <h3>Implementation</h3>
@@ -170,7 +213,7 @@ leetcode_model = genanki.Model(
                     </div>
                     <div class="solution-section">
                         <h3>Complexity</h3>
-                        {{Complexity}}
+                        {{text:Complexity}}
                     </div>
                     <div class="solution-tags">
                         {{Tags}}
@@ -183,12 +226,13 @@ leetcode_model = genanki.Model(
 )
 
 
+
 class LeetCodeNote(genanki.Note):
     """Custom Note class with unique GUID generation for LeetCode cards."""
     
     @property
     def guid(self):
-        # Create unique ID based on problem ID and solution type
+        # Create unique ID based on problem ID and code
         return genanki.guid_for(self.fields[0], self.fields[5])
 
 
