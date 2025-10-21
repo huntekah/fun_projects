@@ -43,7 +43,7 @@ Always provide multiple solutions if they represent fundamentally different or c
 
 Formatting
 - Use \(\) for inline math (e.g., \(E=mc^2\)) and \[\] for display/block math.
-- use <code>...</code> tags for inline code snippets, or simple HTML formatting if needed in the problem description.
+- use <code>...</code> tags for inline code snippets, or simple HTML formatting if needed in the problem description or strategy.
 
 EXAMPLES
 Here are two high-quality examples of the desired output for two different LeetCode problems.
