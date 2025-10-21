@@ -24,7 +24,7 @@ class LeetCodeSolution(BaseModel):
     strategy: str = Field(..., description="Step-by-step strategy or algorithm description")
     complexity: str = Field(..., description="Time and space complexity analysis")
     code: str = Field(..., description="Minimal implementation code for the solution")
-    solution_type: str = Field(..., description="Type of solution (e.g., 'brute force', 'greedy', 'dynamic programming', 'two pointers', etc.)")
+    solution_type: str = Field(..., description="Type of solution, which is a hint for the approach (e.g., 'brute force', 'greedy bottom up', 'dynamic programming with memoization', 'two pointers', etc.)")
 
 
 class LeetcodeCard(BaseModel):
