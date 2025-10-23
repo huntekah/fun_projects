@@ -1,6 +1,6 @@
 from typing import List
 from connectors.llm.structured_gemini import LLMClient
-from src.models.cards import AtomicCards, CardType
+from src.models.cards import AtomicCards, CardType, ClozeCard
 
 
 def extract_atomic_cards(chunk: str) -> List[CardType]:
@@ -116,47 +116,45 @@ Based on all the rules and examples above, process the following text chunk:
     return result.cards
 
 
-def fix_card(source: str, card: CardType) -> CardType:
+def fix_content(source: str, card: CardType) -> CardType:
     """
-    Read the card. fix any mistakes, if there are some. apply math nice formatting for html.
+    Fix a card using two-stage improvement: content refinement followed by formatting.
 
     Args:
-        chunk: Text chunk to process
+        source: Original source text for verification
+        card: Card to be improved
 
     Returns:
-        List of atomic flashcards extracted from the chunk
+        Improved flashcard with better content and formatting
     """
     llm_client = LLMClient()
-    prompt = f"""You are a meticulous Senior Machine Learning Engineer and expert educator, acting as a final quality check for flashcards. 
-    Your task is to review and polish a single, pre-existing flashcard by cross-referencing it against its original source text to ensure it is technically flawless, clear, and maximally effective for learning.
+    
+    # Stage 1: Content improvement
+    content_prompt = f"""You are a meticulous Senior Machine Learning Engineer and expert educator, acting as a content reviewer for flashcards. 
+    Your task is to review and improve a single flashcard by cross-referencing it against its original source text to ensure it is technically flawless, clear, and maximally effective for learning.
 
-Your goal is NOT to create new content, but to use the provided source to **verify and refine** what is already there.
-
-You must analyze the given flashcard based on the following **Polishing Principles**:
+You must analyze the given flashcard based on the following **Content Principles**:
 
 1.  **Technical Accuracy & Precision (Verified by Source):**
-    * Does the terminology in the card **perfectly align** with the `[Source Text]`?
+    * Does the terminology in the card **perfectly align** with the source text?
     * Use the source to correct any imprecise terms (e.g., change "context vectors" to "value vectors" if the source specifies the latter).
     * Ensure all formulas and variables are correctly transcribed from the source, using proper MathJax formatting  Use \\(\\) for inline math (e.g., \\(E=mc^2\\)) and \\[\\] for display/block math.
-    * Use basic HTML tags for formatting where appropriate (e.g., `<b>`, `<i>`, `<code>`, `<pre>`).
+    * You can use basic HTML tags for formatting where appropriate (e.g., `<b>`, `<i>`, `<code>`, `<pre>`).
 
 2.  **Clarity & Conciseness:**
     * Is the card as simple and direct as possible without losing critical meaning from the source?
     * Remove redundant words or awkward phrasing. The final card should be a distilled, learnable fact from the source.
 
 3.  **Preservation of Atomicity:**
-    * Does the card still test only ONE discrete piece of information? Do not add new, separate facts from the source; your job is only to polish the fact already present in the card.
+    * Does the card still test only ONE discrete piece of information? Do not add new, separate facts from the source.
 
 4.  **Contextual Self-Sufficiency:**
-    * Can the card be understood on its own? If the source provides a small, critical piece of context that makes the card understandable, you may add it.
+    * Can the card be understood on its own? If the source provides critical context that makes the card understandable, add it.
 
 **TASK:**
-
-1.  Carefully read the `<Source Text>`. This is the ground truth.
-2.  Review the user-provided `<Input Card>`, which was generated based on the source.
-3.  Compare the card against the source, applying the **Polishing Principles** to identify any inaccuracies or ambiguities.
-4.  If the card is already perfect and fully aligned with the source, return it verbatim.
-5.  If the card needs changes, produce a better, polished card that is a more accurate and clear representation of the information in the source.
+1. Carefully read the source text as ground truth
+2. Review the input card for content accuracy and clarity
+3. Return an improved version focusing on content.
 
 <Source Text>
 {source}
@@ -167,5 +165,80 @@ You must analyze the given flashcard based on the following **Polishing Principl
 </Input Card>
 """
 
-    result: CardType = llm_client.generate(prompt, CardType)
-    return result
+    # Get content-improved card
+    fixed_card: CardType = llm_client.generate(content_prompt, CardType)
+    
+    return fixed_card
+
+def fix_formatting(card: CardType) -> CardType:
+    """
+    Fix the formatting of a flashcard to ensure it is visually clear and professional.
+
+    Args:
+        card: Card to be formatted
+
+    Returns:
+        Formatted flashcard
+    """
+    # smaller_client = LLMClient(model="gemini-2.5-flash-lite")
+    smaller_client = LLMClient()
+    bigger_client = LLMClient()
+    formatting_prompt = f"""You are an expert in educational formatting and presentation for ANKI flashcards. Your task is to take a technically accurate flashcard and apply proper formatting to make it visually clear and professional.
+
+Focus ONLY on formatting improvements:
+
+1. **MathJax Formatting:**
+   * Use \\(\\) for inline math (e.g., \\(E=mc^2\\))
+   * Use \\[\\] for display/block math for complex formulas
+   * Ensure all mathematical notation is properly formatted
+   * IMPORTANT \\lt \\gt &lt; &gt; &le; &ge; need to be used instead of < and > symbols inside math equations - using literal `<` and `>` will break HTML rendering.
+
+2. Cloze Conflicts
+Cloze deletions are terminated with }}}}, which can conflict with a }}}} appearing in your LaTeX. To prevent LaTeX from being interpreted as a closing cloze marker, you can put a space between any double closing braces that do not indicate the end of the cloze, so
+
+{{{{c1::[$]\frac{{foo}}{{\frac{{bar}}{{baz}}}}[/$] blah blah blah.}}}}
+will not work, but
+
+{{{{c1::[$]\frac{{foo}}{{\frac{{bar}}{{baz}} }}[/$] blah blah blah.}}}}
+will (and LaTeX ignores spaces in math mode, so your equation will render the same). If you want to avoid adding the extra space into the rendered text (for example, when you are making Cloze cards for learning programming languages), another option is to use a HTML comment when editing the card in HTML mode:
+
+{{{{c1::[$]\frac{{foo}}{{\frac{{bar}}{{baz}}<!-- -->}}[/$] blah blah blah.}}}}
+You may use either workaround if you need to use the :: character sequence within the Cloze-deleted text. The first card generated for the following note text will read [type] in C++ is a type-safe union:
+
+{{{{c1::std:<!-- -->:variant::~type~}}}} in C++ is a {{{{c2::type-safe union}}}}
+
+
+2. **HTML Formatting - Convert ALL formatting to HTML:**
+   Always use HTML tags instead of Markdown. Here are the key conversions:
+   
+   **Common formatting:**
+   * Use <b>bold text</b> instead of **bold text**
+   * Use <i>italicized text</i> instead of *italicized text*
+   * Use <code>code</code> instead of `code`
+   * Use <pre><code>multi-line code</code></pre> for code blocks
+   * Use the HTML entities &lt;, &gt; and &amp; to encode these characters so that the browser will not interpret them, but MathJax will.
+   
+eg: "The vocabulary \\(V(p)\\) in <b>top-p sampling</b> is defined as the smallest set of words satisfying the condition: {{{{c1::\\sum_{{w \\in V(p)}} P(w|w_{{&lt;t}}) \\geq p}}}}"
+or "P(w|w_{{ \\lt t}}) \\geq p"
+or "P(w|w_{{ &lt;t}}) \\geq p"
+in case it is really hard to avoid using the literal < character, wrap it with spaces around it.
+   
+   Same goes for other markdown elements. We aim to use their HTML equivalents like <h1>, <h2>, <ul>, <ol>, <li>, <a>, <hr>, <blockquote>, etc.
+
+3. **Structure & Readability:**
+   * Apply consistent formatting throughout the card
+   * Make important concepts stand out visually
+   * Ensure the formatting enhances learning without being distracting
+
+**IMPORTANT:** Do NOT change the content, meaning, or technical accuracy. Only apply formatting improvements.
+
+<Input Card>
+{card.model_dump_json()}
+</Input Card>
+"""
+
+    if isinstance(card, ClozeCard):
+        return bigger_client.generate(formatting_prompt, ClozeCard)
+    
+    fixed_card: CardType = smaller_client.generate(formatting_prompt, CardType)
+    return fixed_card

@@ -9,7 +9,7 @@ from src.processing.splitter import split_to_chunks
 from src.processing.preprocessor import clean_chapter_text
 from src.processing.merger import merge_chunks
 from src.processing.semantic_chunker import split_markdown_into_sections
-from src.processing.atomic_chunker import extract_atomic_cards, fix_card
+from src.processing.atomic_chunker import extract_atomic_cards, fix_content, fix_formatting
 from src.models.cards import CardType, ClozeCard, EnumerationCard, QACard
 from tqdm import tqdm
 
@@ -71,8 +71,9 @@ def chapter_pipeline(
             continue
 
     new_cards = []
-    for section_text, card in tqdm(all_cards, desc="Fixing extracted cards"):
-        fixed_card: QACard | ClozeCard | EnumerationCard = fix_card(section_text, card)
+    for section_text, card in tqdm(all_cards, desc="Fixing extracted cards", smoothing=0.1):
+        fixed_content_card: QACard | ClozeCard | EnumerationCard = fix_content(section_text, card)
+        fixed_card: QACard | ClozeCard | EnumerationCard = fix_formatting(fixed_content_card)
         new_cards.append(fixed_card)
 
     all_cards = new_cards
