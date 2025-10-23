@@ -128,7 +128,7 @@ def fix_content(source: str, card: CardType) -> CardType:
     Returns:
         Improved flashcard with better content and formatting
     """
-    llm_client = LLMClient()
+    llm_client = LLMClient(model="gemini-2.5-flash")
     
     # Stage 1: Content improvement
     content_prompt = f"""You are a meticulous Senior Machine Learning Engineer and expert educator, acting as a content reviewer for flashcards. 
@@ -139,7 +139,7 @@ You must analyze the given flashcard based on the following **Content Principles
 1.  **Technical Accuracy & Precision (Verified by Source):**
     * Does the terminology in the card **perfectly align** with the source text?
     * Use the source to correct any imprecise terms (e.g., change "context vectors" to "value vectors" if the source specifies the latter).
-    * Ensure all formulas and variables are correctly transcribed from the source, using proper MathJax formatting  Use \\(\\) for inline math (e.g., \\(E=mc^2\\)) and \\[\\] for display/block math.
+    * Ensure all formulas and variables are correctly transcribed from the source, using proper MathJax formatting  Use \\(\\) for inline math (e.g., \\( E = mc^2 \\) ) and \\[\\] for display/block math.
     * You can use basic HTML tags for formatting where appropriate (e.g., `<b>`, `<i>`, `<code>`, `<pre>`).
 
 2.  **Clarity & Conciseness:**
