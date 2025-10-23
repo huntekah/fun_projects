@@ -1,6 +1,7 @@
 from typing import List
 from connectors.llm.structured_gemini import LLMClient
-from src.models.cards import AtomicCards, CardType, ClozeCard
+from src.models.cards import AtomicCards, CardType, ClozeCard, QACard, EnumerationCard
+from src.utils.text_processing import clean_anki_text
 
 
 def extract_atomic_cards(chunk: str) -> List[CardType]:
@@ -180,9 +181,8 @@ def fix_formatting(card: CardType) -> CardType:
     Returns:
         Formatted flashcard
     """
-    # smaller_client = LLMClient(model="gemini-2.5-flash-lite")
-    smaller_client = LLMClient()
-    bigger_client = LLMClient()
+    smaller_client = LLMClient(model="gemini-2.5-flash-lite")
+
     formatting_prompt = f"""You are an expert in educational formatting and presentation for ANKI flashcards. Your task is to take a technically accurate flashcard and apply proper formatting to make it visually clear and professional.
 
 Focus ONLY on formatting improvements:
@@ -237,8 +237,18 @@ in case it is really hard to avoid using the literal < character, wrap it with s
 </Input Card>
 """
 
-    if isinstance(card, ClozeCard):
-        return bigger_client.generate(formatting_prompt, ClozeCard)
-    
+
     fixed_card: CardType = smaller_client.generate(formatting_prompt, CardType)
+    
+    # Apply all text fixes (HTML escaping and MathJax/Cloze conflicts)
+    match fixed_card:
+        case QACard():
+            fixed_card.q = clean_anki_text(fixed_card.q)
+            fixed_card.a = clean_anki_text(fixed_card.a)
+        case ClozeCard():
+            fixed_card.text = clean_anki_text(fixed_card.text)
+        case EnumerationCard():
+            fixed_card.prompt = clean_anki_text(fixed_card.prompt)
+            fixed_card.items = [clean_anki_text(item) for item in fixed_card.items]
+    
     return fixed_card

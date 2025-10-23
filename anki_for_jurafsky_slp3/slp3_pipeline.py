@@ -12,6 +12,7 @@ from src.processing.semantic_chunker import split_markdown_into_sections
 from src.processing.atomic_chunker import extract_atomic_cards, fix_content, fix_formatting
 from src.models.cards import CardType, ClozeCard, EnumerationCard, QACard
 from tqdm import tqdm
+import traceback
 
 
 def chapter_pipeline(
@@ -163,6 +164,7 @@ def create_cards_for_chapters(
             print(f"✅ Chapter {chapter_num} completed successfully!")
 
         except Exception as e:
+            traceback.print_exc()
             print(f"❌ Error processing chapter {chapter_num}: {e}")
             continue
 
