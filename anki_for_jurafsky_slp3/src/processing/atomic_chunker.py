@@ -199,7 +199,7 @@ def fix_formatting(card: CardType) -> CardType:
     """
     smaller_client = LLMClient(model="gemini-2.5-flash-lite")
 
-    formatting_prompt = """You are an expert in educational formatting and presentation for ANKI flashcards. Your task is to take a technically accurate flashcard and apply proper formatting to make it visually clear and professional.
+    formatting_prompt = f"""You are an expert in educational formatting and presentation for ANKI flashcards. Your task is to take a technically accurate flashcard and apply proper formatting to make it visually clear and professional.
 
 Focus ONLY on formatting improvements:
 
@@ -264,23 +264,22 @@ In C++, a <code>std::variant</code> is a <b>type-safe union</b> that can hold on
 </example result card2>
 
 <Input Card>
-{text}
+{card.model_dump_json()}
 </Input Card>
 """
 
 
-    # fixed_card: CardType = smaller_client.generate(formatting_prompt, CardType)
-    def fixing_text(text: str) -> str:
-        return clean_anki_text(smaller_client.generate(formatting_prompt.format(text=text), str))
-    # Apply all text fixes (HTML escaping and MathJax/Cloze conflicts)
-    match card:
-        case QACard():
-            card.q = fixing_text(card.q)
-            card.a = fixing_text(card.a)
-        case ClozeCard():
-            card.text = fixing_text(card.text)
-        case EnumerationCard():
-            card.prompt = fixing_text(card.prompt)
-            card.items = [fixing_text(item) for item in card.items]
+    fixed_card: CardType = smaller_client.generate(formatting_prompt, CardType)
 
-    return card
+    # Apply all text fixes (HTML escaping and MathJax/Cloze conflicts)
+    match fixed_card:
+        case QACard():
+            fixed_card.q = clean_anki_text(fixed_card.q)
+            fixed_card.a = clean_anki_text(fixed_card.a)
+        case ClozeCard():
+            fixed_card.text = clean_anki_text(fixed_card.text)
+        case EnumerationCard():
+            fixed_card.prompt = clean_anki_text(fixed_card.prompt)
+            fixed_card.items = [clean_anki_text(item) for item in fixed_card.items]
+
+    return fixed_card
