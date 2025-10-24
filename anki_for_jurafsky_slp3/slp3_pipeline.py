@@ -20,6 +20,7 @@ def chapter_pipeline(
     chapter_name: str,
     window_size: int = 6000,
     overlap: int = 3000,
+    data_dir: Path | None = None,
 ) -> List[CardType]:
     """
     Process a raw chapter text through the complete pipeline to generate atomic flashcards.
@@ -29,10 +30,14 @@ def chapter_pipeline(
         chapter_name: Name of the chapter (e.g., "chapter_8")
         window_size: Size of chunks for processing (default: 6000)
         overlap: Overlap between chunks (default: 3000)
+        data_dir: Base data directory (defaults to ./data/slp3)
 
     Returns:
         List of atomic flashcards extracted from all sections of the chapter
     """
+    
+    if data_dir is None:
+        data_dir = Path("data/slp3")
 
     # Step 1: Split into overlapping chunks
     chunks = list(split_to_chunks(raw_chapter_text, window_size, overlap))
@@ -45,6 +50,16 @@ def chapter_pipeline(
 
     # Step 3: Merge cleaned chunks
     merged_text = merge_chunks(cleaned_chunks, overlap)
+    
+    # Save cleaned text
+    cleaned_txt_dir = data_dir / "cleaned_txt"
+    cleaned_txt_dir.mkdir(parents=True, exist_ok=True)
+    cleaned_file = cleaned_txt_dir / f"{chapter_name}.txt"
+    
+    with open(cleaned_file, "w", encoding="utf-8") as f:
+        f.write(merged_text)
+    
+    print(f"💾 Saved cleaned text to: {cleaned_file}")
 
     # Step 4: Split into semantic sections
     sections = split_markdown_into_sections(merged_text)
@@ -119,7 +134,7 @@ def create_cards_for_chapters(
         # Process through pipeline
         try:
             print("⚙️ Running pipeline...")
-            cards = chapter_pipeline(raw_text, f"chapter_{chapter_num}")
+            cards = chapter_pipeline(raw_text, f"chapter_{chapter_num}", data_dir=data_dir)
 
             if not cards:
                 print(f"⚠️ No cards generated for chapter {chapter_num}")

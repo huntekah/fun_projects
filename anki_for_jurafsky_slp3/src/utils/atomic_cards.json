@@ -2,8 +2,8 @@
   "chapter": 8,
   "total_cards": 227,
   "card_counts": {
-    "Q&A": 43,
-    "Cloze": 168,
+    "Q&A": 50,
+    "Cloze": 161,
     "Enumeration": 16
   },
   "cards": [
@@ -13,30 +13,30 @@
     },
     {
       "type": "Cloze",
-      "text": "Language modeling that predicts tokens one by one by conditioning on prior context is known as left-to-right, {{c1::causal}}, or {{c2::autoregressive}} language modeling."
+      "text": "<b>Left-to-right</b> language modeling (also called {{c1::causal or autoregressive}}) is the task of predicting output tokens one by one by conditioning on the prior context."
     },
     {
       "type": "Cloze",
-      "text": "The transformer architecture's key mechanism for building contextual representations is called {{c1::self-attention}} or multi-head attention."
+      "text": "The transformer architecture includes a key mechanism for building contextual representations of a token's meaning, called <b>{{c1::self-attention or multi-head attention}}</b>."
     },
     {
       "type": "Q&A",
       "q": "What is the high-level function of the attention mechanism in a transformer?",
-      "a": "It builds contextual representations for tokens by attending to and integrating information from surrounding tokens, which helps the model learn relationships between tokens over large spans."
+      "a": "To build contextual representations of a token&apos;s meaning by attending to and integrating information from surrounding tokens, which helps the model learn how tokens relate to each other over large spans."
     },
     {
       "type": "Enumeration",
-      "prompt": "What are the three major, sequential components of a transformer architecture?",
+      "prompt": "According to the text, what are the three major components of a (left-to-right) transformer, in order?",
       "items": [
         "Input encoding component",
-        "A stack of transformer blocks",
+        "A column of stacked transformer blocks",
         "Language modeling head"
       ],
       "ordered": true
     },
     {
       "type": "Enumeration",
-      "prompt": "What are the main sub-layers that make up a single transformer block?",
+      "prompt": "What are the main components of a transformer block, which is itself a multilayer network?",
       "items": [
         "A multi-head attention layer",
         "Feedforward networks",
@@ -46,240 +46,241 @@
     },
     {
       "type": "Cloze",
-      "text": "A transformer's stack of blocks maps an entire context window of input vectors \\((x_1,...,x_n)\\) to a window of output vectors \\((h_1,...,h_n)\\) of the {{c1::same length}}."
+      "text": "A set of transformer blocks maps an entire context window of input vectors \r\n\r\n\\((x_1, ..., x_n)\\) to a window of output vectors \r\n\r\n\\((h_1, ..., h_n)\\) of {{c1::the same length}}."
     },
     {
       "type": "Cloze",
-      "text": "A transformer's input encoding component processes an input token into a contextual vector representation, using an {{c1::embedding matrix}} and a mechanism for encoding {{c2::token position}}."
+      "text": "The transformer's <b>input encoding component</b> processes an input token into a contextual vector representation using an {{c1::embedding matrix and a mechanism for encoding token position}}."
     },
     {
       "type": "Q&A",
       "q": "How does a transformer's language modeling head generate a token prediction?",
-      "a": "It takes the embedding output from the final transformer block, passes it through an unembedding matrix U, and applies a softmax over the vocabulary to generate a probability distribution for the next token."
+      "a": "It takes the output vector from the final transformer block, passes it through an unembedding matrix <i>U</i>, and then applies a softmax over the vocabulary to generate a probability distribution for the next token."
     },
     {
       "type": "Cloze",
-      "text": "Unlike modern contextual models, static embedding methods like word2vec assign a word the {{c1::same vector representation}} regardless of its context."
+      "text": "For static embeddings like word2vec, the representation of a word’s meaning is always the same {{c1::fixed vector}} irrespective of the context."
     },
     {
       "type": "Q&A",
       "q": "What is the primary limitation of static word embeddings like word2vec?",
-      "a": "They assign the same fixed vector to a word regardless of its context. For example, in the sentences \"The chicken didn't cross the road because it was too tired\" versus \"...it was too wide\", the meaning of 'it' changes, but a static embedding cannot capture this difference."
+      "a": "They represent a word with the same fixed vector irrespective of its context. This means they cannot capture how a word's meaning changes, for example, how the <code>it</code> refers to 'the chicken' in '...it was too tired' but to 'the road' in '...it was too wide'."
     },
     {
       "type": "Cloze",
-      "text": "Attention helps solve the challenge that contextual words needed to compute a word's meaning can be {{c1::quite far away}} in the sentence or paragraph."
+      "text": "The source text states that a key challenge in NLP is that the contextual words needed to compute the meaning of other words can be {{c1::quite far away}} in the sentence or paragraph."
     },
     {
       "type": "Cloze",
-      "text": "In a transformer, contextual embeddings are built up {{c1::layer by layer}}, with each successive layer producing a richer, more contextualized representation for every token."
+      "text": "In a transformer, the model builds up richer and richer contextualized representations of the meanings of input tokens {{c1::layer by layer}}."
     },
     {
       "type": "Q&A",
-      "q": "What is the high-level function of the attention mechanism within a Transformer?",
-      "a": "Attention is the mechanism that builds the representation for tokens at layer \\(k+1\\) by weighing and combining the representations of other tokens in the context from layer \\(k\\)."
+      "q": "What is the high-level function of the attention mechanism when moving between Transformer layers?",
+      "a": "Attention is the mechanism that weighs and combines token representations from layer \\(k\\) to build a more contextualized representation for each token at layer \\(k+1\\)."
     },
     {
       "type": "Cloze",
-      "text": "The {{c1::attention distribution}} is a distribution of weights over tokens in a context, indicating how heavily to draw from each token's representation when building an updated, contextual representation for a given token."
+      "text": "The {{c1::attention distribution}} is a set of weights generated by an attention mechanism, representing the importance of other tokens in the context when building an updated, contextualized representation for a specific token."
     },
     {
       "type": "Cloze",
-      "text": "The attention computation is a way to compute a vector representation for a token at a particular layer of a transformer, by selectively attending to and integrating information from {{c1::prior tokens}} at the previous layer."
+      "text": "The attention computation is a method for computing a vector representation for a token at a particular layer of a transformer, by selectively attending to and integrating information from {{c1::prior tokens}} at the previous layer."
     },
     {
       "type": "Cloze",
-      "text": "In causal (left-to-right) attention, when processing token \\(x_i\\), the model has access to all prior tokens up to and including \\(x_i\\), but no access to {{c1::future tokens}}."
+      "text": "In causal (left-to-right) attention, when processing token \\(x_i\\), the model has access to all prior tokens up to and including \\(x_i\\), but no access to {{c1::tokens after \\(x_i\\) (i.e., future tokens)}}."
     },
     {
       "type": "Cloze",
-      "text": "A self-attention layer maps an input sequence \\((x_1,...,x_n)\\) to an output sequence of the {{c1::same length}}, \\((a_1,...,a_n)\\)."
+      "text": "A self-attention layer maps an input sequence \\((\\(x1,...,xn\\))\\) to an output sequence of the {{c1::same length}}, \\((\\(a1,...,an\\))\\)."
     },
     {
       "type": "Cloze",
-      "text": "Fundamentally, an attention mechanism computes its output as a {{c1::weighted sum}} of value vectors."
+      "text": "Fundamentally, an attention mechanism computes its output as a {{c1::weighted sum}} of <b>value vectors</b>."
     },
     {
       "type": "Enumeration",
       "prompt": "In a Transformer attention head, what are the three distinct roles an input embedding plays?",
       "items": [
-        "Query: The role of the current element being compared to preceding inputs.",
-        "Key: The role of a preceding input that is compared to the current element to determine a similarity weight.",
-        "Value: The role of a preceding element that gets weighted and summed to compute the output for the current element."
+        "<b>Query</b>: The role of the current element, used to be compared to preceding inputs.",
+        "<b>Key</b>: The role of a preceding input, which is compared against the current element's query to determine a similarity weight.",
+        "<b>Value</b>: The role of a preceding input's vector, which is weighted and summed to compute the output for the current element."
       ],
       "ordered": false
     },
     {
       "type": "Cloze",
-      "text": "To create the query, key, and value vectors (\\(q_i, k_i, v_i\\)) for an input vector \\(x_i\\), a Transformer projects \\(x_i\\) using three distinct weight matrices: {{c1::\\(WQ, WK, WV\\)}}."
+      "text": "In a Transformer's attention head, an input vector \\(x_i\\) is projected into query (\\(q_i\\)), key (\\(k_i\\)), and value (\\(v_i\\)) vectors using three learned weight matrices. The specific equations are: {{c1::\\(q_i = x_iW_Q;\\quad k_i = x_iW_K;\\quad v_i = x_iW_V\\)}}."
     },
     {
       "type": "Cloze",
-      "text": "The query vector \\(q_i\\) is computed by projecting the input vector \\(x_i\\) with the query weight matrix \\(W_Q\\): {{c1::\\(q_i = x_i W_Q\\)}}."
+      "text": "In a transformer's attention head, the <b>query</b> vector \\(q_i\\) is created by projecting the input vector \\(x_i\\) using the query weight matrix \\(W_Q\\): {{c1::\\(q_i = x_i W_Q\\)}}"
     },
     {
       "type": "Cloze",
-      "text": "In self-attention, the key vector \\(k_i\\) is computed by projecting the input vector \\(x_i\\) with the key weight matrix \\(W_K\\): {{c1::\\(k_i = x_i W_K\\)}}."
+      "text": "In a transformer's attention head, the input vector \\(x_i\\) is projected to represent its role as a <b>key</b>, creating the key vector \\(k_i\\) with the formula: {{c1:\\[k_i = x_i W_K\\]}}"
     },
     {
       "type": "Cloze",
-      "text": "In a transformer attention head, the value vector \\(v_i\\) is computed by projecting the input vector \\(x_i\\) with the value weight matrix \\(WV\\): {{c1::\\(v_i = x_i WV\\)}}."
+      "text": "The value vector \\(v_i\\) is computed by projecting the input vector \\(x_i\\) with the value weight matrix: {{c1::\\(v_i = x_i W V\\)}}."
     },
     {
       "type": "Q&A",
       "q": "Why is the dot product score in the attention mechanism scaled by \\(\\sqrt{d_k}\\)?",
-      "a": "To avoid the numerical issues and loss of gradients during training that result from exponentiating arbitrarily large dot product values within the softmax function."
-    },
-    {
-      "type": "Cloze",
-      "text": "In scaled dot-product attention, the similarity score is calculated with the formula: {{c1::\\(score(x_i, x_j) = \\frac{q_i \\cdot k_j}{\\sqrt{d_k}}\\)}}."
-    },
-    {
-      "type": "Cloze",
-      "text": "In a transformer's attention mechanism, the attention weights, \\(\\alpha_{ij}\\), are calculated by applying a {{c1::softmax}} function to the scaled dot-product scores."
-    },
-    {
-      "type": "Cloze",
-      "text": "The output of an attention head, \\(\\text{head}_i\\), is calculated as a weighted sum of the {{c1::value vectors (\\(v_j\\))}}, using the attention weights \\(\\alpha_{ij}\\)."
+      "a": "To stabilize training. Without scaling, dot product scores can become very large. When these large scores are exponentiated inside the softmax function, it can lead to numerical instability and vanishing gradients."
     },
     {
       "type": "Q&A",
-      "q": "What is the purpose of the final output weight matrix, \\(W^O\\), in a self-attention layer?",
-      "a": "It projects the attention head's output (which has dimensionality \\(d_v\\)) back to the model's main dimensionality (\\(d\\)), ensuring the layer's output \\(a_i\\) has the same shape as its input \\(x_i\\)."
+      "q": "In a transformer&#39;s self-attention mechanism, what is the formula for the similarity score between the current input \\(x_i\\) and a prior input \\(x_j\\)?",
+      "a": "The score is calculated via a scaled dot product of the query vector \\(q_i\\) and the key vector \\(k_j\\):\n\\[score(x_i, x_j) = \\frac{q_i \\cdot k_j}{\\sqrt{d_k}}\\]\nScaling by \\(\\sqrt{d_k}\\), where \\(d_k\\) is the dimensionality of the key and query vectors, helps prevent numerical instability and vanishing gradients during training."
     },
     {
       "type": "Cloze",
-      "text": "In a self-attention head, given a model dimension \\(d\\) and a query/key dimension \\(d_k\\), the weight matrices for the query (\\(W_Q\\)) and key (\\(W_K\\)) both have the shape {{c1::[\\(d \\times d_k\\)]}}."
+      "text": "In self-attention, the attention weights <math>\\alpha_{ij}</math> are computed by normalizing the similarity scores, <math>\\text{score}(x_i, x_j)</math>, using the {{c1::softmax}} function. The formula is given by:<math>\\\\alpha_{ij} = \\text{softmax}(\\text{score}(x_i, x_j)) \\quad \\forall j \\le i</math>"
     },
     {
       "type": "Cloze",
-      "text": "In an attention head with model dimension \\(d\\) and value dimension \\(d_v\\), the shape of the value matrix \\(W_V\\) is {{c1::\\([d \\times d_v]\\)}}."
+      "text": "The output of a single self-attention head, <span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mtext>head</mtext><mi>i</mi></msub></mrow><annotation encoding=\"application/x-tex\">\\text{head}_i</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:0.73333em;vertical-align:-0.03333em;\"></span><span class=\"mord\"><span class=\"mord mathnormal\">head</span><span class=\"mord\"><i>i</i></span></span></span></span></span></span>, is calculated as a weighted sum of the {{c1::value vectors (<span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mi>v</mi><mi>j</mi></msub></mrow><annotation encoding=\"application/x-tex\">v_j</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:0.73333em;vertical-align:-0.03333em;\"></span><span class=\"mord\"><span class=\"mord mathnormal\">v</span><span class=\"mord subscript\"><i>j</i></span></span></span></span></span></span>)}}, according to the formula: <span class=\"katex\"><span class=\"katex-mathml\"><math xmlns=\"http://www.w3.org/1998/Math/MathML\"><semantics><mrow><msub><mtext>head</mtext><mi>i</mi></msub><mo>=</mo><munderover><mo>&#x2211;</mo><mrow><mi>j</mi><mo>&#x2264;</mo><mi>i</mi></mrow><none></none></munderover><msub><mi>&#x3B1;</mi><mrow><mi>i</mi><mi>j</mi></mrow></msub><msub><mi>v</mi><mi>j</mi></msub></mrow><annotation encoding=\"application/x-tex\">\\text{head}_i = \\sum_{j \\le i} \\alpha_{ij} v_j</annotation></semantics></math></span><span class=\"katex-html\" aria-hidden=\"true\"><span class=\"base\"><span class=\"strut\" style=\"height:1.1901079999999998em;vertical-align:-0.305092em;\"></span><span class=\"mord\"><span class=\"mord mathnormal\">head</span><span class=\"mord\"><i>i</i></span></span><span class=\"mspace\" style=\"margin-right:0.222222em;\"></span><span class=\"mbin oplap\"><span class=\"strut\" style=\"height:0.7956779999999999em;vertical-align:-0.091792em;\"></span><span class=\"mop\"><span class=\"mop op-symbol\" style=\"font-size:1.1em;top:0em;\">&#x2211;</span></span><span class=\"mspace\"></span></span><span class=\"mord\"><span class=\"mord mathnormal\">j</span></span><span class=\"mrel\">&#x2264;</span><span class=\"mord\"><span class=\"mord mathnormal\">i</span></span><span class=\"mspace\" style=\"margin-right:0.222222em;\"></span><span class=\"mord\"><span class=\"mord mathnormal\"><i>&#x3B1;</i></span><span class=\"mord subscript\"><span class=\"strut\" style=\"height:0.69444em;vertical-align:-0.305092em;\"></span><span class=\"base\"><span class=\"strut\" style=\"height:0.69444em;vertical-align:-0.305092em;\"></span><span class=\"mord\"><i>ij</i></span></span></span></span><span class=\"mspace\" style=\"margin-right:0.222222em;\"></span><span class=\"mord\"><span class=\"mord mathnormal\">v</span><span class=\"mord subscript\"><i>j</i></span></span></span></span></span></span></span>"
+    },
+    {
+      "type": "Q&A",
+      "q": "What is the purpose of the output weight matrix, \\(W^O\\), in a self-attention layer?",
+      "a": "It projects the attention head output vector, \\(head_i\\), from dimension \\(d_v\\) back to the model dimensionality, \\(d\\). This ensures the layer's output \\(a_i\\) has the same dimension as its input \\(x_i\\), making the transformer architecture very modular."
     },
     {
       "type": "Cloze",
-      "text": "To project the attention head output (dimension \\(d_v\\)) back to the model dimension \\(d\\), the output matrix \\(W_O\\) has a shape of {{c1::\\([d_v \\times d]\\)}}."
+      "text": "In an attention head, given a model dimension <math>\\(d\\)</math> and a key/query dimension <math>\\(d_k\\), the query weight matrix (<math>\\(W_Q\\)</math>) and key weight matrix (<math>\\(W_K\\)</math>) both have the shape {{c1::<math>\\(d \\times d_k\\)</math>}}."
+    },
+    {
+      "type": "Cloze",
+      "text": "In a transformer attention head with model dimension \\(d\\) and value vector dimension \\(dv\\), the shape of the value matrix \\(WV\\) is {{c1::\\[d \\times dv\\]}}."
+    },
+    {
+      "type": "Cloze",
+      "text": "To project the attention head output (dimension \tout ) back to the model dimensionality (\tout ), the output matrix \tout  has a shape of {{c1::[\tout  \\times \tout ]}}."
     },
     {
       "type": "Q&A",
       "q": "What is the core intuition behind using multi-head attention?",
-      "a": "The intuition is that each attention head can attend to the context for different purposes. For example, heads might be specialized to represent different linguistic relationships between tokens or to look for particular kinds of patterns in the context."
+      "a": "The intuition is that each attention head can specialize in attending to the context for different purposes, such as representing different linguistic relationships between tokens or looking for particular kinds of patterns in the context."
     },
     {
       "type": "Cloze",
-      "text": "In a multi-head attention layer, the different attention heads operate in {{c1::parallel}} at the same depth of the model."
+      "text": "In multi-head attention, the <b>`A`</b> separate attention heads reside in {{c1::parallel layers}} at the same depth in a model, each with its own set of parameters."
     },
     {
       "type": "Cloze",
-      "text": "In multi-head attention, each head \\(i\\) has its own set of trainable weight matrices: {{c1::\\(W_i^Q\\), \\(W_i^K\\), and \\(W_i^V\\)}}."
+      "text": "In multi-head attention, each head \\(i\\) has its own set of query, key, and value weight matrices: {{c1::\\(W_i^Q\\), \\(W_i^K\\), and \\(W_i^V\\)}}."
     },
     {
       "type": "Cloze",
-      "text": "In multi-head attention, each head \\(i\\) has its own weight matrices (\\(W_i^Q, W_i^K, W_i^V\\)) used to project the inputs into {{c1::separate query, key, and value embeddings}} for that head."
+      "text": "In multi-head attention, each head <i>i</i> has its own weight matrices (\\(W_i^Q, W_i^K, W_i^V\\)) which are used to project the inputs into {{c1::separate query, key, and value embeddings}} for that head."
     },
     {
       "type": "Cloze",
-      "text": "In multi-head attention, the query and key embeddings for each head have a dimensionality of {{c1::\\(d_k\\)}}, while the value embeddings have a dimensionality of \\(d_v\\)."
+      "text": "In a multi-head attention layer, the query and key embeddings for each head have a dimensionality of {{c1::\\(d_k\\)}}."
     },
     {
       "type": "Cloze",
-      "text": "In a multi-head attention layer, the value embeddings for each head have dimensionality {{c1::\\(d_v\\)}}."
+      "text": "In multi-head attention, the value embeddings for each head have a dimensionality of {{c1::\\(d_v\\)}}."
     },
     {
       "type": "Cloze",
-      "text": "For each head \\(i\\) in multi-head attention, its query weight matrix (\\(W_i^Q\\)) and key weight matrix (\\(W_i^K\\)) both have a shape of {{c1::\\(d \\times d_k\\)}}, where \\(d\\) is the model dimension and \\(d_k\\) is the dimensionality of the query and key embeddings."
+      "text": "In multi-head attention, for each head \\(i\\), the query weight matrix (\\(W^Q_i\\)) and key weight matrix (\\(W^K_i\\)) are of shape {{c1::\\(d \\times d_k\\)}}, where \\(d\\) is the model dimension and \\(d_k\\) is the dimensionality of the query and key embeddings."
     },
     {
       "type": "Cloze",
-      "text": "In multi-head attention, for each head \\(i\\), its value weight matrix \\(W_i^V\\) has a shape of {{c1::\\(d \\times d_v\\)}}, where \\(d\\) is the model dimension and \\(d_v\\) is the dimensionality of the value embeddings."
+      "text": "In multi-head attention, each head <i>i</i> has a value weight matrix \\(W_i^V\\) of shape {{c1::\\(d \\times d_v\\)}}, where \\(d\\) is the model dimension and \\(d_v\\) is the value embedding dimension."
     },
     {
       "type": "Enumeration",
       "prompt": "What are the main computational steps in a multi-head attention layer?",
       "items": [
-        "For each head, project inputs into query, key, and value embeddings using head-specific weight matrices (\\(W_c^Q, W_c^K, W_c^V\\)).",
-        "For each head, calculate scaled dot-product attention scores for each query-key pair: \\(\\frac{q_i^c \\cdot k_j^c}{\\sqrt{d_k}}\\).",
+        "For each of the <b>A</b> attention heads, project inputs into query, key, and value embeddings using that head's unique weight matrices: \\(<b>W</b>_c^Q, <b>W</b>_c^K, <b>W</b>_c^V\\).",
+        "For each head, calculate the scaled dot-product attention scores: \\( \\text{score}_c(x_i,x_j) = \\frac{q_i^c \\cdot k_j^c}{\\sqrt{d_k}}\\).",
         "For each head, apply a softmax function to the scores to obtain the attention weights \\(\\alpha_{ij}^c\\).",
-        "For each head, compute its output vector (\\(\\text{head}_c^i\\)) as a weighted sum of the value embeddings, using the attention weights \\(\\alpha_{ij}^c\\).",
-        "Concatenate the output vectors from all \\(A\\) heads: \\(\\text{concat}(\\text{head}_1^i, \\dots, \\text{head}_A^i)\\).",
-        "Apply a final linear projection using weight matrix \\(W^O\\) to the concatenated vector to produce the layer's final output vector \\(a_i\\), matching the required model dimension."
+        "For each head, compute its output vector as a weighted sum of the value vectors (for causal attention, this sum is over inputs \\(j \\le i\\)): \\(\\text{head}_i^c = \\sum_{j\\le i} \\alpha_{ij}^c v_j^c\\).",
+        "Concatenate the output vectors from all <b>A</b> heads for the current token <i>i</i>: \\(\\text{head}_i^1 \\oplus \\text{head}_i^2 \\dots \\oplus \\text{head}_i^A\\).",
+        "Apply a final linear projection with matrix \\(<b>W</b>^O\\) to the concatenated vector to produce the layer's final output \\(a_i\\)."
       ],
       "ordered": true
     },
     {
       "type": "Cloze",
-      "text": "In multi-head attention, the outputs of the individual attention heads are {{c1::concatenated}} and then passed through a final linear projection layer (WO) to produce the final output vector."
+      "text": "In multi-head attention, the output vectors from each head are {{c1::concatenated}} and then linearly projected via a weight matrix \\(W^O\\) to produce the final output vector \\(a_i\\)."
     },
     {
       "type": "Cloze",
-      "text": "After concatenating the outputs of \\(A\\) attention heads (each with value dimension \\(d_v\\)), the resulting vector has a dimensionality of {{c1::\\(A \\cdot d_v\\)}} before the final output projection."
+      "text": "In multi-head attention, after concatenating the outputs from <b>A</b> heads, each with a value dimensionality of \\(d_v\\), the resulting vector has a dimensionality of {{c1::\\(A d_v\\)}}."
     },
     {
       "type": "Cloze",
-      "text": "In multi-head attention, the final projection matrix \\(W^O\\) is used to reshape the concatenated head outputs, resulting in a vector with the model's original embedding dimension, {{c1::\\(d\\)}}."
+      "text": "In multi-head attention, the concatenated outputs of the \\(A\\) heads, which have a combined dimension of \\(A \\cdot d_v\\), are projected by a final weight matrix \\(W^O\\) to produce an output vector with the model&#x27;s original dimension, {{c1::\\(d\\)}}."
     },
     {
       "type": "Cloze",
-      "text": "In multi-head attention, the concatenated output from the \\(A\\) heads is projected back to the model dimension \\(d\\) using an output matrix \\(W_O\\) with the shape {{c1::\\[A d_v \\times d\\]}}."
+      "text": "In multi-head attention, the concatenated head outputs (dimension \\(A \\cdot d_v\\)) are projected to the model dimension \\(d\\) by the output matrix \\(W^O\\), which has a shape of {{c1::\\[A d_v \\times d\\]}}."
     },
     {
       "type": "Cloze",
-      "text": "Attention that only considers previous tokens in a sequence (i.e., attends only 'to the left') is known as {{c1::causal attention}}."
+      "text": "Attention where the model only considers previous inputs in a sequence (i.e., only attends 'to the left') is known as {{c1::causal or left-to-right attention}}."
     },
     {
       "type": "Enumeration",
-      "prompt": "What are the four core components of a Transformer block?",
+      "prompt": "What are the four main components of a Transformer block?",
       "items": [
         "Self-attention layer",
         "Feedforward layer",
         "Residual connections",
-        "Normalizing layers (colloquially called “Layer Norm”)"
+        "Normalizing layers (colloquially called “layer norm”)"
       ],
       "ordered": false
     },
     {
       "type": "Cloze",
-      "text": "The conceptual model of data flow in a Transformer, where a central stream of representations is continuously updated by various layers, is known as the {{c1::residual stream}}."
+      "text": "The conceptual viewpoint for a Transformer block where a stream of representations is progressively updated by layers adding their outputs back into it is known as the {{c1::residual stream}}."
     },
     {
       "type": "Q&A",
       "q": "In the 'residual stream' viewpoint of a Transformer block, what does the stream itself represent?",
-      "a": "A single stream of d-dimensional representations for an individual token position, which starts with the original input vector and is progressively updated by the block's components."
+      "a": "It represents a single stream of <b>d</b>-dimensional representations for an individual token's position. As the token is processed, components like the self-attention and feedforward layers read from this stream and add their output back into it."
     },
     {
       "type": "Q&A",
-      "q": "How do components like the attention and feedforward layers interact with the residual stream in a Transformer block?",
+      "q": "According to the <b>residual stream viewpoint</b>, how do components like the attention and feedforward layers operate within a Transformer block?",
       "a": "They read their input from the residual stream and then add their output back into the stream."
     },
     {
       "type": "Cloze",
-      "text": "In the residual stream viewpoint of a Transformer, processing begins with the {{c1::input token embedding}}, which is progressively modified by the block's components."
+      "text": "In the <b>residual stream</b> viewpoint of a Transformer, the stream of d-dimensional representations for a single token position begins with the {{c1::initial token embedding}}."
     },
     {
       "type": "Cloze",
-      "text": "In a common transformer block architecture, a {{c1::layer norm}} operation is applied to the residual stream *before* it is processed by the self-attention and feedforward layers."
+      "text": "In the common 'Pre-LN' Transformer architecture, a {{c1::layer norm}} operation is applied to the residual stream <i>before</i> it is processed by the self-attention or feedforward sub-layers."
     },
     {
       "type": "Enumeration",
-      "prompt": "What is the repeating sequence of operations for each sub-layer (i.e., the attention or feedforward layer) within a Pre-LN Transformer block?",
+      "prompt": "What is the repeating sequence of operations for each sub-layer (e.g., self-attention layer, feedforward layer) within a Pre-LN Transformer block, according to the residual stream viewpoint?",
       "items": [
-        "Apply Layer Normalization to the residual stream.",
-        "Pass the normalized result through the sub-layer.",
-        "Add the sub-layer's output back into the residual stream via a residual connection."
+        "Apply Layer Normalization to the input vector from the residual stream.",
+        "Pass the normalized vector through the sub-layer.",
+        "Add the sub-layer's output back to the residual stream via a residual connection."
       ],
       "ordered": true
     },
     {
       "type": "Cloze",
-      "text": "In the context of a Transformer block, the resulting output vector for a token \\(i\\) after passing through the block's components is denoted as {{c1::\\(h_i\\)}}."
+      "text": "Given an input vector \\(x_i\\) for token \\(i\\), the resulting output vector after processing it through a full transformer block is denoted as {{c1::\\(h_i\\)}}."
     },
     {
       "type": "Q&A",
-      "q": "How does the 'residual stream' concept relate to the older term 'residual connections' in Transformers?",
-      "a": "The term 'residual connections' is an older metaphor describing the addition of a component's input to its output. The 'residual stream' is a more perspicuous (i.e., clearer) visualization, viewing the process as a single stream for a token that components read from and add their output back into."
+      "q": "How does the 'residual stream' viewpoint compare to the 'residual connections' metaphor in Transformers?",
+      "a": "The 'residual stream' is a more <b>perspicuous</b> (i.e., clearer) viewpoint where components read from and add their output back into a single, central stream. 'Residual connections' refers to the underlying mechanism—adding a component's input to its output—which was the primary metaphor used in earlier descriptions before the 'residual stream' concept became a more common way to visualize the process."
     },
     {
       "type": "Cloze",
-      "text": "The feedforward layer in a Transformer is a fully-connected {{c1::2-layer}} network, consisting of one hidden layer and two weight matrices."
+      "text": "The feedforward layer in a Transformer is a fully-connected {{c1::2-layer}} network, i.e., it has one hidden layer and two weight matrices."
     },
     {
       "type": "Cloze",
@@ -287,82 +288,84 @@
     },
     {
       "type": "Cloze",
-      "text": "While the feedforward network weights are shared across token positions within a layer, they are {{c1::different}} from one Transformer layer to the next."
+      "text": "The weights of the feedforward layer are the same for each token position, but are {{c1::different}} from layer to layer."
     },
     {
       "type": "Cloze",
-      "text": "It is common for the dimensionality of the feedforward network's hidden layer (\\(d_{ff}\\)) to be {{c1::larger}} than the model dimensionality (\\(d\\))."
-    },
-    {
-      "type": "Cloze",
-      "text": "The position-wise Feedforward Network (FFN) consists of two {{c1::linear transformations}} with a {{c2::ReLU}} activation function in between."
-    },
-    {
-      "type": "Cloze",
-      "text": "The equation for the position-wise Feedforward Network (FFN), applied to the input \\(x_i\\) for token position \\(i\\), is: {{c1::\\[FFN(x_i) = \\text{ReLU}(x_i W_1 + b_1)W_2 + b_2\\]}}"
-    },
-    {
-      "type": "Cloze",
-      "text": "Layer normalization is a process used to improve training performance in deep neural networks by keeping the values of a hidden layer in a range that facilitates {{c1::gradient-based training}}."
-    },
-    {
-      "type": "Cloze",
-      "text": "Layer normalization is applied to the embedding vector of a {{c1::single token}}, not to an entire transformer layer."
-    },
-    {
-      "type": "Cloze",
-      "text": "The input to layer norm is a single vector of dimensionality \\(d\\), and the output is that vector normalized, again of the {{c1::same dimensionality (\\(d\\))}}."
+      "text": "In a Transformer's feedforward network, the dimensionality of the hidden layer (\\(d_{\\text{ff}}\\)) is commonly {{c1::larger}} than the model dimensionality (\\(d\\))."
     },
     {
       "type": "Q&A",
-      "q": "What are the first two values calculated in Layer Normalization for a given input vector?",
-      "a": "The mean (\\(\\mu\\)) and standard deviation (\\(\\sigma\\)) over all the elements of that single vector."
+      "q": "What is the structure of the position-wise Feed-Forward Network (FFN) layer in a Transformer?",
+      "a": "It is a fully-connected 2-layer network consisting of two linear transformations with a ReLU activation function in between. The exact formula is:\n\\[\n\\text{FFN}(x_i) = \\text{ReLU}(x_i W_1 + b_1) W_2 + b_2\n\\]"
     },
     {
       "type": "Cloze",
-      "text": "In layer normalization, the mean \\(\\mu\\) for an input vector \\(x\\) of dimensionality \\(d\\) is calculated as: {{c1::\\[\\mu = \\frac{1}{d} \\sum_{i=1}^{d} x_i\\]}}"
+      "text": "The equation for the position-wise Feedforward Network (FFN) is: {{c1::\\[ \\text{FFN}(x_i) = \\text{ReLU}(x_i W_1 + b_1)W_2 + b_2 \\]}}."
     },
     {
       "type": "Cloze",
-      "text": "In layer normalization, the standard deviation \\(\\sigma\\) for an input vector \\(x\\) with mean \\(\\mu\\) and dimensionality \\(d\\) is calculated as: {{c1::\\[\\sigma = \\sqrt{\\frac{1}{d} \\sum_{i=1}^{d} (x_i - \\mu)^2}\\]}}."
+      "text": "Layer normalization is a process used in transformers to improve training performance by keeping the values of a hidden layer in a range that facilitates {{c1::gradient-based training}}."
     },
     {
       "type": "Cloze",
-      "text": "The initial normalization step in Layer Norm, which centers the data around zero with a standard deviation of one, is calculated as: {{c1::\\[\\hat{x} = \\frac{x-\\mu}{\\sigma}\\]}}."
+      "text": "The term \"Layer Norm\" can be confusing; it is not applied to an entire transformer layer, but rather to the {{c1::embedding vector of a single token}}."
     },
     {
       "type": "Cloze",
-      "text": "Applying the initial normalization step in Layer Norm, \\(\\hat{x} = \\frac{x-\\mu}{\\sigma}\\), results in a new vector with a mean of {{c1::zero}} and a standard deviation of {{c2::one}}."
+      "text": "The input to layer norm is the \\(d\\)-dimensional embedding vector of a single token, and the output is a normalized vector of {{c1::the same dimensionality (\\(d\\))}}."
+    },
+    {
+      "type": "Q&A",
+      "q": "What are the first two statistics computed during Layer Normalization for a single input vector?",
+      "a": "The mean (<code>&\\(\\mu\\)</code>) and standard deviation (<code>&\\(\\sigma\\)</code>), calculated over all elements of that vector."
     },
     {
       "type": "Cloze",
-      "text": "In the standard implementation of layer normalization, two learnable parameters are introduced: {{c1::\\(\\gamma\\)}}, representing gain, and {{c2::\\(\\beta\\)}}, representing offset."
+      "text": "In layer normalization, the mean \\(\\mu\\) for an embedding vector \\(x\\) of dimensionality \\(d\\) is calculated as: {{c1::\\[\\mu = \\frac{1}{d} \\sum_{i=1}^{d} x_i\\]}}"
     },
     {
       "type": "Cloze",
-      "text": "The full Layer Normalization formula incorporates a learnable gain (\\(\\gamma\\)) and offset (\\(\\beta\\)) applied to the normalized vector: {{c1::\\[LayerNorm(x) = \\gamma \\frac{x-\\mu}{\\sigma} + \\beta\\]}}"
+      "text": "In layer normalization, the standard deviation <span>\\sigma</span> for an input vector <span>\\x</span> of dimensionality <span>\\w</span> with mean <span>\\u</span> is calculated as: {{c1::\\[ \\ sigma = \\ sqrt{ \\ frac{1}{d} \\ sum_{i=1}^{d} (x_i - \\ mu)^2 } \\ ]}}"
+    },
+    {
+      "type": "Cloze",
+      "text": "The initial step of Layer Normalization is a z-score calculation that normalizes an input vector \\(x\\) to produce \\(\\hat{x}\\). The formula is: {{c1::\\[\\hat{x} = \\frac{x-\\mu}{\\sigma}\\]}}"
+    },
+    {
+      "type": "Cloze",
+      "text": "In Layer Normalization, the computation \\[\\hat{x} = \\frac{x-\\mu}{\\sigma}\\] produces a normalized vector with a mean of {{c1::zero}} and a standard deviation of {{c2::one}}."
+    },
+    {
+      "type": "Cloze",
+      "text": "The standard implementation of layer normalization introduces two learnable parameters: <code>\\(\\gamma\\)</code> (a {{c1::gain}} parameter) and <code>\\(\\beta\\)</code> (an {{c2::offset}} parameter)."
+    },
+    {
+      "type": "Q&A",
+      "q": "In the standard implementation of Layer Normalization, two learnable parameters are introduced: a gain ($\\(\\gamma\\)$) and an offset ($\\(\\beta\\)$). What is the final formula for <code>LayerNorm(x)</code>?",
+      "a": "The formula is:\n\\[LayerNorm(x) = \\gamma \\frac{x-\\mu}{\\sigma} + \\beta\\]\nThis applies the learnable gain \\(\\gamma\\) and offset \\(\\beta\\) to the z-score normalized vector \\(\\frac{x-\\mu}{\\sigma}\\)."
     },
     {
       "type": "Enumeration",
       "prompt": "What are the computational steps within a single pre-norm Transformer block for a token \\(x_i\\)?",
       "items": [
-        "Apply Layer Normalization to the input: \\(t^1_i = \\text{LayerNorm}(x_i)\\)",
-        "Compute Multi-Head Attention using the normalized input: \\(t^2_i = \\text{MultiHeadAttention}(t^1_i, [t^1_1, \\cdots, t^1_N])\\)",
-        "Add the attention output back to the original input (first residual connection): \\(t^3_i = t^2_i + x_i\\)",
-        "Apply Layer Normalization to the result of the first residual connection: \\(t^4_i = \\text{LayerNorm}(t^3_i)\\)",
-        "Pass the result through a Feed-Forward Network: \\(t^5_i = \\text{FFN}(t^4_i)\\)",
-        "Add the FFN output to the result of the first residual connection (second residual connection) to get the final output: \\(h_i = t^5_i + t^3_i\\)"
+        "1. Apply Layer Normalization to the input: \\(t^1_i = \\text{LayerNorm}(x_i)\\)",
+        "2. Compute Multi-Head Attention using the normalized input: \\(t^2_i = \\text{MultiHeadAttention}(t^1_i, [t^1_1, \\cdots, t^1_N])\\)",
+        "3. Add the attention output back to the original input (first residual connection): \\(t^3_i = t^2_i + x_i\\)",
+        "4. Apply Layer Normalization to the result of the first residual connection: \\(t^4_i = \\text{LayerNorm}(t^3_i)\\)",
+        "5. Pass the result through a Feed-Forward Network: \\(t^5_i = \\text{FFN}(t^4_i)\\)",
+        "6. Add the FFN output back to \\(t^3_i\\) (second residual connection) to get the final output: \\(h_i = t^5_i + t^3_i\\)"
       ],
       "ordered": true
     },
     {
       "type": "Cloze",
-      "text": "Within a transformer block, the only component that directly incorporates information from other tokens in the context is the {{c1::Multi-Head Attention}} mechanism."
+      "text": "Within a transformer block, the only component that takes as input information from other tokens (specifically, from their residual streams) is {{c1::multi-head attention}}."
     },
     {
       "type": "Q&A",
       "q": "How can the function of an attention head be conceptualized in terms of information flow between tokens?",
-      "a": "An attention head can be viewed as moving information from the residual stream of a neighboring token into the residual stream of the current token."
+      "a": "Based on the work of Elhage et al. (2021), an attention head can be viewed as a mechanism that moves information from the residual stream of a <b>neighboring token</b> into the residual stream of the <b>current token</b>."
     },
     {
       "type": "Cloze",
@@ -370,371 +373,378 @@
     },
     {
       "type": "Cloze",
-      "text": "In a multi-layer transformer, the representation in the residual stream evolves: at earlier blocks, it primarily represents the {{c1::current token}}, while at the highest blocks, it often represents the {{c2::following token}} for predictive tasks."
+      "text": "In a multi-layer transformer, the representation in the residual stream evolves: at earlier transformer blocks, it represents the {{c1::current token}}, while at the highest transformer blocks, it usually represents the {{c2::following token}} since it is being trained to predict the next token."
     },
     {
       "type": "Q&A",
       "q": "What is the key difference between the 'pre-norm' and 'post-norm' Transformer architectures?",
-      "a": "In the 'pre-norm' architecture, Layer Normalization is applied *before* the attention and FFN sub-layers. In the 'post-norm' architecture (from the original Vaswani et al., 2017 paper), it is applied *after*. Pre-norm generally performs better but requires an extra LayerNorm at the very end of the final transformer block."
+      "a": "In the <b>pre-norm</b> architecture, Layer Normalization is applied <b>before</b> the attention and FFN layers. In the <b>post-norm</b> architecture, used in the original Transformer paper (Vaswani et al., 2017), it's applied <b>after</b>.<br><br>The pre-norm architecture generally works better but requires an additional LayerNorm at the very end of the last transformer block."
     },
     {
       "type": "Cloze",
-      "text": "In a stacked pre-norm Transformer architecture, a single extra {{c1::layer norm}} is applied to the final output of the last transformer block, just before the language model head."
+      "text": "The <b>pre-norm</b> Transformer architecture requires a final, extra {{c1::<code>LayerNorm</code>}} to be applied to the output of the last transformer block, just before the language model head."
     },
     {
       "type": "Cloze",
-      "text": "A key property of the Transformer block that enables parallelization is that the computation for each token is {{c1::independent}} of the computation for every other token."
+      "text": "A Transformer block's computations can be parallelized because the calculation for each token is {{c1::independent}} of the calculation for all other tokens."
     },
     {
       "type": "Cloze",
-      "text": "To enable parallel computation in a Transformer, the embeddings for the \\(N\\) input tokens are packed into a single matrix \\(X\\) of size {{c1::\\(N \\times d\\)}}."
+      "text": "To enable parallel computation in a Transformer, the input embeddings for the \\(N\\) tokens of an input sequence are packed into a single matrix \\(X\\) of size {{c1::\\(N \\times d\\)}}, where \\(d\\) is the model dimension."
     },
     {
       "type": "Cloze",
-      "text": "In a Transformer, the input embeddings for a sequence are packed into an input matrix \\(X\\), where each row is the {{c1::embedding of one token}}."
+      "text": "In the Transformer's input matrix \\(X\\), each row is the {{c1::embedding of one token of the input}}."
     },
     {
       "type": "Cloze",
-      "text": "In a Transformer, the dimensionality of the token embeddings (\\(d\\)) is also referred to as the {{c1::model dimension}}."
+      "text": "In a Transformer, the dimensionality of the token embeddings, denoted as \\(d\\), is also known as the {{c1::model dimension}}."
     },
     {
       "type": "Cloze",
-      "text": "For vanilla transformers, the input sequence length (or context size), \\(N\\), commonly ranges from {{c1::1K to 32K}} tokens."
+      "text": "For vanilla transformers, the input length \\(N\\) commonly ranges from {{c1::1K to 32K}} tokens."
     },
     {
       "type": "Cloze",
-      "text": "In a single attention head of a Transformer, the Query (Q), Key (K), and Value (V) matrices are generated for the entire sequence by multiplying the input embedding matrix \\(X\\) with their respective weight matrices: {{c1::\\(Q = XWQ; K = XWK; V = XWV\\)}}."
+      "text": "For a single attention head, the Query (Q), Key (K), and Value (V) matrices are computed for an entire sequence by multiplying the input matrix \\(X\\) with the head's respective weight matrices, \\(WQ\\), \\(WK\\), and \\(WV\\): {{c1::\\(Q = XWQ\\), \\(K = XWK\\), \\(V = XWV\\)}}."
     },
     {
       "type": "Cloze",
-      "text": "In self-attention, all query-key comparisons are computed in parallel for the entire sequence by performing the matrix multiplication {{c1::\\(QK^{\\top}\\)}}."
+      "text": "In self-attention, all query-key comparisons for an entire sequence are computed simultaneously in a single matrix multiplication: {{c1::\\(QK^\\top\\)}}."
     },
     {
       "type": "Cloze",
-      "text": "The attention score matrix \\(QK^T\\) in a self-attention mechanism has a shape of {{c1::\\(N \\times N\\)}}, where \\(N\\) is the number of tokens in the input sequence."
+      "text": "In a self-attention mechanism, the matrix product \\(QK^\\top\\) has a shape of {{c1::\\(N \\times N\\)}}, where \\(N\\) is the number of tokens in the input sequence."
     },
     {
       "type": "Cloze",
-      "text": "The computation for a single self-attention head is summarized by the formula: {{c1::\\( \\text{head} = \\text{softmax}\\left(\\text{mask}\\left(\\frac{QK^\\intercal}{\\sqrt{d_k}}\\right)\\right)V \\)}}."
+      "text": "The entire self-attention computation for an entire sequence of <code>N</code> tokens for one head is reduced to the following formula: {{c1:\\[\\text{head} = \\text{softmax}\\left(\\text{mask}\\left(\\frac{QK^{\\intercal}}{\\sqrt{dk}}\\right)\\right)V\\]}}"
     },
     {
       "type": "Cloze",
-      "text": "In the 'post-norm' Transformer architecture, Layer Normalization is applied {{c1::after}} the self-attention and feed-forward network sub-layers."
+      "text": "In the 'post-norm' Transformer architecture, as used in the original paper by Vaswani et al. (2017), Layer Normalization is applied {{c1::after}} the self-attention and feed-forward network (FFN) sub-layers."
     },
     {
       "type": "Cloze",
-      "text": "In the 'pre-norm' Transformer architecture, which works better than the original 'post-norm' design, Layer Normalization is applied {{c1::before}} the sub-layers (i.e., the attention and FFN layers)."
+      "text": "In contrast to the original 'post-norm' Transformer architecture (Vaswani et al., 2017), where Layer Normalization is applied <i>after</i> the attention and FFN layers, it has been found that a 'pre-norm' architecture, which applies LayerNorm {{c1::beforehand}}, works better."
     },
     {
       "type": "Q&A",
       "q": "Why is masking future tokens essential in self-attention for autoregressive tasks like language modeling?",
-      "a": "In autoregressive tasks, the model's objective is to predict the next token based on previous ones. Allowing it to see future tokens would mean it already knows the answer, making the training task trivial and defeating the purpose of learning to predict."
+      "a": "In standard self-attention, the calculation of <code>QK<sup>&top;</sup></code> results in a score for each query with every key, including keys from tokens that follow the query in the sequence. This is inappropriate for language modeling because if the model can see the token it is supposed to predict, the training task becomes trivial."
     },
     {
       "type": "Cloze",
-      "text": "To prevent an autoregressive model from 'cheating' by looking at future tokens, the elements in the {{c1::upper-triangular}} portion of the \\(QK^{\\top}\\) matrix are masked out before the softmax operation."
+      "text": "In the context of language modeling, to prevent the model from seeing future tokens, the elements in the {{c1::upper-triangular}} portion of the <code>QK<sup>&top;</sup></code> matrix are set to <code>-∞</code> before the softmax operation."
     },
     {
       "type": "Cloze",
-      "text": "In attention masking for autoregressive models, elements in the QK⊺ matrix corresponding to future positions (the upper-triangular portion) are set to {{c1::\\(-\\infty\\)}}, which the subsequent softmax operation will map to {{c2::zero}}, thus preventing the model from attending to future tokens."
-    },
-    {
-      "type": "Cloze",
-      "text": "In causal self-attention (or look-ahead masking), future positions are masked out by adding a mask matrix \\(M\\) to the \\(QK^{\\top}\\) scores, where elements corresponding to future positions are set to \\(-\\infty\\). This happens {{c1::before}} the softmax function is applied."
+      "text": "In self-attention for language modeling, elements in the upper-triangular portion of the \\(QK^T\\) matrix (representing future positions) are set to {{c1::\\(-\\infty\\)}}, which the softmax function turns into a weight of {{c2::zero}}."
     },
     {
       "type": "Q&A",
-      "q": "How is the look-ahead mask matrix \\(M\\) constructed for an autoregressive model?",
-      "a": "For any element \\(M_{ij}\\), if the key index \\(j\\) is greater than the query index \\(i\\), the value is set to \\(-\\infty\\). Otherwise, it is set to 0. This masks the upper-triangular portion of the attention matrix."
-    },
-    {
-      "type": "Cloze",
-      "text": "A major computational drawback of the self-attention mechanism is its {{c1::quadratic}} time complexity (\\(O(N^2)\\)) with respect to the input sequence length \\(N\\), as it computes dot products between each pair of tokens."
+      "q": "How is look-ahead masking implemented in self-attention to prevent a model from accessing future tokens in a sequence?",
+      "a": "A mask matrix <i>M</i> is added to the <i>QK<sup>&top;</sup></i> scores before the softmax function is applied. This mask matrix contains (&minus;&infin;) for all future positions (the upper-triangular portion, where <i>j</i> &gt; <i>i</i>) and 0 for all other positions. The softmax function then converts the (&minus;&infin;) scores to zero, effectively nullifying the attention weights for future tokens."
     },
     {
       "type": "Q&A",
-      "q": "What is the source of the quadratic time complexity in the self-attention mechanism?",
-      "a": "It stems from the need to compute dot products between each pair of tokens in the input sequence, which requires calculating an \\(N \\times N\\) attention score matrix (the QKᵀ matrix) for a sequence of length \\(N\\)."
+      "q": "How is the look-ahead mask matrix \\(M\\) constructed for an autoregressive Transformer?",
+      "a": "For each element \\(M_{ij}\\) of the mask matrix, the value is set to \\(-\\infty\\) if \\(j &gt; i\\) and 0 otherwise. This sets the upper-triangular portion of the matrix to \\(-\\infty\\), which the subsequent softmax operation turns to zero, thus preventing attention to future tokens."
     },
     {
       "type": "Cloze",
-      "text": "In multi-head attention, the query (\\(Q\\)) and key (\\(K\\)) embeddings for each head have a dimensionality of {{c1::\\(d_k\\)}}."
-    },
-    {
-      "type": "Cloze",
-      "text": "In multi-head attention, the Value (\\(V\\)) embeddings for each head have a dimensionality of {{c1::\\(dv\\)}}."
-    },
-    {
-      "type": "Cloze",
-      "text": "In multi-head attention, the weight matrix for queries, \\(W_c^Q\\), for each head \\(c\\) has a shape of {{c1::\\(d \\times d_k\\)}}."
-    },
-    {
-      "type": "Cloze",
-      "text": "In multi-head attention, the weight matrix \\(W_c^K\\) for each head \\(c\\) has a shape of {{c1::\\(d \\times d_k\\)}} to project the model-dimension input into the key dimension."
-    },
-    {
-      "type": "Cloze",
-      "text": "In multi-head attention, the value weight matrix \\(W^V_c\\) for each head \\(c\\) has a shape of {{c1::\\[d \\times d_v\\]}} to project the input from the model dimension (\\(d\\)) to the value dimension (\\(d_v\\))."
-    },
-    {
-      "type": "Cloze",
-      "text": "The output of a single attention head in a multi-head attention layer is a matrix of shape {{c1::\\(N \\times dv\\)}}, where \\(N\\) is the sequence length and \\(dv\\) is the dimensionality of the value embeddings."
-    },
-    {
-      "type": "Cloze",
-      "text": "In multi-head attention, after calculating the output for each individual head, the resulting matrices are {{c1::concatenated}} to form a single large matrix."
-    },
-    {
-      "type": "Cloze",
-      "text": "After concatenating the outputs of \\(A\\) individual attention heads, the resulting combined matrix has a shape of {{c1::\\([N \\times A d_v]\\)}}."
+      "text": "Because self-attention computes dot products between each pair of tokens in the input, its time complexity is {{c1::quadratic}} (\\(O(N^2)\\)) with respect to the input sequence length \\(N\\)."
     },
     {
       "type": "Q&A",
-      "q": "What is the purpose of the final linear projection layer (\\(W_O\\)) in multi-head attention?",
-      "a": "It projects the concatenated output of all attention heads back to the model's original dimension (\\(d\\)), reshaping the \\([N \\times Ad_v]\\) matrix to \\([N \\times d]\\) so it can be used for further processing."
+      "q": "What is the source of the quadratic complexity in the self-attention mechanism?",
+      "a": "The complexity is quadratic because dot products are computed between each pair of tokens in the input sequence. For an input of length \\(\\text{N}\\), this requires computing the \\(\\text{N} \\times \\text{N}\\) \\(QK^T\\) score matrix."
     },
     {
       "type": "Cloze",
-      "text": "In multi-head attention, the final linear projection matrix \\(W^O\\) has a shape of {{c1::\\([A \\cdot dv \\times d]\\)}} to project the concatenated output of all heads back to the model's original dimension."
+      "text": "In multi-head attention, for each head, the key (\\(K\\)) and query (\\(Q\\)) embeddings have dimensionality {{c1::\\(d_k\\)}}, while the value (\\(V\\)) embeddings have dimensionality \\(d_v\\)."
     },
     {
       "type": "Cloze",
-      "text": "The final output of a multi-head attention layer, produced by a final linear projection \\(W_O\\), has a shape of {{c1::\\(N \\times d\\)}}, which matches the model dimension \\(d\\) of the input."
+      "text": "In multi-head attention, the value embeddings (<i>V</i>) for each head are of dimensionality {{c1::<i>d</i><sub>v</sub>}}, as produced by the weight matrix <i>W</i><sub><i>V</i></sub><sup><i>c</i></sup>."
     },
     {
       "type": "Cloze",
-      "text": "In multi-head attention, the Query matrix for a single head \\(i\\) (\\(Q_i\\)) is created by multiplying the input matrix \\(X\\) with a head-specific learned weight matrix, {{c1::\\(W_{Qi}\\)}}."
+      "text": "In multi-head attention, the query weight matrix for each head \\(c\\), \\(W^Q_c\\), has a shape of {{c1::\\(d \\times d_k\\)}}, which projects an input from the model dimension (\\(d\\)) to the query dimension (\\(d_k\\))."
     },
     {
       "type": "Cloze",
-      "text": "In multi-head attention, the Key matrix for a single head \\(i\\) (\\(K_i\\)) is created by multiplying the input matrix \\(X\\) with a head-specific learned weight matrix, {{c1::\\(W_{Ki}\\)}}."
+      "text": "In multi-head attention, the weight matrix for the key, \\(W_K^c\\), for each head \\(c\\) has a shape of {{c1::\\(d \\times d_k\\)}}, as it projects an input of model dimension \\(d\\) to the key dimension \\(d_k\\)."
     },
     {
       "type": "Cloze",
-      "text": "To compute the Value matrix \\(V_i\\) for head \\(i\\) in multi-head attention, the input matrix \\(X\\) is multiplied by the head-specific weight matrix {{c1::\\(W_{Vi}\\)}}."
+      "text": "In multi-head attention, the value weight matrix <span style='color:blue;'>\\(W_c^V\\)</span> for each head <span style='color:blue;'>\\(c\\)</span> has a shape of {{c1::<span style='color:blue;'>\\(d \\times d_v\\)</span>&gt;}}, which projects the <span style='color:blue;'>\\(d\\)</span>-dimensional input to the <span style='color:blue;'>\\(d_v\\)</span>-dimensional value embeddings."
     },
     {
       "type": "Cloze",
-      "text": "The output of a single self-attention head (\\(\\text{headi}\\)) is calculated by the formula: {{c1::\\(\\text{softmax}\\left(\\text{mask}\\left(\\frac{Qi Ki^\\intercal}{\\sqrt{dk}}\\right)\\right) Vi\\)}}."
+      "text": "The output of a single attention head in a multi-head attention layer is a matrix of shape {{c1::\\[N \\times dv\\]}}, where \\(N\\) is the sequence length and \\(dv\\) is the dimensionality of the value embeddings."
     },
     {
       "type": "Cloze",
-      "text": "In multi-head attention, the outputs of individual heads are combined by first {{c1::concatenating}} them (represented by the symbol \\(⊕\\)) and then multiplying the result by a final output weight matrix, \\(W^O\\)."
+      "text": "In multi-head attention, the output matrices from all <b>A</b> heads are {{c1::concatenated}} into a single large matrix of shape <code>[N &times; Adv]</code>. This matrix is then multiplied by a final linear projection matrix <b>W</b><sub>O</sub> to produce the final output of shape <code>[N &times; d]</code>."
     },
     {
       "type": "Cloze",
-      "text": "After concatenating the outputs of all attention heads, the resulting matrix is multiplied by a final output weight matrix, {{c1::\\(W^O\\)}}, to produce the final layer output."
+      "text": "In multi-head attention, the \\(A\\) output matrices, each with shape \\(N \\times d_v\\), are concatenated to form a single matrix of shape {{c1::\\(N \\times A \\cdot d_v\\)}}."
+    },
+    {
+      "type": "Q&A",
+      "q": "What is the purpose of the final linear projection layer (\\(W^O\\)) in multi-head attention?",
+      "a": "It projects the concatenated output from all attention heads back to the model's original embedding dimension (\\(d\\)). This is accomplished by multiplying the concatenated matrix (shape `[N × Adv]`) by the projection weight matrix \\(W^O\\) (shape `[Adv × d]`), yielding the final output of shape `[N × d]`."
+    },
+    {
+      "type": "Cloze",
+      "text": "In multi-head attention, the final linear projection matrix \\(W^O\\) has a shape of {{c1::\\[ A \\cdot d_v \\times d \\]}} to reshape the concatenated head outputs back to the model&#39;s original dimension, \\(d\\)."
+    },
+    {
+      "type": "Cloze",
+      "text": "After the final linear projection with matrix \\(W^O\\), the output of a multi-head attention layer has a shape of {{c1::\\(N \\times d\\)}}, where \\(N\\) is the sequence length and \\(d\\) is the model dimension."
+    },
+    {
+      "type": "Cloze",
+      "text": "In multi-head attention, the Query matrix for head \\(i\\) (\\(Q_i\\)) is computed by multiplying the input matrix \\(X\\) by a head-specific learned weight matrix, {{c1::\\(W_{Qi}\\)}}."
+    },
+    {
+      "type": "Cloze",
+      "text": "In multi-head attention, the Key matrix for head <i>i</i>, <i>K<sub>i</sub></i>, is computed by multiplying the input matrix <i>X</i> by the head-specific weight matrix {{c1::<i>W<sub>K</sub><sup>i</sup></i>}}."
+    },
+    {
+      "type": "Cloze",
+      "text": "In multi-head attention, the Value matrix for a single head \\(i\\) (\\(V_i\\)) is created by multiplying the input matrix \\(X\\) with a head-specific learned weight matrix, {{c1::\\(W_{Vi}\\)}}."
+    },
+    {
+      "type": "Cloze",
+      "text": "The formula for a single self-attention head, \n\n---\n\n<code>head_i = SelfAttention(Q_i, K_i, V_i)</code>\n\n---\n\n, is:\n\n{{c1::\\[\n\\mathrm{softmax}\\left(\\mathrm{mask}\\left(\\frac{Q_i K_i^\\top}{\\sqrt{d_k}}\\right)\\right) V_i\\]}}"
+    },
+    {
+      "type": "Cloze",
+      "text": "The formula for Multi-Head Attention combines the outputs of individual heads (\\(head_i\\)) by concatenating them and then applying a final linear projection with \\(W^O\\): {{c1::(\\(head_1 \\oplus head_2 \\dots \\oplus head_A\\))W^O}}."
+    },
+    {
+      "type": "Cloze",
+      "text": "After concatenating the outputs of all attention heads (represented as \\(head_1 \\oplus head_2...\\oplus head_A\\)), the resulting matrix is multiplied by a final output weight matrix, {{c1::\\(W^O\\)}}, to produce the final layer output."
     },
     {
       "type": "Q&A",
       "q": "Why must the input and output dimensions of a Transformer block be the same?",
-      "a": "To ensure the blocks can be stacked, allowing the output of one layer (e.g., \\(H_{k-1}\\)) to be used as the input for the next layer."
+      "a": "To allow the blocks to be stacked, where the output of one layer (e.g., \\(H_{k-1}\\)) serves as the input for the next layer."
     },
     {
       "type": "Cloze",
-      "text": "The first sub-layer in a Transformer block computes its output \\(O\\) by applying attention to the normalized input and then adding a residual connection: \\(O = {{c1::MultiHeadAttention(LayerNorm(X)) + X}}\\)."
+      "text": "The output \\(O\\) of the first sub-layer in a Transformer block is computed by adding a residual connection to the multi-head attention output: \\(O = {{c1::X + MultiHeadAttention(LayerNorm(X))}}\\)."
     },
     {
       "type": "Cloze",
-      "text": "The second sub-layer in a Transformer block computes the final output \\(H\\) by applying a feed-forward network to the normalized intermediate input \\(O\\) and adding a residual connection: \\(H = {{c1::O + FFN(LayerNorm(O))}}\\)."
+      "text": "The feed-forward network (FFN) sub-layer in a Transformer block computes the final output <i>H</i> from the previous sub-layer's output <i>O</i> using the equation: <i>H = {{c1::O + FFN(LayerNorm(O))}}</i>."
     },
     {
       "type": "Cloze",
-      "text": "For the {{c1::first}} layer of a Transformer, the input \\(X\\) is the sum of the initial word embeddings and positional embeddings."
+      "text": "For the {{c1::first}} layer of a Transformer, the input matrix \\(X\\) is the sum of the initial word embeddings and positional embeddings."
     },
     {
       "type": "Cloze",
-      "text": "In a Transformer, the input to a subsequent layer \\(k\\) is the {{c1::output from the previous layer, \\(H_{k-1}\\)}}."
+      "text": "For a subsequent Transformer layer \\(k\\), the input (denoted as \\(X\\) in the general layer equations) is the {{c1::output from the previous layer, \\(H_{k-1}\\)}}."
     },
     {
       "type": "Cloze",
-      "text": "In a Transformer layer, operations like the Feed-Forward Network (FFN) and LayerNorm are applied {{c1::in parallel}} to each of the \\(N\\) individual token embeddings in the input sequence."
+      "text": "In a Transformer layer, operations like the Feed-Forward Network (FFN) and LayerNorm are applied {{c1::in parallel}} to each of the \\(N\\) token embeddings in the input window."
     },
     {
       "type": "Q&A",
       "q": "What two components are combined to form the initial input representation for a token in a Transformer?",
-      "a": "A token embedding (representing the token's identity) and a positional embedding (representing its position in the sequence). These two components are added together."
+      "a": "An <b>input token embedding</b> (representing the token itself) and an <b>input positional embedding</b> (representing the token's position in the sequence). These two embeddings are added together."
     },
     {
       "type": "Cloze",
-      "text": "The set of initial token embeddings is stored in an embedding matrix \\(E\\) with a shape of {{c1::\\[|V| \\times d\\]}}, where \\(|V|\\) is the vocabulary size and \\(d\\) is the embedding dimension."
+      "text": "The set of initial token embeddings is stored in the embedding matrix <b>E</b>, which has a shape of {{c1::\\[|V| \\times d\\]}}. In this formula, \\(|V|\\) is the vocabulary size and \\(d\\) is the embedding dimension.<br><i>(Reminder: The \\(|V|\\) for vocabulary size is not related to the value vector \\(V\\) from the attention mechanism.)</i>"
     },
     {
       "type": "Q&A",
       "q": "Why are positional embeddings necessary in a Transformer's input?",
-      "a": "Because token embeddings are position-independent, positional embeddings are added to represent the position of each token in the sequence."
+      "a": "Because token embeddings are not position-dependent, positional embeddings must be combined with them to represent the position of each token in the sequence."
     },
     {
       "type": "Cloze",
-      "text": "To produce an input embedding that captures positional information, the token embedding is {{c1::added}} to its corresponding positional embedding."
+      "text": "The final input representation for the \\(i\\)-th token in an input sequence is computed by {{c1::<b>adding</b>}} its token embedding \\(E[\\text{id}(i)]\\) to its positional embedding \\(P[i]\\)."
     },
     {
       "type": "Cloze",
-      "text": "The final input representation for the i-th token in a Transformer, which forms the i-th row of the input matrix \\(X\\), is computed by summing its token embedding and positional embedding: {{c1::\\(X_i = E[\\text{id}(i)] + P[i]\\)}}."
+      "text": "In a Transformer, the final representation for the token at position <code>i</code> forms the <code>i</code>-th row of the input matrix \\(X\\). It's computed by adding the token's embedding to the positional embedding for that position: {{c1::\\(X_i = E[\\text{id}(i)] + P[i]\\)}}."
     },
     {
       "type": "Cloze",
-      "text": "Selecting a token's embedding from the embedding matrix \\(E\\) is equivalent to multiplying a {{c1::one-hot vector}} representing that token by the matrix \\(E\\)."
+      "text": "Conceptually, a token's embedding can be retrieved by multiplying a {{c1::one-hot vector}} representing the token by the embedding matrix <code>E</code>."
     },
     {
       "type": "Cloze",
-      "text": "The simplest method for positional embeddings, called {{c1::absolute position}}, uses randomly initialized, learnable embeddings for each position up to a maximum length."
+      "text": "In the {{c1::absolute position}} method for positional embeddings, a unique, learnable embedding is created for each possible input position up to a maximum length, much like a word embedding is created for a token."
     },
     {
       "type": "Q&A",
       "q": "What is a potential weakness of using learned absolute positional embeddings?",
-      "a": "Embeddings for positions near the maximum context length may be seen infrequently during training, causing them to be poorly trained and to generalize badly."
+      "a": "There are fewer training examples for positions at the outer length limits. Consequently, these positional embeddings may be poorly trained and not generalize well during testing."
     },
     {
       "type": "Cloze",
-      "text": "An alternative to learned positional embeddings is to use a {{c1::static function}} that maps an integer position to a real-valued vector, such as the sinusoidal functions used in the original transformer."
+      "text": "An alternative to learned positional embeddings, which better handles sequences of arbitrary length, is to use a {{c1::static function}} that maps integer positions to real-valued vectors (e.g., sinusoidal embeddings from the original Transformer)."
     },
     {
       "type": "Cloze",
-      "text": "The original Transformer paper used a static function for positional embeddings, based on a combination of {{c1::sine and cosine}} functions with differing frequencies."
+      "text": "The original Transformer paper used {{c1::sinusoidal position embeddings}}, a static function method that combines sine and cosine waves with differing frequencies."
     },
     {
       "type": "Q&A",
-      "q": "What are two key advantages of using sinusoidal positional embeddings over learned ones?",
-      "a": "1. They can generalize to sequence lengths longer than those seen during training, as they are calculated by a static function. 2. They may help capture inherent relationships between positions (e.g., that position 4 is more closely related to 5 than to 17)."
+      "q": "What are two key advantages of using sinusoidal positional embeddings over learned absolute positional embeddings?",
+      "a": "1. They can generalize to sequence lengths longer than those seen during training. 2. They may help capture inherent relationships between positions (e.g., that position 4 is closer to 5 than to 17)."
     },
     {
       "type": "Cloze",
-      "text": "A more complex style of positional embedding, which represents {{c1::relative position}} instead of absolute position, is often implemented in the {{c2::attention mechanism}} at each layer."
+      "text": "A more complex alternative to absolute positional embeddings is to directly represent {{c1::relative position}}, a method often implemented in the {{c2::attention mechanism at each layer}} rather than being added to the initial input."
     },
     {
       "type": "Q&A",
       "q": "In the context of pretrained transformer models, what is a 'head'?",
-      "a": "A 'head' refers to the additional neural circuitry added on top of the basic transformer architecture to apply the model to various tasks, such as language modeling."
+      "a": "A 'head' is the additional neural circuitry added on top of the basic transformer architecture to apply the model to a specific task, such as language modeling."
     },
     {
       "type": "Cloze",
-      "text": "The {{c1::language modeling head}} is the neural circuitry added on top of a transformer's final layer to predict the next word."
+      "text": "The {{c1::language modeling head}} is the neural circuitry added <b>on top of</b> a transformer's final layer to enable next-word prediction."
     },
     {
       "type": "Cloze",
-      "text": "The primary job of a language model is to be a word predictor, assigning a {{c1::probability}} to each possible next word given a context."
+      "text": "As word predictors, language models work by assigning a {{c1::probability}} to each possible next word, given a context of words."
     },
     {
       "type": "Cloze",
-      "text": "To predict the word at position \\(N+1\\), a transformer's language modeling head uses the output embedding from the final transformer layer corresponding to the {{c1::last token (at position \\(N\\))}}."
+      "text": "To predict the word at position \\(N+1\\), a transformer's language modeling head uses the output embedding from the final transformer layer for the {{c1::last token (at position \\(N\\))}}."
     },
     {
       "type": "Enumeration",
-      "prompt": "What are the two main modules of a standard transformer language modeling head, in operational order?",
+      "prompt": "What are the two main modules of a transformer's language modeling head, in order?",
       "items": [
-        "A linear layer that projects the final token's output embedding to a logit vector.",
+        "A linear layer that projects the output embedding of the final token (from the last transformer layer) to a logit vector over the entire vocabulary.",
         "A softmax layer that converts the logit vector into a probability distribution over the vocabulary."
       ],
       "ordered": true
     },
     {
       "type": "Cloze",
-      "text": "The linear layer in a language modeling head projects the \\(d\\)-dimensional output embedding \\(h^L_N\\) from the final transformer layer into a {{c1::logit vector}} \\(u\\), which has a dimension equal to the vocabulary size \\(|V|\\)."
+      "text": "In a transformer's language modeling head, the linear layer projects the output embedding of the final token from the last layer (\\(h^L_N\\)) into a {{c1::logit vector}}, which has a dimensionality equal to the vocabulary size (\\(|V|\\))."
     },
     {
       "type": "Cloze",
-      "text": "The common practice of using the same weights for a model's input embedding matrix and its final output linear layer is known as {{c1::weight tying}}."
+      "text": "In transformer language models, using the transpose of the input embedding matrix (<code>A<sup>@</sup></code>) as the final output linear layer is a common practice known as {{c1::weight tying}}."
     },
     {
       "type": "Cloze",
-      "text": "In a transformer language model head with weight tying, the final linear layer (the 'unembeddng layer') uses the {{c1::transpose of the input embedding matrix (\\(E^T\\))}} to project the final hidden state to a logit vector over the vocabulary."
+      "text": "In a transformer's language model head with <b>weight tying</b>, the final linear layer (also called the 'unembedding layer') uses the {{c1::transpose of the input embedding matrix (\\(E^T\\))}} as its weights."
     },
     {
       "type": "Q&A",
-      "q": "In a transformer's language modeling head with tied weights, how is the final probability distribution \\(y\\) calculated from the final hidden state \\(h_N^L\\)?",
-      "a": "First, the logit vector is calculated by projecting the final hidden state using the transpose of the embedding matrix: \\(u = h_N^L E^T\\). Then, a softmax function is applied to the logits to get the final probabilities: \\(y = \\text{softmax}(u)\\)."
+      "q": "In a transformer's language modeling head with tied weights, how is the final probability distribution <i>y</i> calculated from the final token's output embedding, <i>h<sup>L</sup><sub>N</sub></i>?",
+      "a": "First, the logit vector <i>u</i> is calculated by projecting the output embedding <i>h<sup>L</sup><sub>N</sub></i> using <i>E<sup>T</sup></i>, the transpose of the input embedding matrix:<br><code>[u = h<sup>L</sup><sub>N</sub> E<sup>T</sup>]</code><br>Then, a softmax function is applied to the logits to produce the final probability distribution <i>y</i> over the vocabulary:<br><code>[y = \\text{softmax}(u)]</code>"
     },
     {
       "type": "Cloze",
-      "text": "To generate text, a word is {{c1::sampled}} from the final probability distribution \\(y\\) produced by the language modeling head."
+      "text": "The most important usage of the final probabilities \\(y\\) is to generate text, which is done by {{c1::sampling}} a word from this distribution."
     },
     {
       "type": "Cloze",
-      "text": "In a stacked transformer architecture, the input to layer \\(\\ell\\) for token \\(i\\) (\\(x_{\\ell, i}\\)) is the same as the {{c1::output from the preceding layer \\(\\ell-1\\)}}, which is denoted \\(h_{\\ell-1, i}\\)."
+      "text": "In a stacked transformer architecture, the input to a transformer layer \\(\\ell\\) for token \\(i\\) (denoted \\(x_{\\ell,i}\\)) is the {{c1::output from the preceding layer \\(\\ell-1\\)}} (denoted \\(h_{\\ell-1,i}\\))."
     },
     {
       "type": "Cloze",
-      "text": "A transformer used for unidirectional, causal language modeling (i.e., next-token prediction) is often called a {{c1::decoder-only}} model."
+      "text": "A transformer used for a unidirectional causal language model (i.e., next-token prediction) is often called a <b>decoder-only</b> model."
     },
     {
       "type": "Cloze",
-      "text": "A transformer used for unidirectional causal language modeling is often called a 'decoder-only' model because it uses only the {{c1::decoder}} part of the original encoder-decoder architecture."
+      "text": "A transformer used for unidirectional causal language modeling is often called a <b>decoder-only model</b> because it consists of only the {{c1::decoder}} part of the original encoder-decoder architecture."
     },
     {
       "type": "Cloze",
-      "text": "In text generation sampling, there is a fundamental trade-off between two important factors: {{c1::quality}} and {{c1::diversity}}."
+      "text": "In text generation sampling, there is a fundamental trade-off between two important factors: {{c1::quality}} and {{c2::diversity}}."
     },
     {
       "type": "Cloze",
-      "text": "In text generation, sampling methods that emphasize the most probable words tend to produce output rated as more {{c1::accurate, coherent, and factual}}."
+      "text": "In text generation, sampling methods that emphasize the most probable words tend to produce generations rated by people as more {{c1::accurate, coherent, and factual}}."
     },
     {
       "type": "Cloze",
-      "text": "A downside of emphasizing the most probable words in text generation is that the output can become more {{c1::boring and repetitive}}."
+      "text": "In text generation, methods that emphasize the most probable words tend to produce output that is more accurate, coherent, and factual, but also more {{c1::boring and repetitive}}."
     },
     {
       "type": "Cloze",
-      "text": "In text generation, sampling methods that give more weight to middle-probability words tend to produce more {{c1::creative and diverse}} output."
+      "text": "In text generation, sampling methods that give more weight to middle-probability words tend to result in generations that are more {{c1::creative and diverse}}, but are also {{c2::less factual and more likely to be incoherent or low-quality}}."
     },
     {
       "type": "Cloze",
-      "text": "A downside of giving more weight to middle-probability words during text generation is that the output can be less {{c1::factual}} and more likely to be {{c2::incoherent}} or otherwise low-quality."
+      "text": "In text generation, giving more weight to middle-probability words during sampling can produce more diverse output, but a key downside is that the text is often less {{c1::factual}} and more likely to be {{c2::incoherent}}."
     },
     {
       "type": "Cloze",
-      "text": "Top-k sampling is a simple generalization of {{c1::greedy decoding}} for text generation."
-    },
-    {
-      "type": "Q&A",
-      "q": "What is the core procedure of top-k sampling?",
-      "a": "First, truncate the probability distribution to the top k most likely words. Then, renormalize their probabilities and randomly sample from this smaller set according to the renormalized probabilities."
+      "text": "Top-k sampling is a simple generalization of {{c1::greedy decoding}}."
     },
     {
       "type": "Enumeration",
-      "prompt": "What are the steps in the top-k sampling algorithm?",
+      "prompt": "What is the core procedure of top-k sampling?",
       "items": [
-        "Choose an integer k in advance.",
-        "For each word in the vocabulary, use the language model to compute its likelihood given the context, \\(p(wt|w<t)\\).",
-        "Select the top k most probable words and discard the rest.",
-        "Renormalize the scores of the k words to be a legitimate probability distribution.",
-        "Randomly sample a word from these k words according to its renormalized probability."
+        "Truncate the probability distribution to the top <code>k</code> most likely words.",
+        "Renormalize the scores of the <code>k</code> words to form a legitimate probability distribution.",
+        "Randomly sample a word from within these <code>k</code> words according to their renormalized probabilities."
+      ],
+      "ordered": true
+    },
+    {
+      "type": "Enumeration",
+      "prompt": "What are the steps in the <b>top-k sampling</b> algorithm?",
+      "items": [
+        "Choose in advance a number of words, \\(k\\).",
+        "For each word in the vocabulary, use the language model to compute the likelihood of this word given the context, \\(p(w_t|w_{&lt;t})\\).",
+        "Sort the words by their likelihood and discard any word that is not one of the top \\(k\\) most probable words.",
+        "Renormalize the scores of the \\(k\\) words to form a legitimate probability distribution.",
+        "Randomly sample a word from the remaining \\(k\\) words according to its probability."
       ],
       "ordered": true
     },
     {
       "type": "Cloze",
-      "text": "When the hyperparameter k is set to {{c1::1}}, top-k sampling is identical to greedy decoding."
+      "text": "When k = {{c1::1}}, <b>top-k sampling</b> is identical to greedy decoding."
     },
     {
       "type": "Q&A",
-      "q": "What is the primary benefit of using top-k sampling with k > 1 compared to greedy decoding?",
-      "a": "It results in generating more diverse but still high-enough-quality text by sampling from a set of probable words, rather than always choosing the single most probable one."
+      "q": "What is the primary benefit of using top-k sampling with \\(k &gt; 1\\) compared to greedy decoding?",
+      "a": "It generates more diverse but still high-quality text by sampling from the top-\\(k\\) most probable words, rather than deterministically choosing only the single most probable one."
     },
     {
       "type": "Cloze",
-      "text": "A problem with top-k sampling is that its fixed `k` value fails to adapt to the {{c1::changing shape of the probability distribution}} in different contexts."
+      "text": "One problem with top-k sampling is that its fixed <code>k</code> value is not adaptive to the fact that the {{c1::shape of the probability distribution over words}} differs in different contexts."
     },
     {
       "type": "Q&A",
       "q": "What is the primary advantage of top-p (nucleus) sampling over top-k sampling?",
-      "a": "Top-p sampling dynamically adjusts the size of the candidate word pool based on the probability distribution's shape (e.g., sharp or flat), making it more robust than the fixed-size pool used in top-k sampling."
+      "a": "Unlike top-k sampling which uses a fixed number of candidate words (k), top-p sampling selects a candidate pool based on a cumulative probability mass (p). This allows the pool of words to dynamically expand for flatter probability distributions and shrink for sharper ones, making the method more robust across different contexts than a fixed-size pool."
     },
     {
       "type": "Cloze",
       "text": "Top-p sampling, an alternative to top-k sampling, is also known as {{c1::nucleus sampling}}."
     },
     {
-      "type": "Cloze",
-      "text": "Unlike top-k sampling, top-p (or nucleus) sampling defines the vocabulary as the smallest set of words V(p) such that their cumulative probability mass is {{c1::≥ p}}."
+      "type": "Q&A",
+      "q": "How is the candidate vocabulary <b>V</b><sup>(p)</sup> formally defined in top-p (nucleus) sampling?",
+      "a": "It is the smallest set of words such that the sum of their probabilities is greater than or equal to the hyperparameter <i>p</i>.<br>\n\\[\n\\sum_{w \\in V^{(p)}} P(w|w_{&lt;t}) \\ge p\n\\]"
     },
     {
       "type": "Cloze",
-      "text": "In top-p sampling, the chosen vocabulary \\(V(p)\\) is defined as the {{c1::smallest set}} of the most probable words whose cumulative probability is greater than or equal to \\(p\\)."
+      "text": "In <b>top-p sampling</b> (also called <b>nucleus sampling</b>), the vocabulary for the next token, \\(V^{(p)}\\), is the {{c1::smallest set}} of the most probable words whose cumulative probability is greater than or equal to \\(p\\).<br><br>Formally: \\[\\sum_{w \\in V^{(p)}} P(w|w_{&lt;t}) \\ge p\\]"
     },
     {
       "type": "Cloze",
-      "text": "In top-p sampling, the top-p vocabulary, \\(V^{(p)}\\), is defined as the smallest set of words such that: {{c1::\\[\n\\sum_{w \\in V^{(p)}} P(w|w_{<t}) \\geq p\n\\]}}"
+      "text": "In <b>top-p sampling</b> (or <b>nucleus sampling</b>), the vocabulary \\(V^{(p)}\\) is defined as the <i>smallest set of words</i> satisfying the condition: {{c1::\\[\\sum_{w \\in V^{(p)}} P(w|w \\lt t) \\geq p\\]}}"
     },
     {
       "type": "Cloze",
@@ -742,234 +752,235 @@
     },
     {
       "type": "Cloze",
-      "text": "In language model training, the cross-entropy loss at a given time step \\(t\\) is the negative log probability the model assigns to the correct next word, represented by the formula {{c1::\\(-\\log p(w_{t+1})\\)}}."
+      "text": "In language model training, the <b>cross-entropy loss</b> (also called the <b>negative log likelihood loss</b>) at time step \\(t\\) is the negative log probability assigned to the correct next word \\(w_{t+1}\\), calculated as: {{c1::\\(-\\log p(w_{t+1})\\)}}."
     },
     {
       "type": "Cloze",
-      "text": "The loss for a training sequence is the {{c1::average cross-entropy loss}} over the entire sequence."
+      "text": "For a transformer language model, the loss for a single training sequence is the {{c1::average cross-entropy loss}} over the entire sequence."
     },
     {
       "type": "Cloze",
-      "text": "During training, a model's weights are adjusted to minimize the average cross-entropy loss over the training sequence via {{c1::gradient descent}}."
+      "text": "The weights in a neural network are adjusted to minimize the average cross-entropy loss over the training sequence via <b>gradient descent</b>."
     },
     {
       "type": "Q&A",
-      "q": "What architectural feature of transformers allows them to process training items in parallel?",
+      "q": "What feature of transformers allows each training item to be processed in parallel?",
       "a": "The output for each element in the sequence is computed separately."
     },
     {
       "type": "Cloze",
-      "text": "When training large models, if documents are shorter than the context window, multiple documents are {{c1::packed}} into the window with a special end-of-text token between them."
+      "text": "During LLM training, when documents are shorter than the context window, multiple documents are {{c1::packed}} into the window with a special end-of-text token between them."
     },
     {
       "type": "Cloze",
-      "text": "When multiple documents are packed into a single context window for training, a special {{c1::end-of-text token}} is used to separate them."
+      "text": "When training large models, if documents are shorter than the full context window, multiple documents are packed into the window, separated by a special {{c1::end-of-text token}}."
     },
     {
       "type": "Cloze",
-      "text": "The batch size for gradient descent when training large models is typically very large; for example, the largest GPT-3 model used a batch size of {{c1::3.2 million tokens}}."
+      "text": "When training large language models, the batch size for gradient descent is usually quite large. For example, the largest GPT-3 model used a batch size of {{c1::3.2 million tokens}}."
     },
     {
       "type": "Cloze",
-      "text": "The concept of {{c1::scaling laws}} is used to understand how LLMs scale."
+      "text": "The concept used for thinking about how LLMs scale is known as {{c1::scaling laws}}."
     },
     {
       "type": "Enumeration",
-      "prompt": "What are two important techniques for making large language models work more efficiently, as mentioned in the text?",
+      "prompt": "Name two important techniques mentioned for getting LLMs to work efficiently.",
       "items": [
-        "The KV cache",
+        "KV cache",
         "Parameter-efficient fine tuning"
       ],
       "ordered": false
     },
     {
       "type": "Enumeration",
-      "prompt": "According to scaling laws, what are the three main factors that determine the performance of a large language model?",
+      "prompt": "According to scaling laws, what are the three main factors that determine the performance of a large language model (LLM)?",
       "items": [
-        "Model size (the number of non-embedding parameters)",
-        "Dataset size (the amount of training data)",
-        "The amount of compute used for training"
+        "<b>Model size</b> (number of non-embedding parameters)",
+        "<b>Dataset size</b> (amount of training data)",
+        "<b>Compute budget</b> (amount of compute used for training)"
       ],
       "ordered": false
     },
     {
       "type": "Cloze",
-      "text": "The relationships between model performance and factors like model size, dataset size, and compute are known as {{c1::scaling laws}}."
+      "text": "In large language models, the relationships between performance (specifically, the loss) and the three key factors of <b>model size</b>, <b>dataset size</b>, and the amount of <b>training compute</b> are known as {{c1::scaling laws}}."
     },
     {
       "type": "Cloze",
-      "text": "According to scaling laws, the performance of a large language model, as measured by loss, scales as a {{c1::power-law}} with respect to three main factors: model size, dataset size, and the amount of compute used for training."
+      "text": "According to scaling laws, the performance of a large language model (measured by loss) scales as a {{c1::power-law}} with three main factors: model size (the number of parameters not counting embeddings), dataset size, and the amount of compute used for training."
     },
     {
       "type": "Q&A",
-      "q": "What is the general form of the power-law relationship for model loss (L) as a function of a resource X (e.g., parameters N, data D, compute C), as described by scaling laws?",
-      "a": "The loss \\(L\\) scales with a resource \\(X\\) according to the formula \\(L(X) = (\\frac{X_c}{X})^{\\alpha_X}\\), where \\(X_c\\) and \\(\\alpha_X\\) are constants."
+      "q": "According to scaling laws, what is the general power-law formula for model loss, \\(L\\), as a function of a resource \\(X\\) (e.g., number of parameters N, dataset size D, or compute C)?",
+      "a": "The loss, \\(L(X)\\), is described by the power-law function: \\[\\]L(X) = \\left(\\frac{X_c}{X}\\right)^{\\alpha_X}\\[/\\] Where \\(X_c\\) and \\(\\alpha_X\\) are constants dependent on factors like the specific model architecture and training data."
     },
     {
       "type": "Q&A",
-      "q": "Why do scaling laws emphasize the general power-law relationship over the precise values of its constants (e.g., \\(N_c, \\alpha_N\\))?",
-      "a": "Because the precise values of the constants depend on the exact transformer architecture, tokenization, and vocabulary size, making the general relationship with loss the more fundamental and transferable insight."
+      "q": "Why do scaling laws emphasize the general power-law relationship over the precise values of its constants (e.g., <b>N<sub>c</sub></b>, <b>&alpha;<sub>N</sub></b>)?",
+      "a": "Because the precise values of the constants are highly dependent on the exact transformer architecture, tokenization, and vocabulary size. This makes the general relationship a more fundamental and transferable insight, so scaling laws focus on it rather than the precise, implementation-specific constant values."
     },
     {
       "type": "Cloze",
-      "text": "Assuming \\(d_{attn} = d\\) and \\(d_{ff} = 4d\\), the number of non-embedding parameters \\(N\\) in a Transformer can be approximated by the formula: {{c1::\\(N \\approx 12 \\cdot nlayer \\cdot d^2\\)}}."
+      "text": "The number of non-embedding parameters \\(N\\) in a Transformer is approximated as {{c1::\\(N \\approx 12 \\cdot n_{layer} \\cdot d^2\\)}}, assuming \\(d_{attn} = d_{ff}/4 = d\\)."
     },
     {
       "type": "Cloze",
-      "text": "A key practical application of scaling laws is to {{c1::predict what a model's final loss will be}} by extrapolating from its performance at a smaller scale (e.g., early in the training curve, with less data, or a smaller model)."
+      "text": "A key practical application of scaling laws is using performance at a smaller scale (e.g., early in the training curve, with less data) to predict the {{c1::loss that would be achieved by adding more data or increasing the model size}}."
     },
     {
       "type": "Q&A",
-      "q": "Why is the highly parallel attention computation used in Transformer training inefficient for inference?",
-      "a": "Because inference generates tokens iteratively, one at a time. A naive approach would wastefully recompute the key and value vectors for all prior tokens at each step, unlike the efficient, single parallel computation over the entire sequence during training."
+      "q": "Why is the parallel attention computation from Transformer training inefficient for inference?",
+      "a": "Because inference is an iterative process that generates one token at a time. At each step, this would require wastefully recomputing the key and value vectors for all preceding tokens, unlike in training where the entire sequence can be processed in parallel at once."
     },
     {
       "type": "Cloze",
-      "text": "In iterative Transformer inference, a key inefficiency is the redundant recomputation of the {{c1::key (K) and value (V) vectors}} for all prior tokens at each new generation step."
+      "text": "The key inefficiency in iterative Transformer inference is the redundant recomputation of {{c1::key and value vectors}} for all prior tokens at each generation step."
     },
     {
       "type": "Cloze",
-      "text": "The {{c1::KV cache}} is an optimization technique used during Transformer inference to store the pre-computed key and value vectors of past tokens, thereby avoiding redundant calculations."
+      "text": "The {{c1::KV cache}} is an optimization for Transformer inference that stores the key and value vectors of prior tokens, so they can be reused instead of being recomputed when generating each new token."
     },
     {
       "type": "Q&A",
-      "q": "During Transformer inference with a KV cache, what is computed for a new token versus what is retrieved for previous tokens?",
-      "a": "For the new token, its query (Q), key (K), and value (V) vectors are computed. For all previous tokens, their key (K) and value (V) vectors are retrieved from the cache."
+      "q": "During Transformer inference with a KV cache, what is computed for a new token versus what is retrieved for prior tokens?",
+      "a": "For the new token, its <b>query</b>, <b>key</b>, and <b>value</b> vectors are computed. For all prior tokens, their <b>key</b> and <b>value</b> vectors are retrieved from the cache, avoiding recomputation."
     },
     {
       "type": "Q&A",
       "q": "Why is standard fine-tuning often impractical for very large language models?",
-      "a": "Because they have an enormous number of parameters to train, making backpropagation through all layers extremely expensive in terms of processing power, memory, and time."
+      "a": "Because they have an enormous number of parameters, and updating all of them via backpropagation is extremely expensive in terms of <b>processing power</b>, <b>memory</b>, and <b>time</b>."
     },
     {
       "type": "Cloze",
-      "text": "Methods that allow a model to be fine-tuned without changing all its parameters are known as {{c1::parameter-efficient fine tuning (PEFT)}}."
+      "text": "Methods that allow a model to be fine-tuned without changing all the parameters are called {{c1::parameter-efficient fine-tuning (PEFT)}}."
     },
     {
       "type": "Cloze",
-      "text": "The core strategy of Parameter-Efficient Fine-Tuning (PEFT) is to {{c1::freeze}} some of the parameters and only update a {{c2::particular subset}} of parameters."
+      "text": "The core strategy of Parameter-Efficient Fine-Tuning (PEFT) is to {{c1::freeze}} the majority of a model's parameters and only update a {{c2::small, particular subset}}."
     },
     {
       "type": "Cloze",
-      "text": "LoRA, a popular PEFT method, stands for {{c1::Low-Rank Adaptation}}."
+      "text": "LoRA, a method for Parameter-Efficient Fine-Tuning (PEFT), stands for {{c1::Low-Rank Adaptation}}."
     },
     {
       "type": "Q&A",
       "q": "What is the core intuition of LoRA (Low-Rank Adaptation)?",
-      "a": "The intuition is to freeze the large, pretrained weight matrices of a model and, instead of updating them directly during finetuning, train a much smaller, low-rank approximation of the weight updates. This low-rank approximation is composed of two smaller matrices whose product is added to the original frozen weights."
+      "a": "Instead of fine-tuning a large weight matrix (<i>\\(W\\)</i>) directly, LoRA freezes \\(W\\) and learns a low-rank approximation to the update matrix (<i>\\(\\Delta W\\)</i>). This approximation is represented by two smaller matrices (<i>\\(A\\)</i> and <i>\\(B\\)</i>) that are trained instead, making the process highly parameter-efficient."
     },
     {
       "type": "Cloze",
-      "text": "In LoRA, the update to a weight matrix \\(W\\) is approximated by the product of two smaller, low-rank matrices, {{c1::\\(A\\) and \\(B\\)}}, which are trained instead of \\(W\\)."
+      "text": "In LoRA (Low-Rank Adaptation), the update <span class='math-inline'>\\Delta W</span> for a pre-trained weight matrix <span class='math-inline'> W </span> is represented as the product of two low-rank matrices, {{c1::the matrices <span class='math-inline'> A </span> and <span class='math-inline'> B </span>}}. These new matrices are trained during finetuning while <span class='math-inline'> W </span> remains frozen."
     },
     {
       "type": "Cloze",
-      "text": "In LoRA, for a weight matrix \\(W\\) of size \\([N \\times d]\\), the update matrices \\(A\\) and \\(B\\) have sizes \\([N \\times r]\\) and \\([r \\times d]\\) respectively, where the rank \\(r\\) is chosen to be {{c1::quite small}} (\\(r \\ll \\min(d,N)\\))."
+      "text": "In LoRA, for a weight matrix \\(W\\) of dimensionality \\([N \\times d]\\), the update is represented by matrices \\(A\\) of size \\([N \\times r]\\) and \\(B\\) of size \\([r \\times d]\\). The rank \\(r\\) is chosen to be {{c1::quite small, where \\(r \\ll \\min(d,N)\\)}}."
     },
     {
       "type": "Cloze",
-      "text": "During finetuning with LoRA, the modified forward pass for a layer with input \\(x\\) and a frozen weight matrix \\(W\\) becomes \\(h = xW + {{c1::xAB}}\\), where \\(A\\) and \\(B\\) are trainable low-rank matrices."
+      "text": "During LoRA fine-tuning, the forward pass for a layer with input \\(x\\) and a frozen weight matrix \\(W\\) is updated to \\(h = xW + {{c1::xAB}}\\)."
     },
     {
       "type": "Enumeration",
-      "prompt": "What are the key advantages of using LoRA for fine-tuning?",
+      "prompt": "What are the key advantages of <b>LoRA (Low-Rank Adaptation)</b> for fine-tuning large language models?",
       "items": [
-        "Dramatically reduces hardware requirements, since gradients don’t have to be calculated for most parameters.",
-        "Adds no additional inference latency, as the weight updates can be merged into the pretrained weights before inference.",
-        "Enables modularity, allowing LoRA modules for different domains to be swapped in and out."
+        "<b>Reduces hardware requirements</b>: Gradients do not need to be calculated for most parameters.",
+        "<b>No inference overhead</b>: Learned weight updates can be added directly to original pretrained weights.",
+        "<b>Enables modularity</b>: LoRA modules for different domains can be swapped in and out by adding or subtracting them from original weights."
       ],
       "ordered": false
     },
     {
       "type": "Cloze",
-      "text": "A key advantage of LoRA is its modularity: adapter modules for different domains, represented by the matrix product \\(AB\\), can be swapped in and out by being {{c1::added to or subtracted from}} the frozen pretrained weights \\(W\\)."
+      "text": "The modularity of LoRA allows different task-specific modules (the matrix product \\(AB\\)) to be swapped in and out by {{c1::adding them to or subtracting them from}} the base model's frozen weights \\(W\\)."
     },
     {
       "type": "Cloze",
-      "text": "The original version of LoRA was specifically applied to the weight matrices within the Transformer's self-attention mechanism, namely {{c1::\\(W_Q, W_K, W_V, W_O\\)}}."
+      "text": "In its original version, LoRA was applied only to the weight matrices in the self-attention computation, specifically the {{c1::query (\\(W_Q\\)), key (\\(W_K\\)), value (\\(W_V\\)), and output (\\(W_O\\))}} matrices."
     },
     {
       "type": "Cloze",
-      "text": "The subfield of interpretability, which focuses on ways to understand mechanistically what is going on inside a model, is sometimes called {{c1::mechanistic interpretability}}."
+      "text": "The subfield of interpretability that focuses on understanding mechanistically what is going on inside a model is sometimes called <b>{{c1::mechanistic interpretability}}</b>."
     },
     {
       "type": "Q&A",
-      "q": "What is the primary goal of mechanistic interpretability with respect to models like the transformer?",
-      "a": "To understand mechanistically what is going on inside the model to explain its high performance on language tasks."
+      "q": "What is the goal of the subfield of interpretability, sometimes called mechanistic interpretability?",
+      "a": "To understand mechanistically what is going on inside a model like the Transformer to explain how it manages to perform so well on language tasks."
     },
     {
       "type": "Q&A",
       "q": "What is the fundamental difference between learning via pretraining and in-context learning?",
-      "a": "Learning via pretraining updates a model's parameters using gradient descent according to a loss function. In contrast, in-context learning occurs during the forward pass at inference time, without any gradient-based updates to the model's parameters."
+      "a": "Pretraining involves updating a model's parameters via <b>gradient descent</b>, while in-context learning occurs during a forward pass at inference time without any <b>gradient-based parameter updates</b>."
     },
     {
       "type": "Cloze",
-      "text": "In-context learning is a language model's ability to learn new tasks or improve predictions during the {{c1::forward pass at inference time}}, without any gradient-based updates to the model’s parameters."
+      "text": "In-context learning refers to a language model's ability to learn from its prompt (e.g., learn new tasks, better predict tokens) during the forward-pass at inference-time, specifically {{c1::without any gradient-based updates to the model’s parameters}}."
     },
     {
       "type": "Cloze",
-      "text": "A defining feature of in-context learning is that it occurs {{c1::without any gradient-based updates}} to the model's parameters, happening instead during the forward pass at inference-time."
+      "text": "In-context learning is when a language model learns during its forward pass at inference-time, {{c1::without any gradient-based updates}} to the model's parameters."
     },
     {
       "type": "Q&A",
       "q": "What is a leading hypothesis for how in-context learning works in Transformers?",
-      "a": "A leading hypothesis is that it's enabled by specialized circuits within the attention computation called 'induction heads'."
+      "a": "A leading hypothesis is that in-context learning is driven by <b>induction heads</b>, which are circuits within the attention mechanism that perform pattern completion. For example, upon seeing the pattern `AB...A` in a sequence, an induction head predicts that `B` will follow."
     },
     {
       "type": "Cloze",
-      "text": "An 'induction head' is a circuit within a Transformer's {{c1::attention computation}} that is hypothesized to be a key mechanism behind in-context learning."
+      "text": "An <b>induction head</b> is an abstract circuit within a Transformer's {{c1::attention computation}}, hypothesized to be a key mechanism enabling in-context learning."
     },
     {
       "type": "Cloze",
-      "text": "According to the induction head hypothesis, the function of an induction head is to {{c1::predict repeated sequences}}, such as by instantiating a pattern completion rule like AB...A→B."
+      "text": "The function of an induction head is to predict {{c1::repeated sequences}}. For example, if it sees the pattern <code>AB...A</code> in an input sequence, it predicts that <code>B</code> will follow."
     },
     {
       "type": "Enumeration",
-      "prompt": "What are the two sequential components of an induction head's mechanism for completing a pattern like 'AB...A→B'?",
+      "prompt": "What are the two sequential steps an induction head uses to complete a pattern like <code>AB...A&rarr;B</code>?",
       "items": [
-        "Prefix Matching: When at the current token ('A'), it searches back over the context to find a prior instance of 'A'.",
-        "Copying: It increases the probability that the token that followed the earlier 'A' (i.e., 'B') will occur next, effectively copying it."
+        "<b>Prefix Matching</b>: Search back over the context to find a prior instance of the current token (A).",
+        "<b>Copying</b>: If a prior instance is found, copy the token that followed it (B) by increasing the probability that B will occur next."
       ],
       "ordered": true
     },
     {
       "type": "Cloze",
-      "text": "A generalized, \"fuzzy\" version of the induction head pattern completion rule, hypothesized to be responsible for in-context learning, implements a rule like A*B*...A→B by matching tokens that are {{c1::semantically similar}} (A* ≈ A), not just identical."
+      "text": "The generalized 'fuzzy' version of an induction head's pattern completion rule (e.g., \\(A^*B^*...A\\rightarrow B\\)), hypothesized to be responsible for in-context learning, operates on tokens that are {{c1::semantically similar}} (i.e., \\(A^* \\approx A\\)) rather than strictly identical."
     },
     {
       "type": "Q&A",
-      "q": "In the context of ML interpretability, what is an 'ablation study'?",
-      "a": "An ablation study is a method for testing the causal effect of a model component by removing or disabling it and observing the impact on performance. For example, if removing a hypothesized cause makes an effect disappear, it provides evidence for that causal link."
+      "q": "In the context of model interpretability, what is <b>ablation</b>?",
+      "a": "A technique used in interpretability studies to test for causal effects. The method involves removing or disabling a model component (a 'hypothesized cause') to observe if an expected effect disappears, which would support the component's causal role."
     },
     {
       "type": "Cloze",
-      "text": "Evidence for the induction head hypothesis comes from {{c1::ablation studies}}, which show that disabling these heads significantly harms a model's in-context learning performance."
+      "text": "Suggestive evidence for the induction head hypothesis for in-context learning comes from {{c1::ablation studies}}. These studies show that disabling induction heads causes a model's in-context learning performance to decrease."
     },
     {
       "type": "Q&A",
-      "q": "What is a practical method for ablating an attention head in a Transformer, according to Crosbie and Shutova (2022)?",
-      "a": "A method is to first identify the target attention heads and then zero out the terms in the output weight matrix (\\(W^O\\)) corresponding to those heads, which effectively nullifies their contribution to the model's output."
+      "q": "What is a practical method for ablating an attention head in a Transformer, based on the work of Crosbie and Shutova (2022)?",
+      "a": "A method for ablating a head is to set the terms in the output weight matrix, \\(W^O\\), that correspond to that head to zero. This nullifies the head's contribution to the model's output."
     },
     {
       "type": "Q&A",
-      "q": "What is the Logit Lens interpretability tool used for?",
-      "a": "It is a tool used to visualize what the internal layers of a transformer might be representing. This is done by taking a vector from an internal layer, multiplying it by the model's unembedding layer to get logits, and then applying a softmax to see the resulting probability distribution over words."
+      "q": "What is the primary purpose of the Logit Lens interpretability tool?",
+      "a": "To visualize what a transformer's internal layers might be representing by multiplying a hidden state vector from any layer by the unembedding layer to produce a distribution over the vocabulary."
     },
     {
       "type": "Cloze",
-      "text": "The core assumption of the Logit Lens is to take a vector from any layer of a transformer and treat it as if it were the {{c1::prefinal embedding}}."
+      "text": "The core idea of the <b>Logit Lens</b> is to take a vector from any layer of a transformer and treat it as if it were the {{c1::prefinal embedding}}, allowing one to see what the vector might represent in terms of word distributions."
     },
     {
       "type": "Cloze",
-      "text": "To implement the Logit Lens, a vector from an internal layer is multiplied by the model's {{c1::unembedding layer}} to produce logits."
+      "text": "The <b>Logit Lens</b> visualizes a transformer's internal states by taking a vector from any layer, treating it as a prefinal embedding, and multiplying it by the {{c1::unembedding layer}} to get logits."
+    },
+    {
+      "type": "Q&A",
+      "q": "How does the Logit Lens interpret an internal vector from a transformer?",
+      "a": "It multiplies the vector by the <b>unembedding layer</b> to get logits (as if the vector were the pre-final embedding), and then computes a softmax to see the resulting distribution over words."
     },
     {
       "type": "Cloze",
-      "text": "After generating logits with the Logit Lens, a {{c1::softmax}} function is applied to produce a probability distribution over the vocabulary."
-    },
-    {
-      "type": "Cloze",
-      "text": "A key limitation of the Logit Lens is its potential unreliability, as the network {{c1::wasn’t trained}} to make its internal representations function as pre-final embeddings."
+      "text": "The Logit Lens doesn't always work perfectly because the network {{c1::wasn&apos;t trained}} to make its internal representations function as if they were pre-final embeddings."
     },
     {
       "type": "Cloze",
@@ -977,47 +988,43 @@
     },
     {
       "type": "Q&A",
-      "q": "At a high level, how does a self-attention layer compute its output for a given token?",
-      "a": "It computes a weighted sum of vectors from prior tokens, where the weights are based on the relevance of each token to the current one being processed."
+      "q": "At a high level, how does a multi-head attention computation map an input token to an output?",
+      "a": "It takes an input vector \\(x_i\\) and maps it to an output \\(a_i\\) by summing vectors from <b>prior tokens</b>, weighted by how relevant they are for the processing of the current token."
     },
     {
       "type": "Cloze",
-      "text": "In a transformer block, the {{c1::residual stream}} passes the input from a prior layer to the next, adding the outputs from components like the multi-head attention and feedforward layers."
-    },
-    {
-      "type": "Enumeration",
-      "prompt": "What are the two main computational sub-layers within a standard transformer block, in order?",
-      "items": [
-        "multi-head attention layer",
-        "feedforward layer"
-      ],
-      "ordered": true
-    },
-    {
-      "type": "Cloze",
-      "text": "In a transformer block, a multi-head attention layer and a feedforward layer are each preceded by a {{c1::layer normalization}} step."
-    },
-    {
-      "type": "Cloze",
-      "text": "Deeper and more powerful transformer networks are created by {{c1::stacking}} multiple transformer blocks."
-    },
-    {
-      "type": "Cloze",
-      "text": "The input representation for a token in a Transformer is created by summing its token embedding with a {{c1::positional encoding}} that represents its sequence position."
+      "text": "In a transformer block, a {{c1::residual stream}} passes the input from a prior layer up to the next layer, with the output of a multi-head attention layer and a feedforward layer added to it."
     },
     {
       "type": "Q&A",
-      "q": "What is the function of the language model head in a transformer-based language model?",
-      "a": "It applies an unembedding matrix to the output of the top layer (H) to generate logits, which are then passed through a softmax to generate word probabilities."
+      "q": "What are the main components of a transformer block, and in what order are they applied?",
+      "a": "A transformer block consists of a <b>multi-head attention layer</b> followed by a <b>feedforward layer</b>. The output of each component is added to a residual stream. The source also specifies that each of these two components is preceded by a <b>layer normalization</b> step."
+    },
+    {
+      "type": "Cloze",
+      "text": "In a transformer block, the multi-head attention layer and the subsequent feedforward layer are each preceded by a {{c1::layer normalization}}."
+    },
+    {
+      "type": "Cloze",
+      "text": "Transformer blocks are {{c1::stacked}} to make deeper and more powerful networks."
+    },
+    {
+      "type": "Cloze",
+      "text": "The input to a transformer is computed by adding an embedding to a {{c1::positional encoding}} that represents the sequential position of the token."
+    },
+    {
+      "type": "Q&A",
+      "q": "What is the function of the <code>language model head</code> in a transformer-based language model?",
+      "a": "It applies an <code>unembedding</code> matrix to the output <code>H</code> of the top transformer layer to generate <code>logits</code>, which are then passed through a <code>softmax</code> function to generate word probabilities."
     },
     {
       "type": "Q&A",
       "q": "What is a key advantage of transformer-based LMs regarding their use of context?",
-      "a": "They have a wide context window, allowing them to draw on enormous amounts of context to predict upcoming words."
+      "a": "They have a wide context window (200K tokens or even more), allowing them to draw on <b>enormous amounts of context</b> to predict upcoming words."
     },
     {
       "type": "Enumeration",
-      "prompt": "Name two computational tricks for making large language models more efficient.",
+      "prompt": "What are two computational tricks mentioned in the text for making large language models more efficient?",
       "items": [
         "The KV cache",
         "Parameter-efficient finetuning"
@@ -1026,7 +1033,7 @@
     },
     {
       "type": "Enumeration",
-      "prompt": "The Transformer architecture was developed drawing on which two main lines of prior research?",
+      "prompt": "The Transformer was developed drawing on which two lines of prior research?",
       "items": [
         "self-attention",
         "memory networks"
@@ -1035,27 +1042,28 @@
     },
     {
       "type": "Cloze",
-      "text": "Encoder-decoder attention is the concept of using a {{c1::soft weighting}} over the input sequence's encodings to inform a {{c2::generative decoder}}."
+      "text": "Encoder-decoder attention is the idea of using a {{c1::<b>soft weighting</b>}} over the encodings of input words to inform a {{c2::<b>generative decoder</b>}}."
     },
     {
       "type": "Cloze",
-      "text": "The idea of encoder-decoder attention was extended to self-attention by dropping the need for {{c1::separate encoding and decoding sequences}}."
+      "text": "Self-attention extended encoder-decoder attention by dropping the need for {{c1::separate encoding and decoding sequences}}."
     },
     {
       "type": "Cloze",
-      "text": "Self-attention re-conceptualized attention as a way of weighting tokens to collect information passed from {{c1::lower layers to higher layers}}."
+      "text": "Self-attention frames attention as a way of weighting tokens in collecting information passed from {{c1::lower layers to higher layers}}."
+    },
+    {
+      "type": "Q&A",
+      "q": "From what line of prior research did the Transformer's terminology of <code>key</code>, <code>query</code>, and <code>value</code> originate?",
+      "a": "Memory networks. The source text notes that this terminology \"came from memory networks\"."
     },
     {
       "type": "Cloze",
-      "text": "The terminology of {{c1::key}}, {{c2::query}}, and {{c3::value}} used in the Transformer architecture originated from research on {{c4::memory networks}}."
+      "text": "Memory networks are a mechanism for adding an {{c1::<b>external read-write memory</b>}} to networks."
     },
     {
       "type": "Cloze",
-      "text": "Memory networks are a mechanism for adding an {{c1::external read-write memory}} to networks."
-    },
-    {
-      "type": "Cloze",
-      "text": "A key mechanism of memory networks is using an embedding of a {{c1::query}} to match {{c2::keys}} that represent stored information."
+      "text": "The terminology of key, query, and value came from memory networks, which work by using an embedding of a {{c1::query}} to match {{c2::keys}}."
     }
   ]
 }
