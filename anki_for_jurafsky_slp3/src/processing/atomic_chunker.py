@@ -2,8 +2,14 @@ from typing import List
 from connectors.llm.structured_gemini import LLMClient
 from src.models.cards import AtomicCards, CardType, ClozeCard, QACard, EnumerationCard
 from src.utils.text_processing import clean_anki_text
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=4, max=10),
+    retry=retry_if_exception_type((TypeError, ValueError, AttributeError))
+)
 def extract_atomic_cards(chunk: str) -> List[CardType]:
     """
     Extract atomic knowledge cards from a text chunk.
@@ -117,6 +123,11 @@ Based on all the rules and examples above, process the following text chunk:
     return result.cards
 
 
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=4, max=10),
+    retry=retry_if_exception_type((TypeError, ValueError, AttributeError))
+)
 def fix_content(source: str, card: CardType) -> CardType:
     """
     Fix a card using two-stage improvement: content refinement followed by formatting.
@@ -139,7 +150,7 @@ You must analyze the given flashcard based on the following **Content Principles
 1.  **Technical Accuracy & Precision (Verified by Source):**
     * Does the terminology in the card **perfectly align** with the source text?
     * Use the source to correct any imprecise terms (e.g., change "context vectors" to "value vectors" if the source specifies the latter).
-    * Ensure all formulas and variables are correctly transcribed from the source, using proper MathJax formatting  Use \\(\\) for inline math (e.g., \\( E = mc^2 \\) ) and \\[\\] for display/block math.
+    * Ensure all formulas and variables are correctly transcribed from the source, using proper MathJax formatting  Use \\(\\) for inline math e.g., \\( E = mc^2\\)  and \\[\\] for display/block math.
     * You can use basic HTML tags for formatting where appropriate (e.g., `<b>`, `<i>`, `<code>`, `<pre>`).
 
 2.  **Clarity & Conciseness:**
@@ -171,6 +182,11 @@ You must analyze the given flashcard based on the following **Content Principles
     
     return fixed_card
 
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=4, max=10),
+    retry=retry_if_exception_type((TypeError, ValueError, AttributeError))
+)
 def fix_formatting(card: CardType) -> CardType:
     """
     Fix the formatting of a flashcard to ensure it is visually clear and professional.
@@ -183,18 +199,18 @@ def fix_formatting(card: CardType) -> CardType:
     """
     smaller_client = LLMClient(model="gemini-2.5-flash-lite")
 
-    formatting_prompt = f"""You are an expert in educational formatting and presentation for ANKI flashcards. Your task is to take a technically accurate flashcard and apply proper formatting to make it visually clear and professional.
+    formatting_prompt = """You are an expert in educational formatting and presentation for ANKI flashcards. Your task is to take a technically accurate flashcard and apply proper formatting to make it visually clear and professional.
 
 Focus ONLY on formatting improvements:
 
 1. **MathJax Formatting:**
-   * Use \\(\\) for inline math (e.g., \\(E=mc^2\\))
+   * Use \\(\\) for inline math (e.g., \\( E = mc^2\\))
    * Use \\[\\] for display/block math for complex formulas
    * Ensure all mathematical notation is properly formatted
-   * IMPORTANT \\lt \\gt &lt; &gt; &le; &ge; need to be used instead of < and > symbols inside math equations - using literal `<` and `>` will break HTML rendering.
 
 2. Cloze Conflicts
-Cloze deletions are terminated with }}}}, which can conflict with a }}}} appearing in your LaTeX. To prevent LaTeX from being interpreted as a closing cloze marker, you can put a space between any double closing braces that do not indicate the end of the cloze, so
+Dont add new cloze deletions or change content. Just fix conflicts between existing cloze deletions and MathJax.
+In Anki, Cloze deletions are terminated with }}}}, which can conflict with a }}}} appearing in your LaTeX. To prevent LaTeX from being interpreted as a closing cloze marker, you can put a space between any double closing braces that do not indicate the end of the cloze, so
 
 {{{{c1::[$]\frac{{foo}}{{\frac{{bar}}{{baz}}}}[/$] blah blah blah.}}}}
 will not work, but
@@ -218,10 +234,9 @@ You may use either workaround if you need to use the :: character sequence withi
    * Use <pre><code>multi-line code</code></pre> for code blocks
    * Use the HTML entities &lt;, &gt; and &amp; to encode these characters so that the browser will not interpret them, but MathJax will.
    
-eg: "The vocabulary \\(V(p)\\) in <b>top-p sampling</b> is defined as the smallest set of words satisfying the condition: {{{{c1::\\sum_{{w \\in V(p)}} P(w|w_{{&lt;t}}) \\geq p}}}}"
-or "P(w|w_{{ \\lt t}}) \\geq p"
-or "P(w|w_{{ &lt;t}}) \\geq p"
-in case it is really hard to avoid using the literal < character, wrap it with spaces around it.
+eg: "The vocabulary \\(V(p)\\) in <b>top-p sampling</b> is defined as the smallest set of words satisfying the condition: {{{{c1::\\sum_ {{ w \\in V(p) }} P(w|w_ {{ &lt;t }} ) \\geq p }}}}"
+or "P(w|w_ {{ \\lt t }} ) \\geq p"
+or "P(w|w_ {{ &lt;t }} ) \\geq p"
    
    Same goes for other markdown elements. We aim to use their HTML equivalents like <h1>, <h2>, <ul>, <ol>, <li>, <a>, <hr>, <blockquote>, etc.
 
@@ -232,23 +247,40 @@ in case it is really hard to avoid using the literal < character, wrap it with s
 
 **IMPORTANT:** Do NOT change the content, meaning, or technical accuracy. Only apply formatting improvements.
 
+<example card>
+The vocabulary V(p) in **top-p sampling** is defined as the smallest set of words satisfying the condition: {{{{c1::∑_{{w∈V(p)}}P(w|w_<t)≥p}}}}
+</example card>
+
+<example result card1>
+The vocabulary \\(V(p)\\) in <b>top-p sampling</b> is defined as the smallest set of words satisfying the condition: {{{{c1::\\sum_ {{ w \\in V(p) }} P(w|w_ {{ &lt;t }} ) \\geq p }}}}
+</example result card1>
+
+<example card2>
+In C++, a `std::variant` is a type-safe union that can hold one of several types at a time.
+</example card2>
+
+<example result card2>
+In C++, a <code>std::variant</code> is a <b>type-safe union</b> that can hold one of several types at a time.
+</example result card2>
+
 <Input Card>
-{card.model_dump_json()}
+{text}
 </Input Card>
 """
 
 
-    fixed_card: CardType = smaller_client.generate(formatting_prompt, CardType)
-    
+    # fixed_card: CardType = smaller_client.generate(formatting_prompt, CardType)
+    def fixing_text(text: str) -> str:
+        return clean_anki_text(smaller_client.generate(formatting_prompt.format(text=text), str))
     # Apply all text fixes (HTML escaping and MathJax/Cloze conflicts)
-    match fixed_card:
+    match card:
         case QACard():
-            fixed_card.q = clean_anki_text(fixed_card.q)
-            fixed_card.a = clean_anki_text(fixed_card.a)
+            card.q = fixing_text(card.q)
+            card.a = fixing_text(card.a)
         case ClozeCard():
-            fixed_card.text = clean_anki_text(fixed_card.text)
+            card.text = fixing_text(card.text)
         case EnumerationCard():
-            fixed_card.prompt = clean_anki_text(fixed_card.prompt)
-            fixed_card.items = [clean_anki_text(item) for item in fixed_card.items]
-    
-    return fixed_card
+            card.prompt = fixing_text(card.prompt)
+            card.items = [fixing_text(item) for item in card.items]
+
+    return card

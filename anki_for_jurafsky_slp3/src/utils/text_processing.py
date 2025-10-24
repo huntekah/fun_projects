@@ -190,12 +190,20 @@ def clean_anki_text(text: Optional[str]) -> str:
     
     # Apply HTML escaping first
     cleaned = escape_html_operators(text)
-    
+    if text != cleaned:
+        print("Applied HTML escaping.")
+        
     # Then fix MathJax operator spacing
+    text = cleaned
     cleaned = fix_mathjax_operator_spacing(cleaned)
+    if text != cleaned:
+        print("Applied MathJax operator spacing.")
     
     # Finally fix MathJax/Cloze conflicts
+    text = cleaned
     cleaned = fix_mathjax_cloze_conflicts(cleaned)
+    if text != cleaned:
+        print("Applied MathJax/Cloze conflict fixes.")
     
     return cleaned
 
