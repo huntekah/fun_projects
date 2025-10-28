@@ -108,7 +108,7 @@ def run_make_deck_command(source: str, chapter_num: int = None):
         sys.exit(1)
 
 
-def run_create_cards_command():
+def run_create_cards_command(skip_if_cleaned: bool = False):
     """Interactive chapter selection and card creation."""
     from slp3_pipeline import create_cards_for_chapters
 
@@ -160,7 +160,7 @@ def run_create_cards_command():
     print(f"\n✅ Selected chapters: {selected_chapters}")
 
     # Process selected chapters
-    create_cards_for_chapters(selected_chapters)
+    create_cards_for_chapters(selected_chapters, skip_if_cleaned=skip_if_cleaned)
 
 
 def run_make_slp3_deck_command(chapter_num: int):
@@ -215,6 +215,7 @@ examples:
   SLP3:
   python main.py -f -s slp3          # Fetch
   python main.py -c                  # Create cards (interactive)
+  python main.py -c --skip-if-cleaned  # Create cards (skip cleaning if possible)
   python main.py -m -s slp3 -ch 8    # Make deck
 
   NeetCode:
@@ -251,6 +252,11 @@ examples:
         help="Interactive chapter selection for card generation",
     )
     parser.add_argument(
+        "--skip-if-cleaned",
+        action="store_true",
+        help="Skip expensive cleaning steps and use existing cleaned text",
+    )
+    parser.add_argument(
         "--make-deck",
         "-m",
         action="store_true",
@@ -278,7 +284,7 @@ def main():
             sys.exit(1)
         run_process_leetcode_command(args.source)
     elif args.create_cards:
-        run_create_cards_command()
+        run_create_cards_command(skip_if_cleaned=args.skip_if_cleaned)
     elif args.make_deck:
         if not args.source:
             print("❌ --source is required when using --make-deck")

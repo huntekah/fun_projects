@@ -127,13 +127,13 @@
     },
     {
       "type": "Q&A",
-      "q": "Why is the dot product score in the attention mechanism scaled by \\(\\sqrt{d_k}\\)?",
+      "q": "Why is the dot product score in the attention mechanism scaled by \\(\\sqrt { d_k } \\)?",
       "a": "To stabilize training. Without scaling, dot product scores can become very large. When these large scores are exponentiated inside the softmax function, it can lead to numerical instability and vanishing gradients."
     },
     {
       "type": "Q&A",
       "q": "In a transformer&#39;s self-attention mechanism, what is the formula for the similarity score between the current input \\(x_i\\) and a prior input \\(x_j\\)?",
-      "a": "The score is calculated via a scaled dot product of the query vector \\(q_i\\) and the key vector \\(k_j\\):\n\\[score(x_i, x_j) = \\frac{q_i \\cdot k_j}{\\sqrt{d_k}}\\]\nScaling by \\(\\sqrt{d_k}\\), where \\(d_k\\) is the dimensionality of the key and query vectors, helps prevent numerical instability and vanishing gradients during training."
+      "a": "The score is calculated via a scaled dot product of the query vector \\(q_i\\) and the key vector \\(k_j\\):\n\\[score(x_i, x_j) = \\frac { q_i \\cdot k_j }  { \\sqrt { d_k }  } \\]\nScaling by \\(\\sqrt { d_k } \\), where \\(d_k\\) is the dimensionality of the key and query vectors, helps prevent numerical instability and vanishing gradients during training."
     },
     {
       "type": "Cloze",
@@ -198,10 +198,10 @@
       "prompt": "What are the main computational steps in a multi-head attention layer?",
       "items": [
         "For each of the <b>A</b> attention heads, project inputs into query, key, and value embeddings using that head's unique weight matrices: \\(<b>W</b>_c^Q, <b>W</b>_c^K, <b>W</b>_c^V\\).",
-        "For each head, calculate the scaled dot-product attention scores: \\( \\text{score}_c(x_i,x_j) = \\frac{q_i^c \\cdot k_j^c}{\\sqrt{d_k}}\\).",
-        "For each head, apply a softmax function to the scores to obtain the attention weights \\(\\alpha_{ij}^c\\).",
-        "For each head, compute its output vector as a weighted sum of the value vectors (for causal attention, this sum is over inputs \\(j \\le i\\)): \\(\\text{head}_i^c = \\sum_{j\\le i} \\alpha_{ij}^c v_j^c\\).",
-        "Concatenate the output vectors from all <b>A</b> heads for the current token <i>i</i>: \\(\\text{head}_i^1 \\oplus \\text{head}_i^2 \\dots \\oplus \\text{head}_i^A\\).",
+        "For each head, calculate the scaled dot-product attention scores: \\( \\text { score } _c(x_i,x_j) = \\frac { q_i^c \\cdot k_j^c }  { \\sqrt { d_k }  } \\).",
+        "For each head, apply a softmax function to the scores to obtain the attention weights \\(\\alpha_ { ij } ^c\\).",
+        "For each head, compute its output vector as a weighted sum of the value vectors (for causal attention, this sum is over inputs \\(j \\le i\\)): \\(\\text { head } _i^c = \\sum_ { j\\le i }  \\alpha_ { ij } ^c v_j^c\\).",
+        "Concatenate the output vectors from all <b>A</b> heads for the current token <i>i</i>: \\(\\text { head } _i^1 \\oplus \\text { head } _i^2 \\dot s \\oplus \\text { head } _i^A\\).",
         "Apply a final linear projection with matrix \\(<b>W</b>^O\\) to the concatenated vector to produce the layer's final output \\(a_i\\)."
       ],
       "ordered": true
@@ -292,16 +292,16 @@
     },
     {
       "type": "Cloze",
-      "text": "In a Transformer's feedforward network, the dimensionality of the hidden layer (\\(d_{\\text{ff}}\\)) is commonly {{c1::larger}} than the model dimensionality (\\(d\\))."
+      "text": "In a Transformer's feedforward network, the dimensionality of the hidden layer (\\(d_ { \\text { ff }  } \\)) is commonly {{c1::larger}} than the model dimensionality (\\(d\\))."
     },
     {
       "type": "Q&A",
       "q": "What is the structure of the position-wise Feed-Forward Network (FFN) layer in a Transformer?",
-      "a": "It is a fully-connected 2-layer network consisting of two linear transformations with a ReLU activation function in between. The exact formula is:\n\\[\n\\text{FFN}(x_i) = \\text{ReLU}(x_i W_1 + b_1) W_2 + b_2\n\\]"
+      "a": "It is a fully-connected 2-layer network consisting of two linear transformations with a ReLU activation function in between. The exact formula is:\n\\[\n\\text { FFN } (x_i) = \\text { ReLU } (x_i W_1 + b_1) W_2 + b_2\n\\]"
     },
     {
       "type": "Cloze",
-      "text": "The equation for the position-wise Feedforward Network (FFN) is: {{c1::\\[ \\text{FFN}(x_i) = \\text{ReLU}(x_i W_1 + b_1)W_2 + b_2 \\]}}."
+      "text": "The equation for the position-wise Feedforward Network (FFN) is: {{c1::\\[ \\text { FFN } (x_i) = \\text { ReLU } (x_i W_1 + b_1)W_2 + b_2 \\]}}."
     },
     {
       "type": "Cloze",
@@ -322,7 +322,7 @@
     },
     {
       "type": "Cloze",
-      "text": "In layer normalization, the mean \\(\\mu\\) for an embedding vector \\(x\\) of dimensionality \\(d\\) is calculated as: {{c1::\\[\\mu = \\frac{1}{d} \\sum_{i=1}^{d} x_i\\]}}"
+      "text": "In layer normalization, the mean \\(\\mu\\) for an embedding vector \\(x\\) of dimensionality \\(d\\) is calculated as: {{c1::\\[\\mu = \\frac { 1 }  { d }  \\sum_ { i=1 } ^ { d }  x_i\\]}}"
     },
     {
       "type": "Cloze",
@@ -330,11 +330,11 @@
     },
     {
       "type": "Cloze",
-      "text": "The initial step of Layer Normalization is a z-score calculation that normalizes an input vector \\(x\\) to produce \\(\\hat{x}\\). The formula is: {{c1::\\[\\hat{x} = \\frac{x-\\mu}{\\sigma}\\]}}"
+      "text": "The initial step of Layer Normalization is a z-score calculation that normalizes an input vector \\(x\\) to produce \\(\\hat { x } \\). The formula is: {{c1::\\[\\hat { x }  = \\frac { x-\\mu }  { \\sigma } \\]}}"
     },
     {
       "type": "Cloze",
-      "text": "In Layer Normalization, the computation \\[\\hat{x} = \\frac{x-\\mu}{\\sigma}\\] produces a normalized vector with a mean of {{c1::zero}} and a standard deviation of {{c2::one}}."
+      "text": "In Layer Normalization, the computation \\[\\hat { x }  = \\frac { x-\\mu }  { \\sigma } \\] produces a normalized vector with a mean of {{c1::zero}} and a standard deviation of {{c2::one}}."
     },
     {
       "type": "Cloze",
@@ -343,17 +343,17 @@
     {
       "type": "Q&A",
       "q": "In the standard implementation of Layer Normalization, two learnable parameters are introduced: a gain ($\\(\\gamma\\)$) and an offset ($\\(\\beta\\)$). What is the final formula for <code>LayerNorm(x)</code>?",
-      "a": "The formula is:\n\\[LayerNorm(x) = \\gamma \\frac{x-\\mu}{\\sigma} + \\beta\\]\nThis applies the learnable gain \\(\\gamma\\) and offset \\(\\beta\\) to the z-score normalized vector \\(\\frac{x-\\mu}{\\sigma}\\)."
+      "a": "The formula is:\n\\[LayerNorm(x) = \\gamma \\frac { x-\\mu }  { \\sigma }  + \\beta\\]\nThis applies the learnable gain \\(\\gamma\\) and offset \\(\\beta\\) to the z-score normalized vector \\(\\frac { x-\\mu }  { \\sigma } \\)."
     },
     {
       "type": "Enumeration",
       "prompt": "What are the computational steps within a single pre-norm Transformer block for a token \\(x_i\\)?",
       "items": [
-        "1. Apply Layer Normalization to the input: \\(t^1_i = \\text{LayerNorm}(x_i)\\)",
-        "2. Compute Multi-Head Attention using the normalized input: \\(t^2_i = \\text{MultiHeadAttention}(t^1_i, [t^1_1, \\cdots, t^1_N])\\)",
+        "1. Apply Layer Normalization to the input: \\(t^1_i = \\text { LayerNorm } (x_i)\\)",
+        "2. Compute Multi-Head Attention using the normalized input: \\(t^2_i = \\text { MultiHeadAttention } (t^1_i, [t^1_1, \\cdots, t^1_N])\\)",
         "3. Add the attention output back to the original input (first residual connection): \\(t^3_i = t^2_i + x_i\\)",
-        "4. Apply Layer Normalization to the result of the first residual connection: \\(t^4_i = \\text{LayerNorm}(t^3_i)\\)",
-        "5. Pass the result through a Feed-Forward Network: \\(t^5_i = \\text{FFN}(t^4_i)\\)",
+        "4. Apply Layer Normalization to the result of the first residual connection: \\(t^4_i = \\text { LayerNorm } (t^3_i)\\)",
+        "5. Pass the result through a Feed-Forward Network: \\(t^5_i = \\text { FFN } (t^4_i)\\)",
         "6. Add the FFN output back to \\(t^3_i\\) (second residual connection) to get the final output: \\(h_i = t^5_i + t^3_i\\)"
       ],
       "ordered": true
@@ -418,7 +418,7 @@
     },
     {
       "type": "Cloze",
-      "text": "The entire self-attention computation for an entire sequence of <code>N</code> tokens for one head is reduced to the following formula: {{c1:\\[\\text{head} = \\text{softmax}\\left(\\text{mask}\\left(\\frac{QK^{\\intercal}}{\\sqrt{dk}}\\right)\\right)V\\]}}"
+      "text": "The entire self-attention computation for an entire sequence of <code>N</code> tokens for one head is reduced to the following formula: {{c1:\\[\\text { head }  = \\text { softmax } \\left(\\text { mask } \\left(\\frac { QK^ { \\int ercal }  }  { \\sqrt { dk }  } \\right)\\right)V\\]}}"
     },
     {
       "type": "Cloze",
@@ -449,7 +449,7 @@
     {
       "type": "Q&A",
       "q": "How is the look-ahead mask matrix \\(M\\) constructed for an autoregressive Transformer?",
-      "a": "For each element \\(M_{ij}\\) of the mask matrix, the value is set to \\(-\\infty\\) if \\(j &gt; i\\) and 0 otherwise. This sets the upper-triangular portion of the matrix to \\(-\\infty\\), which the subsequent softmax operation turns to zero, thus preventing attention to future tokens."
+      "a": "For each element \\(M_ { ij } \\) of the mask matrix, the value is set to \\(-\\infty\\) if \\(j &gt; i\\) and 0 otherwise. This sets the upper-triangular portion of the matrix to \\(-\\infty\\), which the subsequent softmax operation turns to zero, thus preventing attention to future tokens."
     },
     {
       "type": "Cloze",
@@ -458,7 +458,7 @@
     {
       "type": "Q&A",
       "q": "What is the source of the quadratic complexity in the self-attention mechanism?",
-      "a": "The complexity is quadratic because dot products are computed between each pair of tokens in the input sequence. For an input of length \\(\\text{N}\\), this requires computing the \\(\\text{N} \\times \\text{N}\\) \\(QK^T\\) score matrix."
+      "a": "The complexity is quadratic because dot products are computed between each pair of tokens in the input sequence. For an input of length \\(\\text { N } \\), this requires computing the \\(\\text { N }  \\times \\text { N } \\) \\(QK^T\\) score matrix."
     },
     {
       "type": "Cloze",
@@ -507,7 +507,7 @@
     },
     {
       "type": "Cloze",
-      "text": "In multi-head attention, the Query matrix for head \\(i\\) (\\(Q_i\\)) is computed by multiplying the input matrix \\(X\\) by a head-specific learned weight matrix, {{c1::\\(W_{Qi}\\)}}."
+      "text": "In multi-head attention, the Query matrix for head \\(i\\) (\\(Q_i\\)) is computed by multiplying the input matrix \\(X\\) by a head-specific learned weight matrix, {{c1::\\(W_ { Qi } \\)}}."
     },
     {
       "type": "Cloze",
@@ -515,15 +515,15 @@
     },
     {
       "type": "Cloze",
-      "text": "In multi-head attention, the Value matrix for a single head \\(i\\) (\\(V_i\\)) is created by multiplying the input matrix \\(X\\) with a head-specific learned weight matrix, {{c1::\\(W_{Vi}\\)}}."
+      "text": "In multi-head attention, the Value matrix for a single head \\(i\\) (\\(V_i\\)) is created by multiplying the input matrix \\(X\\) with a head-specific learned weight matrix, {{c1::\\(W_ { Vi } \\)}}."
     },
     {
       "type": "Cloze",
-      "text": "The formula for a single self-attention head, \n\n---\n\n<code>head_i = SelfAttention(Q_i, K_i, V_i)</code>\n\n---\n\n, is:\n\n{{c1::\\[\n\\mathrm{softmax}\\left(\\mathrm{mask}\\left(\\frac{Q_i K_i^\\top}{\\sqrt{d_k}}\\right)\\right) V_i\\]}}"
+      "text": "The formula for a single self-attention head, \n\n---\n\n<code>head_i = SelfAttention(Q_i, K_i, V_i)</code>\n\n---\n\n, is:\n\n{{c1::\\[\n\\mathrm { softmax } \\left(\\mathrm { mask } \\left(\\frac { Q_i K_i^\\top }  { \\sqrt { d_k }  } \\right)\\right) V_i\\]}}"
     },
     {
       "type": "Cloze",
-      "text": "The formula for Multi-Head Attention combines the outputs of individual heads (\\(head_i\\)) by concatenating them and then applying a final linear projection with \\(W^O\\): {{c1::(\\(head_1 \\oplus head_2 \\dots \\oplus head_A\\))W^O}}."
+      "text": "The formula for Multi-Head Attention combines the outputs of individual heads (\\(head_i\\)) by concatenating them and then applying a final linear projection with \\(W^O\\): {{c1::(\\(head_1 \\oplus head_2 \\dot s \\oplus head_A\\))W^O}}."
     },
     {
       "type": "Cloze",
@@ -532,11 +532,11 @@
     {
       "type": "Q&A",
       "q": "Why must the input and output dimensions of a Transformer block be the same?",
-      "a": "To allow the blocks to be stacked, where the output of one layer (e.g., \\(H_{k-1}\\)) serves as the input for the next layer."
+      "a": "To allow the blocks to be stacked, where the output of one layer (e.g., \\(H_ { k-1 } \\)) serves as the input for the next layer."
     },
     {
       "type": "Cloze",
-      "text": "The output \\(O\\) of the first sub-layer in a Transformer block is computed by adding a residual connection to the multi-head attention output: \\(O = {{c1::X + MultiHeadAttention(LayerNorm(X))}}\\)."
+      "text": "The output \\(O\\) of the first sub-layer in a Transformer block is computed by adding a residual connection to the multi-head attention output: \\(O =  {  { c1::X + MultiHeadAttention(LayerNorm(X)) }  } \\)."
     },
     {
       "type": "Cloze",
@@ -548,7 +548,7 @@
     },
     {
       "type": "Cloze",
-      "text": "For a subsequent Transformer layer \\(k\\), the input (denoted as \\(X\\) in the general layer equations) is the {{c1::output from the previous layer, \\(H_{k-1}\\)}}."
+      "text": "For a subsequent Transformer layer \\(k\\), the input (denoted as \\(X\\) in the general layer equations) is the {{c1::output from the previous layer, \\(H_ { k-1 } \\)}}."
     },
     {
       "type": "Cloze",
@@ -570,11 +570,11 @@
     },
     {
       "type": "Cloze",
-      "text": "The final input representation for the \\(i\\)-th token in an input sequence is computed by {{c1::<b>adding</b>}} its token embedding \\(E[\\text{id}(i)]\\) to its positional embedding \\(P[i]\\)."
+      "text": "The final input representation for the \\(i\\)-th token in an input sequence is computed by {{c1::<b>adding</b>}} its token embedding \\(E[\\text { id } (i)]\\) to its positional embedding \\(P[i]\\)."
     },
     {
       "type": "Cloze",
-      "text": "In a Transformer, the final representation for the token at position <code>i</code> forms the <code>i</code>-th row of the input matrix \\(X\\). It's computed by adding the token's embedding to the positional embedding for that position: {{c1::\\(X_i = E[\\text{id}(i)] + P[i]\\)}}."
+      "text": "In a Transformer, the final representation for the token at position <code>i</code> forms the <code>i</code>-th row of the input matrix \\(X\\). It's computed by adding the token's embedding to the positional embedding for that position: {{c1::\\(X_i = E[\\text { id } (i)] + P[i]\\)}}."
     },
     {
       "type": "Cloze",
@@ -655,7 +655,7 @@
     },
     {
       "type": "Cloze",
-      "text": "In a stacked transformer architecture, the input to a transformer layer \\(\\ell\\) for token \\(i\\) (denoted \\(x_{\\ell,i}\\)) is the {{c1::output from the preceding layer \\(\\ell-1\\)}} (denoted \\(h_{\\ell-1,i}\\))."
+      "text": "In a stacked transformer architecture, the input to a transformer layer \\(\\ell\\) for token \\(i\\) (denoted \\(x_ { \\ell,i } \\)) is the {{c1::output from the preceding layer \\(\\ell-1\\)}} (denoted \\(h_ { \\ell-1,i } \\))."
     },
     {
       "type": "Cloze",
@@ -704,7 +704,7 @@
       "prompt": "What are the steps in the <b>top-k sampling</b> algorithm?",
       "items": [
         "Choose in advance a number of words, \\(k\\).",
-        "For each word in the vocabulary, use the language model to compute the likelihood of this word given the context, \\(p(w_t|w_{&lt;t})\\).",
+        "For each word in the vocabulary, use the language model to compute the likelihood of this word given the context, \\(p(w_t|w_ { &lt;t } )\\).",
         "Sort the words by their likelihood and discard any word that is not one of the top \\(k\\) most probable words.",
         "Renormalize the scores of the \\(k\\) words to form a legitimate probability distribution.",
         "Randomly sample a word from the remaining \\(k\\) words according to its probability."
@@ -736,15 +736,15 @@
     {
       "type": "Q&A",
       "q": "How is the candidate vocabulary <b>V</b><sup>(p)</sup> formally defined in top-p (nucleus) sampling?",
-      "a": "It is the smallest set of words such that the sum of their probabilities is greater than or equal to the hyperparameter <i>p</i>.<br>\n\\[\n\\sum_{w \\in V^{(p)}} P(w|w_{&lt;t}) \\ge p\n\\]"
+      "a": "It is the smallest set of words such that the sum of their probabilities is greater than or equal to the hyperparameter <i>p</i>.<br>\n\\[\n\\sum_ { w \\in V^ { (p) }  }  P(w|w_ { &lt;t } ) \\ge p\n\\]"
     },
     {
       "type": "Cloze",
-      "text": "In <b>top-p sampling</b> (also called <b>nucleus sampling</b>), the vocabulary for the next token, \\(V^{(p)}\\), is the {{c1::smallest set}} of the most probable words whose cumulative probability is greater than or equal to \\(p\\).<br><br>Formally: \\[\\sum_{w \\in V^{(p)}} P(w|w_{&lt;t}) \\ge p\\]"
+      "text": "In <b>top-p sampling</b> (also called <b>nucleus sampling</b>), the vocabulary for the next token, \\(V^ { (p) } \\), is the {{c1::smallest set}} of the most probable words whose cumulative probability is greater than or equal to \\(p\\).<br><br>Formally: \\[\\sum_ { w \\in V^ { (p) }  }  P(w|w_ { &lt;t } ) \\ge p\\]"
     },
     {
       "type": "Cloze",
-      "text": "In <b>top-p sampling</b> (or <b>nucleus sampling</b>), the vocabulary \\(V^{(p)}\\) is defined as the <i>smallest set of words</i> satisfying the condition: {{c1::\\[\\sum_{w \\in V^{(p)}} P(w|w \\lt t) \\geq p\\]}}"
+      "text": "In <b>top-p sampling</b> (or <b>nucleus sampling</b>), the vocabulary \\(V^ { (p) } \\) is defined as the <i>smallest set of words</i> satisfying the condition: {{c1::\\[\\sum_ { w \\in V^ { (p) }  }  P(w|w \\lt t) \\geq p\\]}}"
     },
     {
       "type": "Cloze",
@@ -752,7 +752,7 @@
     },
     {
       "type": "Cloze",
-      "text": "In language model training, the <b>cross-entropy loss</b> (also called the <b>negative log likelihood loss</b>) at time step \\(t\\) is the negative log probability assigned to the correct next word \\(w_{t+1}\\), calculated as: {{c1::\\(-\\log p(w_{t+1})\\)}}."
+      "text": "In language model training, the <b>cross-entropy loss</b> (also called the <b>negative log likelihood loss</b>) at time step \\(t\\) is the negative log probability assigned to the correct next word \\(w_ { t+1 } \\), calculated as: {{c1::\\(-\\log p(w_ { t+1 } )\\)}}."
     },
     {
       "type": "Cloze",
@@ -822,7 +822,7 @@
     },
     {
       "type": "Cloze",
-      "text": "The number of non-embedding parameters \\(N\\) in a Transformer is approximated as {{c1::\\(N \\approx 12 \\cdot n_{layer} \\cdot d^2\\)}}, assuming \\(d_{attn} = d_{ff}/4 = d\\)."
+      "text": "The number of non-embedding parameters \\(N\\) in a Transformer is approximated as {{c1::\\(N \\approx 12 \\cdot n_ { layer }  \\cdot d^2\\)}}, assuming \\(d_ { attn }  = d_ { ff } /4 = d\\)."
     },
     {
       "type": "Cloze",
@@ -878,7 +878,7 @@
     },
     {
       "type": "Cloze",
-      "text": "During LoRA fine-tuning, the forward pass for a layer with input \\(x\\) and a frozen weight matrix \\(W\\) is updated to \\(h = xW + {{c1::xAB}}\\)."
+      "text": "During LoRA fine-tuning, the forward pass for a layer with input \\(x\\) and a frozen weight matrix \\(W\\) is updated to \\(h = xW +  {  { c1::xAB }  } \\)."
     },
     {
       "type": "Enumeration",
@@ -944,7 +944,7 @@
     },
     {
       "type": "Cloze",
-      "text": "The generalized 'fuzzy' version of an induction head's pattern completion rule (e.g., \\(A^*B^*...A\\rightarrow B\\)), hypothesized to be responsible for in-context learning, operates on tokens that are {{c1::semantically similar}} (i.e., \\(A^* \\approx A\\)) rather than strictly identical."
+      "text": "The generalized 'fuzzy' version of an induction head's pattern completion rule (e.g., \\(A^*B^*...A\\right arrow B\\)), hypothesized to be responsible for in-context learning, operates on tokens that are {{c1::semantically similar}} (i.e., \\(A^* \\approx A\\)) rather than strictly identical."
     },
     {
       "type": "Q&A",

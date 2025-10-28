@@ -82,6 +82,34 @@ class TestFixMathjaxOperatorSpacing:
         expected = r'{{c1:\[\hat w \frac{1}{2} \sqrt n\]}}'
         assert fix_mathjax_operator_spacing(input_text) == expected
     
+    def test_dots_operator_not_split(self):
+        """Test that \dots operator is not incorrectly split into \dot s."""
+        input_text = r'\(t^2_i = \text{MultiHeadAttention}(t^1_i, [t^1_1, \dots, t^1_N])\)'
+        # \dots should NOT be changed to \dot s
+        result = fix_mathjax_operator_spacing(input_text)
+        assert r'\dots' in result
+        assert r'\dot s' not in result
+    
+    def test_dot_vs_dots_comprehensive(self):
+        """Test comprehensive dot vs dots operator handling."""
+        # Test \dot followed by letter (should add space)
+        assert fix_mathjax_operator_spacing(r'\(\dotx\)') == r'\(\dot x\)'
+        
+        # Test \dots followed by letter (should add space) 
+        assert fix_mathjax_operator_spacing(r'\(\dotsx\)') == r'\(\dots x\)'
+        
+        # Test \dot followed by comma (current behavior: adds space)
+        assert fix_mathjax_operator_spacing(r'\(\dot,\)') == r'\(\dot ,\)'
+        
+        # Test \dots followed by comma (current behavior: adds space)
+        assert fix_mathjax_operator_spacing(r'\(\dots,\)') == r'\(\dots ,\)'
+        
+        # Test \dots in original failing case
+        input_text = r'\(\dots, t^1_N\)'
+        result = fix_mathjax_operator_spacing(input_text)
+        assert r'\dots ,' in result
+        assert r'\dot s' not in result
+    
     def test_edge_cases(self):
         """Test edge cases."""
         assert fix_mathjax_operator_spacing("") == ""

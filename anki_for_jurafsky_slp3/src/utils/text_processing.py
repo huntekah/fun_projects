@@ -97,26 +97,47 @@ def fix_mathjax_cloze_conflicts(text: Optional[str]) -> str:
 
 # Common MathJax operators that need spacing when followed by letters
 MATHJAX_OPERATORS: Set[str] = {
-    # Functions and text operators
     r'\lim', r'\sin', r'\cos', r'\tan', r'\max', r'\min', r'\ln', r'\log', 
     r'\operatorname', r'\text',
-    
-    # Sums, integrals, fractions
     r'\sum', r'\int', r'\prod', r'\bigcup', r'\bigcap', r'\iint',
     r'\iiint', r'\idotsint', r'\frac', r'\over', r'\cfrac', r'\sqrt',
     
-    # Special notation
     r'\choose', r'\binom', r'\pmod', r'\bmod',
     
-    # Accents (like \hat in the example)
     r'\hat', r'\widehat', r'\bar', r'\overline', r'\vec', r'\overrightarrow',
     r'\overleftrightarrow', r'\dot', r'\ddot', r'\tilde', r'\widetilde',
     
-    # Spacing commands
     r'\,', r'\;', r'\quad', r'\qquad',
     
-    # Other special commands
     r'\left', r'\right', r'\middle', r'\not', r'\backslash',
+    
+    # Prefix-based commands (fixes \dot, \sin, \lim bugs)
+    r'\dots', r'\ldots', r'\cdots', r'\vdots', r'\ddots',
+    r'\sinh', r'\cosh', r'\tanh', r'\coth',
+    r'\limsup', r'\liminf', r'\lg',
+
+    # Greek Letters (Lower)
+    r'\alpha', r'\beta', r'\gamma', r'\delta', r'\epsilon', r'\varepsilon', r'\zeta', r'\eta', 
+    r'\theta', r'\vartheta', r'\iota', r'\kappa', r'\lambda', r'\mu', r'\nu', r'\xi', r'\pi', 
+    r'\varpi', r'\rho', r'\varrho', r'\sigma', r'\varsigma', r'\tau', r'\upsilon', r'\phi', 
+    r'\varphi', r'\chi', r'\psi', r'\omega',
+    
+    # Greek Letters (Upper)
+    r'\Gamma', r'\Delta', r'\Theta', r'\Lambda', r'\Xi', r'\Pi', r'\Sigma', r'\Upsilon', 
+    r'\Phi', r'\Psi', r'\Omega',
+    
+    # Font Commands
+    r'\mathbf', r'\mathcal', r'\mathbb', r'\mathrm', r'\mathsf', r'\mathtt', r'\mathscr', 
+    r'\mathfrak', r'\rm', r'\bf', r'\it', r'\sf',
+
+    # Common Symbols & Relations
+    r'\pm', r'\mp', r'\times', r'\div', r'\cdot', r'\ast', r'\star',
+    r'\approx', r'\equiv', r'\sim', r'\simeq', r'\ge', r'\le', r'\neq', r'\gg', r'\ll',
+    r'\in', r'\notin', r'\subset', r'\subseteq', r'\supset', r'\supseteq', r'\ni',
+    r'\forall', r'\exists', r'\infty', r'\partial', r'\nabla',
+
+    # Arrows
+    r'\to', r'\rightarrow', r'\leftarrow', r'\Leftarrow', r'\Rightarrow', r'\leftrightarrow', r'\mapsto',
 }
 
 # Build regex pattern for operators (longest first to avoid partial matches)
@@ -124,7 +145,7 @@ _sorted_operators = sorted(list(MATHJAX_OPERATORS), key=len, reverse=True)
 _operators_pattern = '|'.join(re.escape(op) for op in _sorted_operators)
 
 # Pattern to find operators directly followed by letters (no space)
-OPERATOR_SPACING_PATTERN = re.compile(f'({_operators_pattern})(?=[a-zA-Z])')
+OPERATOR_SPACING_PATTERN = re.compile(f'({_operators_pattern})(?=[^\\s])')
 
 def _mathjax_operator_spacer(match: re.Match) -> str:
     """Add spaces after MathJax operators inside MathJax blocks."""

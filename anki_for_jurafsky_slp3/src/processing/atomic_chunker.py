@@ -81,7 +81,9 @@ CRITICAL RULES
 - Atomicity is Non-Negotiable: Vigorously break down complex sentences.
 - Context is Key: Ensure each card has the minimum necessary context to be understood on its own.
 - Strict Schema: The output JSON must strictly follow the schema defined in the OUTPUT SPECIFICATION.
-- MathJax Formatting: All mathematical formulas, equations, and variables MUST be formatted using MathJax. Use \(\) for inline math (e.g., \(E=mc^2\)) and \[\] for display/block math.
+- MathJax Formatting: All mathematical formulas, equations, and variables MUST be formatted using MathJax. Using <math> or <span> is not allowed. Use \(\) for inline math (e.g., \(E=mc^2\)) and \[\] for display/block math.
+   * Use the HTML entities &lt;, &gt; and &amp; to encode these characters so that the browser will not interpret them, but MathJax will.
+
 
 EXAMPLES OF FILTERING IN ACTION
 
@@ -105,14 +107,21 @@ Generated Card:
 }}
 
 Input Sentence: "The similarity score in an attention mechanism is the scaled dot-product, calculated as (qi ⋅ kj) / √dk."
-Decision: Keep. This is a foundational formula. The formula itself is the key to understanding how attention mechanism works.
+Decision: Keep. This is a foundational formula. The formula itself is the key to understanding how attention mechanism works. 'll use block mathjax formatting for clarity.
 
 Generated Card:
 {{
   "type": "Cloze",
-  "text": "The similarity score in a Transformer's self-attention is calculated using the scaled dot-product: {{{{c1::\\(\\frac{{q_i \\cdot k_j}}{{\\sqrt{{d_k}}}}\\)}}}}."
+  "text": "The similarity score in a Transformer's self-attention is calculated using the scaled dot-product: {{{{c1::\\[\\frac{{q_i \\cdot k_j}}{{\\sqrt{{d_k}}}}\\]}}}}."
 }}
 
+Input Sentence: "In self-attention, the attention weights <math>\\alpha_{{ij}}</math> are computed by normalizing the similarity scores, <math>\\text{{score}}(x_i, x_j)</math>, using the softmax function. The formula is given by:<math>\\\\alpha_{{ij}} = \\text{{softmax}}(\\text{{score}}(x_i, x_j)) \\quad \\forall j <= i</math>"
+Decision: Keep. This is a foundational concept defining a function and its corresponding formula. It's a single, atomic fact. This example also demonstrates cloze-deleting *both* instances of the same term ('softmax') using the same `c1` tag, which is a valid pattern for reinforcing a single concept.
+Generated Card:
+{{
+  "type": "Cloze",
+  "text": "In self-attention, the attention weights \\(\\alpha_{{ij}}\\) are computed by normalizing similarity scores using the {{{{c1::softmax}}}} function, as shown by the formula: \\[\\alpha_{{ij}} = {{{{c1::\\text {{softmax}} }}}}(\\text {{score}} (x_i, x_j)) \\quad \\forall j &le; i\\]."
+}}
 
 BEGIN PROMPT
 Based on all the rules and examples above, process the following text chunk:
@@ -139,7 +148,7 @@ def fix_content(source: str, card: CardType) -> CardType:
     Returns:
         Improved flashcard with better content and formatting
     """
-    llm_client = LLMClient(model="gemini-2.5-flash")
+    llm_client = LLMClient(model="gemini-2.5-pro")
     
     # Stage 1: Content improvement
     content_prompt = f"""You are a meticulous Senior Machine Learning Engineer and expert educator, acting as a content reviewer for flashcards. 
@@ -150,8 +159,7 @@ You must analyze the given flashcard based on the following **Content Principles
 1.  **Technical Accuracy & Precision (Verified by Source):**
     * Does the terminology in the card **perfectly align** with the source text?
     * Use the source to correct any imprecise terms (e.g., change "context vectors" to "value vectors" if the source specifies the latter).
-    * Ensure all formulas and variables are correctly transcribed from the source, using proper MathJax formatting  Use \\(\\) for inline math e.g., \\( E = mc^2\\)  and \\[\\] for display/block math.
-    * You can use basic HTML tags for formatting where appropriate (e.g., `<b>`, `<i>`, `<code>`, `<pre>`).
+    * dont change any formatting in this step.
 
 2.  **Clarity & Conciseness:**
     * Is the card as simple and direct as possible without losing critical meaning from the source?
@@ -207,6 +215,7 @@ Focus ONLY on formatting improvements:
    * Use \\(\\) for inline math (e.g., \\( E = mc^2\\))
    * Use \\[\\] for display/block math for complex formulas
    * Ensure all mathematical notation is properly formatted
+   * Using <math> or <span class="katex"> is NOT allowed - only use MathJax syntax.
 
 2. Cloze Conflicts
 Dont add new cloze deletions or change content. Just fix conflicts between existing cloze deletions and MathJax.
@@ -269,7 +278,8 @@ In C++, a <code>std::variant</code> is a <b>type-safe union</b> that can hold on
 """
 
 
-    fixed_card: CardType = smaller_client.generate(formatting_prompt, CardType)
+    # fixed_card: CardType = smaller_client.generate(formatting_prompt, CardType)
+    fixed_card = card
 
     # Apply all text fixes (HTML escaping and MathJax/Cloze conflicts)
     match fixed_card:
